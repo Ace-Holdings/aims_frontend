@@ -25,7 +25,7 @@ const SidebarAdmin = () => {
     ];
 
     return (
-        <div className={`bg-gray-900 text-white transition-all duration-300 ease-in-out h-screen ${isCollapsed ? "w-16" : "w-64"}`}>
+        <div className={`sticky bg-gray-900 text-white transition-all duration-300 ease-in-out h-screen ${isCollapsed ? "w-16" : "w-64"}`}>
             <div className="flex justify-end p-4">
                 <button
                     onClick={toggleSidebar}
