@@ -7,19 +7,13 @@ import { GrDocumentPerformance } from "react-icons/gr";
 import { LuLogs } from "react-icons/lu";
 import Link from "next/link"
 
-const SidebarAdmin = () => {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    const toggleSidebar = () => setIsCollapsed(!isCollapsed);
-    const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
-
+const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
     const menuItems = [
         { icon: <FiHome />, label: "Home", path: "/admin" },
         { icon: <FiBriefcase />, label: "Assignments", path: "/admin/assignments" },
         { icon: <FiUsers />, label: "Users", path: "/admin/users" },
         { icon: <MdOutlineInventory2 />, label: "Inventory", path: "/admin/inventory" },
-        { icon: <MdOutlinePointOfSale />, label: "Sales", path: "/admin/sales"},
+        { icon: <MdOutlinePointOfSale />, label: "Sales", path: "/admin/sales" },
         { icon: <GrDocumentPerformance />, label: "Bid documents", path: "/admin/bids" },
         { icon: <LuLogs />, label: "Logs", path: "/admin/logs" },
     ];
@@ -52,8 +46,6 @@ const SidebarAdmin = () => {
                     ))}
                 </ul>
             </nav>
-
-
         </div>
     );
 };

@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export default function AssignmentsAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     const openDialog = () => {
         setIsDialogOpen(true);
@@ -20,13 +21,17 @@ export default function AssignmentsAdmin() {
         setIsDialogOpen(false);
     };
 
+    const toggleSidebar = () => {
+        setIsSidebarCollapsed(!isSidebarCollapsed);
+    };
+
     return (
         <>
             <div className={`h-screen flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
-                <div className="fixed top-0 left-0 h-screen w-64 z-10 shadow-md">
-                    <SidebarAdmin />
+                <div className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
+                    <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} />
                 </div>
-                <div className="ml-64 flex-1 flex flex-col">
+                <div className={`flex-1 flex flex-col ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} transition-all duration-300`}>
                     <div className="bg-white p-4 sticky top-0 z-10">
                         <header className="flex gap-2 items-center text-gray-600">
                             <svg
@@ -52,7 +57,7 @@ export default function AssignmentsAdmin() {
                     <div className="ml-6 mt-10">
                         <div className="flex-row gap-4 flex">
                             <TotalAssignments />
-                            <div className="w-20" />
+                            <div className="w-10" />
                             <ActiveAssignments />
                         </div>
                         <div className="h-7" />
@@ -97,7 +102,7 @@ export default function AssignmentsAdmin() {
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment title"
+                                    placeholder="Enter assignment name"
                                 />
                             </div>
                             <div className="mb-4">
@@ -108,7 +113,7 @@ export default function AssignmentsAdmin() {
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment title"
+                                    placeholder="Enter location name"
                                 />
                             </div>
                             <div className="mb-4">
@@ -124,17 +129,30 @@ export default function AssignmentsAdmin() {
                                         popperPlacement="bottom"
                                     />
                                 </div>
-
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     Ends at
                                 </label>
+                                <div className="relative overflow-visible">
+                                    <DatePicker
+                                        dateFormat="yyyy-MM-dd"
+                                        className="grow p-2 bg-white"
+                                        placeholderText="Select end date"
+                                        popperClassName="z-50"
+                                        popperPlacement="bottom"
+                                    />
+                                </div>
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                    Employee to be assigned
+                                </label>
                                 <input
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment title"
+                                    placeholder="Enter employee to be assigned"
                                 />
                             </div>
                             <div className="mb-4">

@@ -1,3 +1,4 @@
+"use client"
 
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
@@ -5,15 +6,26 @@ import ActiveAssignments from "@/components/tiles/activeAssignments";
 import NumberOfSales from "@/components/tiles/numberOfSales";
 import NumberOfBids from "@/components/tiles/numberOfPendingBids";
 import InventoryProportion from "@/components/charts/inventoryProportion";
+import {useState} from "react";
 
 export default function AdminHome() {
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    const toggleSidebar = () => {
+        setIsSidebarCollapsed(!isSidebarCollapsed);
+    };
+
     return (
         <div className="h-screen flex bg-gray-100">
             {/* Sidebar */}
-            <SidebarAdmin/>
+            <div
+                className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
+                <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
+            </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col">
+            <div
+                className={`flex-1 flex flex-col ${isSidebarCollapsed ? "ml-16" : "ml-64"} transition-all duration-300`}>
                 {/* Top Bar */}
                 <div className="bg-white p-4 sticky top-0 z-10">
                     <header className="flex gap-2 items-center text-gray-600">
@@ -40,7 +52,7 @@ export default function AdminHome() {
                 </div>
 
                 {/* Page Content */}
-                <div className="p-6 text-black flex-2 flex flex-row">
+                <div className="p-6 text-black flex-2 flex flex-row mt-5 ">
                     <ActiveAssignments/>
                     <div className="w-20"/>
                     <NumberOfSales/>
