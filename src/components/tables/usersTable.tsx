@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import DataTable from "react-data-table-component";
 
 export default function UsersTable() {
@@ -10,40 +10,59 @@ export default function UsersTable() {
         { id: 5, username: "charlie.w", firstname: "Charlie", surname: "White", email: "charlie.white@mail.com", role: "Admin", status: "Active" }
     ];
 
+    const [users, setUsers] = useState([]);
+
+    // put it in use effect since it has to fetch everytime the page reloads
+    useEffect(() => {
+        fetch("http://localhost:3002/users", {
+            method: "GET",
+        })
+            .then((res) => res.json())
+            .then((fetchedUsers) => {
+                const sortedUsers = fetchedUsers.sort((a: any, b: any) => b.userId - a.userId);
+                setUsers(sortedUsers);
+                setFilteredData(sortedUsers); // Set filteredData to initial users list
+            });
+    }, []);
+
+
     // Columns Definition
     const columns = [
         {
             name: "ID",
-            selector: (row: any) => row.id,
+            selector: (row: any) => row.userId,
+            sortable: true,
+        },
+        {
+            name: "Firstname",
+            selector: (row: any) => row.firstName,
+            sortable: true,
+        },
+        {
+            name: "Lastname",
+            selector: (row: any) => row.surname,
             sortable: true,
         },
         {
             name: "Username",
             selector: (row: any) => row.username,
-            sortable: true,
-        },
-        {
-            name: "First Name",
-            selector: (row: any) => row.firstname,
-            sortable: true,
-        },
-        {
-            name: "Last Name",
-            selector: (row: any) => row.surname,
 
         },
         {
-            name: "Email",
+            name: "email",
             selector: (row: any) => row.email,
         },
         {
             name: "Role",
-            selector: (row: any) => row.role,
+            selector: (row: any) =>
+                row.roles && row.roles.length > 0
+                    ? row.roles.map((role: any) => role.name).join(", ")
+                    : "No Roles",
             sortable: true,
         },
         {
             name: "Status",
-            selector: (row: any) => row.status,
+            selector: (row: any) => row.assignmentStaus,
             sortable: true,
         },
     ];
@@ -62,31 +81,36 @@ export default function UsersTable() {
     // States for filtering and searching
     const [filter, setFilter] = useState("All");
     const [search, setSearch] = useState("");
-    const [filteredData, setFilteredData] = useState(data);
+    const [filteredData, setFilteredData] = useState(users);
 
     // Handle Filter Change
     const handleFilterChange = (e: any) => {
         const value = e.target.value;
         setFilter(value);
 
-        // Filter data based on status or show all
-        if (value === "All") {
-            setFilteredData(data);
-        } else {
-            setFilteredData(data.filter((item) => item.status === value));
-        }
+        const filtered =
+            value === "All"
+                ? users
+                : users.filter((item: any) => item.status === value);
+        setFilteredData(
+            filtered.filter((item: any) =>
+                item.username.toLowerCase().includes(search.toLowerCase())
+            )
+        );
     };
 
-    // Handle Search
+    // Handle Search Change
     const handleSearchChange = (e: any) => {
         const value = e.target.value;
         setSearch(value);
 
-        // Filter data based on search text
+        const filtered = users.filter((item: any) =>
+            item.username.toLowerCase().includes(value.toLowerCase())
+        );
         setFilteredData(
-            data.filter((item) =>
-                item.username.toLowerCase().includes(value.toLowerCase())
-            )
+            filter === "All"
+                ? filtered
+                : filtered.filter((item: any) => item.status === filter)
         );
     };
 

@@ -15,6 +15,17 @@ export default function UsersAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+    // states for forms
+    const [firstname, setFirstname] = useState("");
+    const [lastname, setLastname] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
+    const [idNumber, setIdNumber] = useState("");
+    const [roleId, setRoleId] = useState("");
+
+
+
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -26,6 +37,35 @@ export default function UsersAdmin() {
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    // handler function to submit user details
+    const handleUserRegistration = async (e: any) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch('http://localhost:3002/users', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    firstName: firstname,
+                    surname: lastname,
+                    username: username,
+                    password: password,
+                    email: email,
+                    idNumber: idNumber,
+                    roleId: [parseInt(roleId)]
+                })
+            })
+
+            if (response.ok) {
+                closeDialog();
+            }
+        } catch(e) {
+            console.log(e);
+        }
+    }
 
     return (
         <>
@@ -97,7 +137,7 @@ export default function UsersAdmin() {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add User</h2>
                         <div className="h-2"/>
-                        <form>
+                        <form onSubmit={handleUserRegistration}>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     firstName
@@ -106,7 +146,8 @@ export default function UsersAdmin() {
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment name"
+                                    placeholder="Enter user firstname"
+                                    onChange={(e):void => setFirstname(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
@@ -117,7 +158,8 @@ export default function UsersAdmin() {
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment name"
+                                    placeholder="Enter user lastname"
+                                    onChange={(e)=>setLastname(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
@@ -128,7 +170,8 @@ export default function UsersAdmin() {
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment name"
+                                    placeholder="Enter username"
+                                    onChange={(e)=>setUsername(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
@@ -139,7 +182,8 @@ export default function UsersAdmin() {
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter location name"
+                                    placeholder="Enter password"
+                                    onChange={(e)=>setPassword(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
@@ -150,12 +194,14 @@ export default function UsersAdmin() {
                                     id="role"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     defaultValue=""
+                                    onChange={(e) => setRoleId(e.target.value)}
+                                    value={roleId}
                                 >
                                     <option value="" disabled>
                                         Select a role
                                     </option>
-                                    <option value="manager">Manager</option>
-                                    <option value="employee">Employee</option>
+                                    <option value="2">Manager</option>
+                                    <option value="3">Employee</option>
                                 </select>
                             </div>
                             <div className="mb-4">
@@ -166,7 +212,8 @@ export default function UsersAdmin() {
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter location name"
+                                    placeholder="Enter user email"
+                                    onChange={(e)=>setEmail(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">

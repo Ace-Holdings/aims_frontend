@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 
 export default function AssignmentsTable() {
@@ -12,21 +12,40 @@ export default function AssignmentsTable() {
         { id: 5, name: "Charlie White", role: "Admin", status: "Active" },
     ];
 
+    const [assignments, setAssignments] = useState([])
+
+    useEffect(() => {
+        fetch("http://localhost:3002/assignments", {
+            method: "GET",
+        }).then((response) => response.json())
+            .then(data => setAssignments(data));
+    }, []);
+
     // Columns Definition
     const columns = [
         {
             name: "ID",
-            selector: (row: any) => row.id,
+            selector: (row: any) => row.assignmentId,
             sortable: true,
         },
         {
-            name: "Name",
-            selector: (row: any) => row.name,
+            name: "Assignment name",
+            selector: (row: any) => row.assignmentName,
             sortable: true,
         },
         {
-            name: "Role",
-            selector: (row: any) => row.role,
+            name: "Location",
+            selector: (row: any) => row.location,
+            sortable: true,
+        },
+        {
+            name: "Starts At",
+            selector: (row: any) => row.startsAt,
+            sortable: true,
+        },
+        {
+            name: "Ends At",
+            selector: (row: any) => row.endsAt,
             sortable: true,
         },
         {
@@ -105,7 +124,7 @@ export default function AssignmentsTable() {
             {/* DataTable Component */}
             <DataTable
                 columns={columns}
-                data={filteredData}
+                data={assignments}
                 customStyles={customStyles}
                 pagination
                 highlightOnHover

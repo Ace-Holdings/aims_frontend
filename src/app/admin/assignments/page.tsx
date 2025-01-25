@@ -13,6 +13,14 @@ export default function AssignmentsAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+    // form attributes
+    const [assignmentName, setAssignmentName] = useState("");
+    const [location, setLocation] = useState("");
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [employeeAssigned, setEmployeeAssigned] = useState("");
+    const [description, setDescription] = useState("");
+
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -25,6 +33,33 @@ export default function AssignmentsAdmin() {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
+    // handler function to submit assignment form data to server
+    const handleAssignmentSubmit = async() => {
+        try {
+            const response = await fetch('http://localhost:3002/assignments', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    assignmentName: assignmentName,
+                    location: location,
+                    startsAt: startDate,
+                    endsAt: endDate,
+                    employeeAssigned: employeeAssigned,
+                    description: description,
+                })
+            });
+
+            if (response.ok) {
+                setIsDialogOpen(false);
+            }
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
+    // @ts-ignore
     return (
         <>
             <div className={`h-screen flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
@@ -93,12 +128,14 @@ export default function AssignmentsAdmin() {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add Assignment</h2>
                         <div className="h-2"/>
-                        <form>
+                        <form onSubmit={handleAssignmentSubmit}>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     Assignment name
                                 </label>
                                 <input
+                                    value={assignmentName}
+                                    onChange={(e) => setAssignmentName(e.target.value)}
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
@@ -110,6 +147,8 @@ export default function AssignmentsAdmin() {
                                     Location
                                 </label>
                                 <input
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
@@ -122,9 +161,14 @@ export default function AssignmentsAdmin() {
                                 </label>
                                 <div className="relative overflow-visible">
                                     <DatePicker
-                                        dateFormat="yyyy-MM-dd"
-                                        className="grow p-2 bg-white"
-                                        placeholderText="Select start date"
+                                        selected={startDate}
+                                        onChange={(data) => setStartDate(data)}
+                                        dateFormat="yyyy-MM-dd h:mm aa"
+                                        showTimeSelect
+                                        timeFormat="h:mm aa"
+                                        timeIntervals={15}
+                                        className="grow p-2 bg-white w-[200px]"
+                                        placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="bottom"
                                     />
@@ -136,9 +180,14 @@ export default function AssignmentsAdmin() {
                                 </label>
                                 <div className="relative overflow-visible">
                                     <DatePicker
-                                        dateFormat="yyyy-MM-dd"
-                                        className="grow p-2 bg-white"
-                                        placeholderText="Select end date"
+                                        selected={endDate}
+                                        onChange={(data) => setEndDate(data)}
+                                        dateFormat="yyyy-MM-dd h:mm aa"
+                                        showTimeSelect
+                                        timeFormat="h:mm aa"
+                                        timeIntervals={15}
+                                        className="grow p-2 bg-white w-[200px]"
+                                        placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="bottom"
                                     />
@@ -149,6 +198,8 @@ export default function AssignmentsAdmin() {
                                     Employee to be assigned
                                 </label>
                                 <input
+                                    value={employeeAssigned}
+                                    onChange={(e) => setEmployeeAssigned(e.target.value)}
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
@@ -160,6 +211,8 @@ export default function AssignmentsAdmin() {
                                     Description
                                 </label>
                                 <textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
                                     id="description"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     placeholder="Enter assignment description"
