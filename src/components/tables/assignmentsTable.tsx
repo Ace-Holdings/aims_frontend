@@ -18,7 +18,10 @@ export default function AssignmentsTable() {
         fetch("http://localhost:3002/assignments", {
             method: "GET",
         }).then((response) => response.json())
-            .then(data => setAssignments(data));
+            .then((data) => {
+                setAssignments(data)
+                setFilteredData(data)
+            })
     }, []);
 
     // Columns Definition
@@ -124,7 +127,7 @@ export default function AssignmentsTable() {
             {/* DataTable Component */}
             <DataTable
                 columns={columns}
-                data={assignments}
+                data={filteredData}
                 customStyles={customStyles}
                 pagination
                 highlightOnHover

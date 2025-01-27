@@ -1,50 +1,70 @@
-"use client"
+"use client";
 
 // components/layout/AdminNavbar.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiUser, FiSettings, FiLogOut } from "react-icons/fi";
+import { jwtDecode } from "jwt-decode"; // Ensure this is installed
 
 const Navbar = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [username, setUsername] = useState("");
     const toggleDialog = () => {
         setIsDialogOpen(!isDialogOpen);
     };
 
-    return (
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decodedToken: any = jwtDecode(token); // Adjust this to match your token structure
+                console.log(decodedToken);
+                setUsername(decodedToken.user || "User");
+            } catch (e) {
+                console.error(e);
+            }
+        } else {
+            setUsername("User");
+        }
+    }, []);
 
-            <div className="relative">
+    return (
+        <div className="relative bg-white px-6 py-4 flex items-center justify-between rounded-b-md">
+            {/* Navbar content */}
+
+                <p className="text-gray-700 font-semibold mr-4">{username}</p>
                 <button
                     onClick={toggleDialog}
                     className="flex items-center p-2 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
                 >
                     <FiUser className="text-gray-600" size={20} />
                 </button>
-                {isDialogOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg">
-                        <ul className="py-1">
-                            <li>
-                                <button
-                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    onClick={() => alert("Go to settings")}
-                                >
-                                    <FiSettings className="mr-2" />
-                                    Settings
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    onClick={() => alert("Logging out")}
-                                >
-                                    <FiLogOut className="mr-2" />
-                                    Logout
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                )}
-            </div>
 
+            {/* Dropdown menu */}
+            {isDialogOpen && (
+                <div className="absolute top-full right-0 mt-4 w-48  rounded-md shadow-lg z-50">
+                    <ul className="py-1">
+                        <li>
+                            <button
+                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                onClick={() => alert("Go to settings")}
+                            >
+                                <FiSettings className="mr-2" />
+                                Settings
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                onClick={() => alert("Logging out")}
+                            >
+                                <FiLogOut className="mr-2" />
+                                Logout
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            )}
+        </div>
     );
 };
 

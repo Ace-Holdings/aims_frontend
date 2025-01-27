@@ -2,13 +2,6 @@ import React, {useEffect, useState} from "react";
 import DataTable from "react-data-table-component";
 
 export default function UsersTable() {
-    const data = [
-        { id: 1, username: "john", firstname: "John", surname: "Ndawala", email: "john@mail.com", role: "Admin", status: "Active" },
-        { id: 2, username: "jane.smith", firstname: "Jane", surname: "Smith", email: "jane.smith@mail.com", role: "User", status: "Inactive" },
-        { id: 3, username: "alice.j", firstname: "Alice", surname: "Johnson", email: "alice.johnson@mail.com", role: "Moderator", status: "Active" },
-        { id: 4, username: "bob.brown", firstname: "Bob", surname: "Brown", email: "bob.brown@mail.com", role: "User", status: "Inactive" },
-        { id: 5, username: "charlie.w", firstname: "Charlie", surname: "White", email: "charlie.white@mail.com", role: "Admin", status: "Active" }
-    ];
 
     const [users, setUsers] = useState([]);
 

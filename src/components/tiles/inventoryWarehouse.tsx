@@ -1,0 +1,40 @@
+import {useEffect, useState} from "react";
+
+export default function InventoryWarehouse() {
+    const [warehouseInventoryValue, setWarehouseInventoryValue] = useState(0);
+
+    useEffect(() => {
+        // Fetch inventory data
+        fetch('http://localhost:3002/inventory', {
+            method: 'GET',
+        })
+            .then((response) => response.json())
+            .then((data) => {
+
+                const shopInventory = data.filter((item: any) => item.location === "warehouse");
+
+
+                const totalValue = shopInventory.reduce((sum: number, item: any) => {
+                    return sum + item.quantity * item.pricePerUnit;
+                }, 0);
+
+                setWarehouseInventoryValue(totalValue);
+            })
+            .catch((error) => {
+                console.error("Error fetching inventory:", error);
+            });
+    }, []);
+
+    return (
+        <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col justify-center  w-1/3 h-64 font-custom">
+            <p className="text-xl font-extrabold text-blue-500 mt-10">
+                {warehouseInventoryValue.toLocaleString(undefined, {
+                    style: "currency",
+                    currency: "MWK",
+                })}
+            </p>
+            <div className="h-3"/>
+            <h2 className="text-2xl font-bold text-gray-700 ">Value of inventory warehouse</h2>
+        </div>
+    )
+}
