@@ -2,13 +2,30 @@
 
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import SalesTile from "@/components/tiles/sales";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import {jwtDecode} from "jwt-decode";
 
 export default function AdminSales() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [inventories, setInventories] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedItem, setSelectedItem] = useState("");
+
+    const [username, setUsername] = useState("");
+    const [userId, setUserId] = useState<string | null>(null);
+
+    const [quantity, setQuantity] = useState(0);
+    const [item, setItem] = useState("");
+    const [description, setDescription] = useState("");
+    const [amount, setAmount] = useState(0);
+    const [customer, setCustomer] = useState("");
+    const [issuer, setIssuer] = useState("");
+    const [timestamp, setTimestamp] = useState<Date | null>(null);
+
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -22,6 +39,69 @@ export default function AdminSales() {
         setIsDialogOpen(false);
     }
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decodedToken: any = jwtDecode(token); // Adjust this to match your token structure
+                console.log(decodedToken);
+                setUsername(decodedToken.user || "User");
+            } catch (e) {
+                console.error(e);
+            }
+        } else {
+            setUsername("User");
+        }
+    }, []);
+
+    useEffect(() => {
+        const fetchInventories = async (query: string) => {
+            try {
+                const response = await fetch(`http://localhost:3002/inventory/search?name=${query}`, {
+                    method: "GET",
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setInventories(data); // Update the state with the fetched inventories
+                } else {
+                    console.log("Could not fetch inventories");
+                }
+            } catch (error) {
+                console.error("Error fetching inventories:", error);
+            }
+        };
+
+        if (searchQuery) {
+            fetchInventories(searchQuery);
+        }
+    }, [searchQuery]);
+
+    useEffect(() => {
+        if (username) {
+            const fetchUserId = async () => {
+                try {
+                    const response = await fetch(`http://localhost:3002/users/search?username=${username}`, {
+                        method: "GET",
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log(data);
+                        if (data.length > 0) {
+                            setUserId(data[0].userId);
+                        }
+                    } else {
+                        console.log("Could not fetch users");
+                    }
+                } catch (error) {
+                    console.error("Error fetching user:", error);
+                }
+            };
+            fetchUserId();
+        }
+    }, [username]);
+
     const sales = [
         { id: 1, title: "Sale 1", date: "2025-01-20", amount: 200.5 },
         { id: 2, title: "Sale 2", date: "2025-01-22", amount: 150.0 },
@@ -31,6 +111,38 @@ export default function AdminSales() {
 
     // Sort sales by date (latest to earliest)
     const sortedSales = sales.sort((a: any, b: any) => new Date(b.date) - new Date(a.date));
+
+    // handler function to submit sales transaction
+    const handleSalesSubmit = async (e: any) => {
+        e.preventDefault();
+
+        try {
+            const response = await fetch('http://localhost:3002/sales', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    quantity: quantity,
+                    description: description,
+                    customer: customer,
+                    amount: amount,
+                    timestamp: timestamp,
+                    userId: userId,
+                    inventoryId: selectedItem,
+                })
+            });
+
+            if (response.ok) {
+                closeDialog();
+            } else {
+                console.log('could not submit sales transaction');
+            }
+
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     return (
         <>
@@ -119,25 +231,84 @@ export default function AdminSales() {
                 <div
                     className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-lg font-medium mb-4 text-center text-bold">Add stock item</h2>
+                        <h2 className="text-lg font-medium mb-4 text-center text-bold">Add sales transaction</h2>
                         <div className="h-2"/>
-                        <form>
+                        <form onSubmit={handleSalesSubmit}>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    quantity
+                                    Quantity
                                 </label>
                                 <input
+                                    value={quantity}
+                                    onChange={(e: any) => {
+                                        setQuantity(e.target.value)
+                                    }}
                                     type="number"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     placeholder="Item quantity"
                                 />
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    pricePerUnit
+                            <div className="mb-4 relative">
+                                <label htmlFor="item" className="block text-gray-700 font-medium mb-2">
+                                    Search Inventories
                                 </label>
                                 <input
+                                    value={selectedItem ? inventories.find(item => item.inventoryId === selectedItem)?.name : searchQuery}
+                                    onChange={(e) => {
+                                        setSearchQuery(e.target.value);
+                                        setSelectedItem(""); // Reset selected item when typing
+                                    }}
+                                    type="text"
+                                    id="item"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Type to search for items"
+                                />
+                                {searchQuery && (
+                                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
+                                        {inventories
+                                            .filter((inventory) =>
+                                                inventory.name.toLowerCase().includes(searchQuery.toLowerCase())
+                                            )
+                                            .map((inventory) => (
+                                                <li
+                                                    key={inventory.inventoryId}
+                                                    onClick={() => {
+                                                        setSelectedItem(inventory.inventoryId); // Set selected inventoryId
+                                                        setSearchQuery(""); // Clear search query
+                                                    }}
+                                                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                                                >
+                                                    {inventory.name}
+                                                </li>
+                                            ))}
+                                    </ul>
+                                )}
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                    Description
+                                </label>
+                                <input
+                                    value={description}
+                                    onChange={(e: any) => {
+                                        setDescription(e.target.value)
+                                    }}
+                                    type="text"
+                                    id="title"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Price per item"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                    Amount
+                                </label>
+                                <input
+                                    value={amount}
+                                    onChange={(e: any) => {
+                                        setAmount(e.target.value)
+                                    }}
                                     type="number"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
@@ -146,9 +317,13 @@ export default function AdminSales() {
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Item name
+                                    Customer
                                 </label>
                                 <input
+                                    value={customer}
+                                    onChange={(e: any) => {
+                                        setCustomer(e.target.value)
+                                    }}
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
@@ -157,21 +332,14 @@ export default function AdminSales() {
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Description
-                                </label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Item description"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Date and Time added
+                                    Date and Time of sale
                                 </label>
                                 <div className="relative overflow-visible">
                                     <DatePicker
+                                        selected={timestamp}
+                                        onChange={(e: Date | null) => {
+                                            setTimestamp(e)
+                                        }}
                                         dateFormat="yyyy-MM-dd h:mm aa"
                                         showTimeSelect
                                         timeFormat="h:mm aa"
@@ -183,24 +351,7 @@ export default function AdminSales() {
                                     />
                                 </div>
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
-                                    Location
-                                </label>
-                                <select
-                                    id="role"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    defaultValue=""
 
-
-                                >
-                                    <option value="" disabled>
-                                        Select location
-                                    </option>
-                                    <option value="shop">Shop</option>
-                                    <option value="warehouse">Warehouse</option>
-                                </select>
-                            </div>
                             <div className="flex justify-end gap-4">
                                 <button
                                     type="button"
