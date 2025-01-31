@@ -7,7 +7,9 @@ const SalesTile = ({ title, date, amount }) => {
         <div className="bg-white shadow-md p-4 rounded-lg mt-4">
             <h2 className="text-lg text-black font-semibold">{title}</h2>
             <p className="text-gray-500">{formattedDate}</p>
-            <p className="text-green-600 font-bold">${amount}</p>
+            <p className="text-green-600 font-bold">
+                {new Intl.NumberFormat('en-US', {style: 'currency', currency: 'MWK'}).format(amount)}
+            </p>
         </div>
     );
 };

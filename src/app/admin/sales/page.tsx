@@ -17,6 +17,7 @@ export default function AdminSales() {
 
     const [username, setUsername] = useState("");
     const [userId, setUserId] = useState<string | null>(null);
+    const [sales, setSales] = useState([]);
 
     const [quantity, setQuantity] = useState(0);
     const [item, setItem] = useState("");
@@ -25,6 +26,8 @@ export default function AdminSales() {
     const [customer, setCustomer] = useState("");
     const [issuer, setIssuer] = useState("");
     const [timestamp, setTimestamp] = useState<Date | null>(null);
+
+    const [unitPrice, setUnitPrice] = useState(0);
 
 
     const toggleSidebar = () => {
@@ -38,6 +41,22 @@ export default function AdminSales() {
     const closeDialog = () => {
         setIsDialogOpen(false);
     }
+
+    const handleSelectInventory = async (inventoryId: string) => {
+        setSelectedItem(inventoryId);
+        setSearchQuery("");
+        try {
+            const response = await fetch(`http://localhost:3002/inventory/${inventoryId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setUnitPrice(data.pricePerUnit);
+            } else {
+                console.log("Could not fetch inventory details");
+            }
+        } catch (error) {
+            console.error("Error fetching inventory details:", error);
+        }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -87,7 +106,6 @@ export default function AdminSales() {
 
                     if (response.ok) {
                         const data = await response.json();
-                        console.log(data);
                         if (data.length > 0) {
                             setUserId(data[0].userId);
                         }
@@ -102,7 +120,30 @@ export default function AdminSales() {
         }
     }, [username]);
 
-    const sales = [
+    useEffect(() => {
+        const fetchSales = async () =>  {
+            try {
+                const response: any = await fetch('http://localhost:3002/sales', {
+                    method: "GET",
+                });
+
+                const data = await response.json({});
+                console.log(data);
+                setSales(data);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        fetchSales();
+    }, []);
+
+    useEffect(() => {
+        setAmount(quantity * unitPrice);
+    }, [quantity, unitPrice]);
+
+
+
+    const salesArray = [
         { id: 1, title: "Sale 1", date: "2025-01-20", amount: 200.5 },
         { id: 2, title: "Sale 2", date: "2025-01-22", amount: 150.0 },
         { id: 3, title: "Sale 3", date: "2025-01-19", amount: 300.75 },
@@ -110,7 +151,8 @@ export default function AdminSales() {
     ];
 
     // Sort sales by date (latest to earliest)
-    const sortedSales = sales.sort((a: any, b: any) => new Date(b.date) - new Date(a.date));
+    const sortedSales = sales.sort((a: any, b: any) => b.createdAt - a.createdAt);
+
 
     // handler function to submit sales transaction
     const handleSalesSubmit = async (e: any) => {
@@ -216,9 +258,9 @@ export default function AdminSales() {
                         <div className="max-w-4xl mx-auto mb-2">
                             {sortedSales.map((sale) => (
                                 <SalesTile
-                                    key={sale.id} // Use a unique key for each tile
-                                    title={sale.title}
-                                    date={sale.date}
+                                    key={sale.saleId} // Use a unique key for each tile
+                                    title={sale.customer}
+                                    date={sale.createdAt}
                                     amount={sale.amount}
                                 />
                             ))}
@@ -273,13 +315,15 @@ export default function AdminSales() {
                                             .map((inventory) => (
                                                 <li
                                                     key={inventory.inventoryId}
-                                                    onClick={() => {
-                                                        setSelectedItem(inventory.inventoryId); // Set selected inventoryId
-                                                        setSearchQuery(""); // Clear search query
-                                                    }}
+                                                    onClick={() => handleSelectInventory(inventory.inventoryId)}
                                                     className="p-2 hover:bg-gray-100 cursor-pointer"
                                                 >
-                                                    {inventory.name}
+                                                    {inventory.name} <p className="text-green-600 font-bold">
+                                                    {new Intl.NumberFormat('en-US', {
+                                                        style: 'currency',
+                                                        currency: 'MWK'
+                                                    }).format(inventory.pricePerUnit)}
+                                                </p>
                                                 </li>
                                             ))}
                                     </ul>
@@ -297,22 +341,7 @@ export default function AdminSales() {
                                     type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Price per item"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Amount
-                                </label>
-                                <input
-                                    value={amount}
-                                    onChange={(e: any) => {
-                                        setAmount(e.target.value)
-                                    }}
-                                    type="number"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Price per item"
+                                    placeholder="Item description"
                                 />
                             </div>
                             <div className="mb-4">
@@ -374,3 +403,4 @@ export default function AdminSales() {
         </>
     )
 }
+
