@@ -62,7 +62,7 @@ export default function AssignmentsAdmin() {
     // @ts-ignore
     return (
         <>
-            <div className={`h-screen flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
+            <div className={`flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
                 <div className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
                     <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} />
                 </div>

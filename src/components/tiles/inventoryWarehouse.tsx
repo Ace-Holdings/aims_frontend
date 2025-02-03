@@ -27,14 +27,11 @@ export default function InventoryWarehouse() {
 
     return (
         <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col justify-center  w-1/3 h-64 font-custom">
-            <p className="text-xl font-extrabold text-blue-500 mt-10">
-                {warehouseInventoryValue.toLocaleString(undefined, {
-                    style: "currency",
-                    currency: "MWK",
-                })}
+            <p className="text-green-600 font-bold text-xl">
+                {new Intl.NumberFormat('en-US', {style: 'currency', currency: 'MWK'}).format(warehouseInventoryValue)}
             </p>
             <div className="h-3"/>
-            <h2 className="text-2xl font-bold text-gray-700 ">Value of inventory warehouse</h2>
+            <h2 className="text-xl font-bold text-gray-700 ">Value of inventory in warehouse</h2>
         </div>
     )
 }

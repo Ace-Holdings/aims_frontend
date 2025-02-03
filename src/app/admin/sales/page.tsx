@@ -151,7 +151,7 @@ export default function AdminSales() {
     ];
 
     // Sort sales by date (latest to earliest)
-    const sortedSales = sales.sort((a: any, b: any) => b.createdAt - a.createdAt);
+    const sortedSales = sales.sort((a: any, b: any) => a.createdAt - b.createdAt);
 
 
     // handler function to submit sales transaction
@@ -188,7 +188,7 @@ export default function AdminSales() {
 
     return (
         <>
-            <div className={`h-screen flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
+            <div className={` flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
                 <div
                     className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
                     <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
@@ -258,10 +258,14 @@ export default function AdminSales() {
                         <div className="max-w-4xl mx-auto mb-2">
                             {sortedSales.map((sale) => (
                                 <SalesTile
+                                    id={sale.saleId}
                                     key={sale.saleId} // Use a unique key for each tile
-                                    title={sale.customer}
+                                    title={sale.inventory.name}
                                     date={sale.createdAt}
                                     amount={sale.amount}
+                                    quantity={sale.quantity}
+                                    issuer={sale.user.username}
+                                    customer={sale.customer}
                                 />
                             ))}
                         </div>
