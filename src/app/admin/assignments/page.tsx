@@ -20,6 +20,9 @@ export default function AssignmentsAdmin() {
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [employeeAssigned, setEmployeeAssigned] = useState("");
     const [description, setDescription] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [employeeResults, setEmployeeResults] = useState<any[]>([]);
+    const [selectedEmployees, setSelectedEmployees] = useState<any[]>([]);
 
     const openDialog = () => {
         setIsDialogOpen(true);
@@ -33,10 +36,49 @@ export default function AssignmentsAdmin() {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
-    // handler function to submit assignment form data to server
-    const handleAssignmentSubmit = async() => {
+    // Fetch employees based on search term
+    const handleSearch = async (query: string) => {
+        setSearchTerm(query);
+        if (query.length < 2) {
+            setEmployeeResults([]);
+            return;
+        }
+
         try {
-            const response = await fetch('http://localhost:3002/assignments', {
+            const response = await fetch(`http://localhost:3002/users/search?username=${query}`);
+            if (response.ok) {
+                const data = await response.json();
+                setEmployeeResults(data);
+            }
+        } catch (error) {
+            console.error("Error fetching employees:", error);
+        }
+    };
+
+    // Add employee to selected list
+    const handleSelectEmployee = (employee: any) => {
+        if (!selectedEmployees.find(e => e.userId === employee.userId)) {
+            setSelectedEmployees(prevSelectedEmployees => {
+                return [...prevSelectedEmployees, employee];
+            });
+        }
+        console.log(selectedEmployees);
+        setSearchTerm(""); // Clear search box
+        setEmployeeResults([]); // Clear search results
+    };
+
+    // Remove selected employee
+    const handleRemoveEmployee = (employeeId: string) => {
+        setSelectedEmployees(selectedEmployees.filter(e => e.userId !== employeeId));
+    };
+
+    // handler function to submit assignment form data to server
+    const handleAssignmentSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            // Step 1: Create the assignment first
+            const assignmentResponse = await fetch('http://localhost:3002/assignments', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -46,18 +88,42 @@ export default function AssignmentsAdmin() {
                     location: location,
                     startsAt: startDate,
                     endsAt: endDate,
-                    employeeAssigned: employeeAssigned,
-                    description: description,
+                    description: description, // Employees are NOT included here
                 })
             });
 
-            if (response.ok) {
-                setIsDialogOpen(false);
+            if (!assignmentResponse.ok) {
+                throw new Error("Failed to create assignment");
             }
-        } catch(e) {
-            console.log(e);
+
+            const assignmentData = await assignmentResponse.json();
+            const assignmentId = assignmentData.assignmentId; // Assuming API returns assignment ID
+
+            // Step 2: Assign employees to the created assignment
+            if (selectedEmployees.length > 0) {
+                await fetch(`http://localhost:3002/assignments/${assignmentId}/assign-employees`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        employeeIds: selectedEmployees.map(emp => emp.userId),
+                    })
+                });
+            }
+
+            // Close the dialog and reset form after success
+            // setIsDialogOpen(false);
+            setAssignmentName("");
+            setLocation("");
+            setStartDate(null);
+            setEndDate(null);
+            setDescription("");
+            setSelectedEmployees([]);
+        } catch (e) {
+            console.log("Error submitting assignment:", e);
         }
-    }
+    };
 
     // @ts-ignore
     return (
@@ -193,19 +259,45 @@ export default function AssignmentsAdmin() {
                                     />
                                 </div>
                             </div>
-                            <div className="mb-4">
+                            <div className="relative">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     Employee to be assigned
                                 </label>
                                 <input
-                                    value={employeeAssigned}
-                                    onChange={(e) => setEmployeeAssigned(e.target.value)}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter employee to be assigned"
+                                    value={searchTerm}
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                    placeholder="Search employee by username"
+                                    className="w-full p-2 border mb-2 rounded"
                                 />
+                                {/* Search Results Dropdown */}
+                                {employeeResults.length > 0 && (
+                                    <ul className="absolute w-full bg-white border rounded shadow-lg z-10">
+                                        {employeeResults.map((emp) => (
+                                            <li
+                                                key={emp.userId}
+                                                onClick={() => handleSelectEmployee(emp)}
+                                                className="p-2 hover:bg-gray-200 cursor-pointer"
+                                            >
+                                                {emp.username} ({emp.firstName})
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
+
+                            {/* Selected Employees */}
+                            <div className="mb-4">
+                                {selectedEmployees.map(emp => (
+                                    <span key={emp.userId} className="bg-gray-200 p-1 rounded m-1 inline-block">
+                                        {emp.username}
+                                        <button onClick={() => handleRemoveEmployee(emp.id)}
+                                                className="ml-2 text-red-500">
+                                            &times;
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+
                             <div className="mb-4">
                                 <label htmlFor="description" className="block text-gray-700 font-medium mb-2">
                                     Description
