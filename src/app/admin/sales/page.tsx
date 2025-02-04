@@ -175,11 +175,35 @@ export default function AdminSales() {
                 })
             })
 
-            if (response.ok) {
-                closeDialog();
-            } else {
-                console.log('could not submit sales transaction');
+            if (!response.ok) {
+                console.log("Could not submit sales");
+                return;
             }
+
+            const inventoryResponse = await fetch(`http://localhost:3002/inventory/${selectedItem}`, {
+                method: "GET",
+            });
+
+            if (!inventoryResponse.ok) {
+                console.log('could not fetch inventories');
+                return;
+            }
+                const inventoryData = await inventoryResponse.json();
+                const newQuantity = inventoryData.quantity - quantity;
+                const fetchNewQuantity = await fetch(`http://localhost:3002/inventory/${selectedItem}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        quantity: newQuantity,
+                    })
+                });
+
+                if (fetchNewQuantity.ok) {
+                    closeDialog();
+                }
+
 
         } catch (e) {
             console.log(e);
