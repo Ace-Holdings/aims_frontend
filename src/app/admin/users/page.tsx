@@ -99,7 +99,7 @@ export default function UsersAdmin() {
 
                         </header>
                     </div>
-                    <div className="ml-6 mt-10">
+                    <div className="ml-6 mt-10 font-custom">
                         <div className="flex-row gap-4 flex">
                             <TotalUsers/>
                             <div className="w-10"/>
@@ -133,7 +133,7 @@ export default function UsersAdmin() {
             </div>
 
             {isDialogOpen && (
-                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
+                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add User</h2>
                         <div className="h-2"/>

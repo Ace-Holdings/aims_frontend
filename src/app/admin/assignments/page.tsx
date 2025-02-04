@@ -124,7 +124,7 @@ export default function AssignmentsAdmin() {
 
             {/* Dialog */}
             {isDialogOpen && (
-                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
+                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add Assignment</h2>
                         <div className="h-2"/>

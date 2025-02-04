@@ -99,7 +99,7 @@ export default function AdminInventory() {
                         </header>
                     </div>
 
-                    <div className="ml-6 mt-10">
+                    <div className="ml-6 mt-10 font-custom">
                         <div className="flex-row gap-4 flex">
                             <InventoryShop/>
                             <div className="w-10"/>
@@ -134,7 +134,7 @@ export default function AdminInventory() {
 
             {isDialogOpen && (
                 <div
-                    className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
+                    className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add stock item</h2>
                         <div className="h-2"/>

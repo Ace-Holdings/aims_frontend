@@ -173,7 +173,7 @@ export default function AdminSales() {
                     userId: userId,
                     inventoryId: selectedItem,
                 })
-            });
+            })
 
             if (response.ok) {
                 closeDialog();
@@ -188,7 +188,7 @@ export default function AdminSales() {
 
     return (
         <>
-            <div className={` flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
+            <div className={` flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""} font-custom`}>
                 <div
                     className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
                     <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
@@ -226,7 +226,7 @@ export default function AdminSales() {
                     </div>
 
                     {/* Section with Add Sale Button and Horizontal Line */}
-                    <div className="py-6 mt-4">
+                    <div className="py-6 mt-4 items-center font-custom">
                         <div className="flex justify-center">
                             <button
                                 className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
@@ -254,8 +254,8 @@ export default function AdminSales() {
                         </div>
                     </div>
 
-                    <div className="p-6 space-y-6">
-                        <div className="max-w-4xl mx-auto mb-2">
+                    <div className="flex justify-center items-center pb-4">
+                        <div className="max-w-4xl w-full mx-auto space-y-6 flex flex-col items-center">
                             {sortedSales.map((sale) => (
                                 <SalesTile
                                     id={sale.saleId}
@@ -275,13 +275,13 @@ export default function AdminSales() {
 
             {isDialogOpen && (
                 <div
-                    className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
+                    className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add sales transaction</h2>
                         <div className="h-2"/>
                         <form onSubmit={handleSalesSubmit}>
                             <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     Quantity
                                 </label>
                                 <input

@@ -14,6 +14,9 @@ import "react-datepicker/dist/react-datepicker.css";
 export default function AdminBids() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [description, setDescription] = useState("");
+    const [deadline, setDeadline] = useState<Date | null>(null);
+    const [fileType, setFileType] = useState("");
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -25,6 +28,33 @@ export default function AdminBids() {
 
     const closeDialog = () => {
         setIsDialogOpen(false);
+    }
+
+    // function to handle bid creation submission
+    const handleBidSubmit = async (event: React.FormEvent) => {
+        event.preventDefault();
+
+        try {
+            const response = await fetch('http://localhost:3002/bids', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    description: description,
+                    deadline: deadline,
+                    fileType: fileType,
+                    status: "Active",
+                })
+            });
+            if (response.ok) {
+                closeDialog();
+            } else {
+                console.log('could not create bid');
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     return (
@@ -105,16 +135,18 @@ export default function AdminBids() {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add stock item</h2>
                         <div className="h-2"/>
-                        <form>
+                        <form onSubmit={handleBidSubmit}>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     Description
                                 </label>
                                 <input
                                     type="text"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Item quantity"
+                                    placeholder="Bid description"
                                 />
                             </div>
                             <div className="mb-4">
@@ -123,6 +155,8 @@ export default function AdminBids() {
                                 </label>
                                 <div className="relative overflow-visible">
                                     <DatePicker
+                                        selected={deadline}
+                                        onChange={(date) => {setDeadline(date)}}
                                         dateFormat="yyyy-MM-dd h:mm aa"
                                         showTimeSelect
                                         timeFormat="h:mm aa"
@@ -141,6 +175,8 @@ export default function AdminBids() {
                                 <select
                                     id="fileType"
                                     className="w-full p-2 border border-gray-300 rounded-lg bg-white"
+                                    value={fileType}
+                                    onChange={(e) => setFileType(e.target.value)}
                                 >
                                     <option value="pdf">PDF</option>
                                     <option value="docx">DOCX</option>
