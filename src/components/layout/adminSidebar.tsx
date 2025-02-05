@@ -6,6 +6,9 @@ import { MdOutlineInventory2, MdOutlinePointOfSale } from "react-icons/md";
 import { GrDocumentPerformance } from "react-icons/gr";
 import { LuLogs } from "react-icons/lu";
 import Link from "next/link"
+import { useRouter } from "next/navigation";
+
+
 
 const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
     const menuItems = [
@@ -17,6 +20,8 @@ const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
         { icon: <GrDocumentPerformance />, label: "Bid documents", path: "/admin/bids" },
         { icon: <LuLogs />, label: "Logs", path: "/admin/logs" },
     ];
+
+
 
     return (
         <div className={`sticky bg-gray-900 text-white transition-all duration-300 ease-in-out h-screen ${isCollapsed ? "w-16" : "w-64"}`}>

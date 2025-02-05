@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
+import {FiTrash2} from "react-icons/fi";
 
 export default function AssignmentsTable() {
     const data = [
@@ -55,6 +56,20 @@ export default function AssignmentsTable() {
             name: "Status",
             selector: (row: any) => row.status,
             sortable: true,
+        },
+        {
+            name: "Actions",
+            selector: (row: any) => (
+                <button
+                    className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                    title="Delete User"
+                >
+                    <FiTrash2 className="w-5 h-5" />
+                </button>
+            ),
+            ignoreRowClick: true,
+            allowOverflow: true,
+            button: true,
         },
     ];
 

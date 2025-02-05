@@ -49,6 +49,7 @@ export default function AdminBids() {
             });
             if (response.ok) {
                 closeDialog();
+                window.location.reload();
             } else {
                 console.log('could not create bid');
             }

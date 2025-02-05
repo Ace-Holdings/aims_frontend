@@ -1,5 +1,6 @@
 import DataTable from "react-data-table-component";
 import React, { useEffect, useState } from "react";
+import {FiTrash2} from "react-icons/fi";
 
 export default function InventoryTable() {
     const [stock, setStock] = useState([]);
@@ -27,6 +28,20 @@ export default function InventoryTable() {
         { name: "Description", selector: (row: any) => row.description },
         { name: "Date added", selector: (row: any) => row.dateAdded },
         { name: "Location", selector: (row: any) => row.location },
+        {
+            name: "Actions",
+            selector: (row: any) => (
+                <button
+                    className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                    title="Delete User"
+                >
+                    <FiTrash2 className="w-5 h-5" />
+                </button>
+            ),
+            ignoreRowClick: true,
+            allowOverflow: true,
+            button: true,
+        },
     ];
 
     // Custom styles for table

@@ -114,6 +114,7 @@ export default function AssignmentsAdmin() {
 
             // Close the dialog and reset form after success
             setIsDialogOpen(false);
+            window.location.reload();
             setAssignmentName("");
             setLocation("");
             setStartDate(null);
