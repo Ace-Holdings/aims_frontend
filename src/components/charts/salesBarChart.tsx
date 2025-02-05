@@ -1,54 +1,75 @@
-import React, { useState } from "react";
-import Chart from "react-apexcharts";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function SalesBarChart() {
     const [chartData, setChartData] = useState({
-        series: [
-            {
-                name: "Sales Amount",
-                data: [1200, 1500, 1800, 2500, 3000, 3500, 4000, 3200, 2800, 5000, 4500, 5200], // Sample sales data
-            },
-        ],
+        series: [{ name: "Sales Amount", data: new Array(12).fill(0) }], // Initialize with 12 months
         options: {
             chart: {
                 type: "bar",
-                height: 250, // Reduced height to fit better
+                height: 250,
             },
             xaxis: {
                 categories: [
                     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
                 ],
-                title: {
-                    text: "Month",
-                },
+                title: { text: "Month" },
             },
             yaxis: {
-                title: {
-                    text: "Amount ($)",
-                },
+                title: { text: "Amount (MWK)" },
             },
-            colors: ["#3498db"], // Customize bar color
+            colors: ["#3498db"],
             plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: "40%", // Slightly narrower bars
-                },
+                bar: { horizontal: false, columnWidth: "40%" },
             },
-            dataLabels: {
-                enabled: false,
-            },
+            dataLabels: { enabled: false },
         },
     });
+
+    // Fetch sales data from the API
+    useEffect(() => {
+        async function fetchSales() {
+            try {
+                const response = await fetch("http://localhost:3002/sales");
+                if (!response.ok) throw new Error("Failed to fetch data");
+
+                const data = await response.json();
+
+                // Process data: sum amounts by month
+                const monthlySales = new Array(12).fill(0);
+
+                data.forEach((sale: any) => {
+                    const date = new Date(sale.timestamp); // Convert timestamp to Date
+                    const monthIndex = date.getMonth(); // Extract month (0 = Jan, 11 = Dec)
+                    monthlySales[monthIndex] += sale.amount; // Add amount to corresponding month
+                });
+
+                // Update chart data
+                setChartData((prevData) => ({
+                    ...prevData,
+                    series: [{ name: "Sales Amount", data: monthlySales }],
+                }));
+            } catch (error) {
+                console.error("Error fetching sales data:", error);
+            }
+        }
+
+        fetchSales();
+    }, []);
 
     return (
         <div className="bg-white shadow-lg rounded-lg p-4 flex flex-col justify-center w-2/5 h-72 font-custom">
             <h2 className="font-semibold text-center mb-2 text-sm">Monthly Sales</h2>
-            <Chart
+            <ApexChart
                 options={chartData.options}
                 series={chartData.series}
                 type="bar"
-                height={200} // Adjusted height to fit the container
+                height={200}
             />
         </div>
     );
