@@ -7,6 +7,7 @@ import NumberOfSales from "@/components/tiles/numberOfSales";
 import NumberOfBids from "@/components/tiles/numberOfPendingBids";
 import InventoryProportion from "@/components/charts/inventoryProportion";
 import {useState} from "react";
+import SalesBarChart from "@/components/charts/salesBarChart";
 
 export default function AdminHome() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -55,7 +56,7 @@ export default function AdminHome() {
                 <div className="p-6 text-black flex-2 flex flex-row mt-5 ">
                     <ActiveAssignments/>
                     <div className="w-20"/>
-                    <NumberOfSales/>
+                    <SalesBarChart/>
                 </div>
                 <div className="p-6 text-black flex-2 flex flex-row">
                     <NumberOfBids/>

@@ -90,7 +90,7 @@ export default function AdminBids() {
 
                         </header>
                     </div>
-                    <div className="flex flex-col items-center mt-10 px-6">
+                    <div className="flex flex-col items-center mt-10 px-6 font-custom">
                         {/* Add Bid Button */}
                         <button
                             className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"

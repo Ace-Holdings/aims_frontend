@@ -202,6 +202,7 @@ export default function AdminSales() {
 
                 if (fetchNewQuantity.ok) {
                     closeDialog();
+                    window.location.reload();
                 }
 
 

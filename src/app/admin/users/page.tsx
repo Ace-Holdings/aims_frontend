@@ -61,6 +61,7 @@ export default function UsersAdmin() {
 
             if (response.ok) {
                 closeDialog();
+                window.location.reload();
             }
         } catch(e) {
             console.log(e);
