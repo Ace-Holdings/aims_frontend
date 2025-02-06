@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
 import DataTable from "react-data-table-component";
-import { FiTrash2 } from "react-icons/fi";
+import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
 
 export default function UsersTable() {
 
     const [users, setUsers] = useState([]);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
 
@@ -24,6 +25,11 @@ export default function UsersTable() {
     const openDeleteDialog = (user: any) => {
         setSelectedUser(user);
         setShowDeleteDialog(true);
+    }
+
+    const openDetailDialog = (user: any) => {
+        setSelectedUser(user);
+        setShowDetailsDialog(true);
     }
 
     // function to delete user
@@ -86,13 +92,31 @@ export default function UsersTable() {
         {
             name: "Actions",
             selector: (row: any) => (
-                <button
-                    onClick={() => openDeleteDialog(row)}
-                    className="text-red-600 hover:text-red-800 transition-colors duration-200"
-                    title="Delete User"
-                >
-                    <FiTrash2 className="w-5 h-5" />
-                </button>
+                <div className="flex">
+                    <button
+                        className="text-green-600 hover:text-green-800 transition-colors duration-200"
+                    >
+                        <FiEdit className="size-6"/>
+                    </button>
+                    <div className="w-2"/>
+                    <button
+                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                        title="View Details"
+                        onClick={() => {
+                            openDetailDialog(row)
+                        }}
+                    >
+                        <FiEye className="w-5 h-5"/>
+                    </button>
+                    <div className="w-2"/>
+                    <button
+                        className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                        title="Delete User"
+                        onClick={() => openDeleteDialog(row)}
+                    >
+                        <FiTrash2 className="w-5 h-5"/>
+                    </button>
+                </div>
             ),
             ignoreRowClick: true,
             allowOverflow: true,
@@ -186,7 +210,7 @@ export default function UsersTable() {
             {showDeleteDialog && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black backdrop-blur-sm font-custom">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
-                        <h3 className="text-xl font-semibold mb-4 text-neon-pink">Confirm Delete</h3>
+                        <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">
                             Are you sure you want to delete this user?
                         </p>
@@ -202,6 +226,48 @@ export default function UsersTable() {
                                 onClick={handleDeleteUser}
                             >
                                 Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showDetailsDialog && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black font-custom">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
+                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">User Details</h3>
+                        <div className="flex flex-wrap gap-4">
+                            <div>
+                                <strong>First name:</strong> {selectedUser.firstName}
+                            </div>
+                            <div>
+                                <strong>Last name:</strong> {selectedUser.surname}
+                            </div>
+                            <div>
+                                <strong>username:</strong> {selectedUser.username}
+                            </div>
+                            <div>
+                                <strong>email:</strong> {selectedUser.email}
+                            </div>
+                            <div>
+                                <strong>ID number:</strong> {selectedUser.idNumber}
+                            </div>
+                            <div>
+                                <strong>Assignment status:</strong> {selectedUser.assignmentStatus}
+                            </div>
+                            <div>
+                                <strong>Assignment ID:</strong> {selectedUser.assignmentId}
+                            </div>
+                            <div>
+                                <strong>Roles:</strong> {selectedUser.roles.map(role => role.name).join(", ")}
+                            </div>
+                        </div>
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                onClick={() => setShowDetailsDialog(false)}
+                            >
+                                Close
                             </button>
                         </div>
                     </div>
