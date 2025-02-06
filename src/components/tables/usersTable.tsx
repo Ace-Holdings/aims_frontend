@@ -37,6 +37,7 @@ export default function UsersTable() {
                 console.error('could not delete user');
             }
             setShowDeleteDialog(false);
+            window.location.reload();
         } catch(e) {
             console.log(e);
         }
@@ -187,7 +188,7 @@ export default function UsersTable() {
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
                         <h3 className="text-xl font-semibold mb-4 text-neon-pink">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">
-                            Are you sure you want to delete this assignment?
+                            Are you sure you want to delete this user?
                         </p>
                         <div className="mt-4 flex justify-end space-x-3">
                             <button
