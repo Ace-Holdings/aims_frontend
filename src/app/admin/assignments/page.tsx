@@ -226,18 +226,19 @@ export default function AssignmentsAdmin() {
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     Starts at
                                 </label>
-                                <div className="relative overflow-visible">
+                                <div
+                                    className="relative w-[350px]">  {/* Ensure enough width for side-by-side layout */}
                                     <DatePicker
                                         selected={startDate}
-                                        onChange={(data) => setStartDate(data)}
+                                        onChange={(date) => setStartDate(date)}
                                         dateFormat="yyyy-MM-dd h:mm aa"
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="grow p-2 bg-white w-[200px]"
+                                        className="w-full p-2 bg-white border border-gray-300 rounded-md" // Style input
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
-                                        popperPlacement="bottom"
+                                        popperPlacement="bottom-start"  // Align properly
                                     />
                                 </div>
                             </div>
