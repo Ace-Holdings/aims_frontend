@@ -29,6 +29,22 @@ export default function AdminSales() {
 
     const [unitPrice, setUnitPrice] = useState(0);
 
+    // search prop
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const [filteredSales, setFilteredSales] = useState(sales);
+
+    // filtered sales by search
+    useEffect(() => {
+        const filtered = sales.filter((sale) =>
+            sale.customer.toLowerCase().includes(searchTerm.toLowerCase()) // Use searchTerm here directly
+        );
+        setFilteredSales(filtered);
+    }, [searchTerm, sales]); // Re-run filtering when searchTerm or sales change
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value); // Change searchQuery to searchTerm
+    };
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -213,13 +229,13 @@ export default function AdminSales() {
 
     return (
         <>
-            <div className={` flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""} font-custom`}>
+            <div className={` flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""} font-custom `}>
                 <div
                     className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
                     <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
                 </div>
                 <div
-                    className={`flex-1 flex flex-col ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} transition-all duration-300`}>
+                    className={`flex-1 flex flex-col ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} transition-all duration-300 mb-10`}>
 
                     <div className="bg-white  p-4 sticky top-0 z-10">
                         <header className="flex gap-2 items-center text-gray-600">
@@ -279,20 +295,33 @@ export default function AdminSales() {
                         </div>
                     </div>
 
-                    <div className="flex justify-center items-center pb-4">
+                    <div className="flex flex-col items-center">
+                        <input
+                            type="text"
+                            placeholder="Search by customer..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            className="mb-4 p-2 border border-gray-300 rounded-lg shadow-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                        />
+
+                        {/* Sales Tiles */}
                         <div className="max-w-4xl w-full mx-auto space-y-6 flex flex-col items-center">
-                            {sortedSales.map((sale) => (
-                                <SalesTile
-                                    id={sale.saleId}
-                                    key={sale.saleId} // Use a unique key for each tile
-                                    title={sale.inventory.name}
-                                    date={sale.createdAt}
-                                    amount={sale.amount}
-                                    quantity={sale.quantity}
-                                    issuer={sale.user.username}
-                                    customer={sale.customer}
-                                />
-                            ))}
+                            {filteredSales.length > 0 ? (
+                                filteredSales.map((sale) => (
+                                    <SalesTile
+                                        key={sale.saleId}
+                                        id={sale.saleId}
+                                        title={sale.inventory.name}
+                                        date={sale.createdAt}
+                                        amount={sale.amount}
+                                        quantity={sale.quantity}
+                                        issuer={sale.user.username}
+                                        customer={sale.customer}
+                                    />
+                                ))
+                            ) : (
+                                <p className="text-gray-500">No sales found for this customer.</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -306,7 +335,7 @@ export default function AdminSales() {
                         <div className="h-2"/>
                         <form onSubmit={handleSalesSubmit}>
                             <div className="mb-4">
-                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     Quantity
                                 </label>
                                 <input
