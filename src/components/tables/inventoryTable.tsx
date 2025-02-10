@@ -2,6 +2,7 @@ import DataTable from "react-data-table-component";
 import React, { useEffect, useState } from "react";
 import {FiEye, FiTrash2, FiEdit} from "react-icons/fi";
 import DatePicker from "react-datepicker";
+import ReactDOM from "react-dom";
 
 
 export default function InventoryTable() {
@@ -222,8 +223,8 @@ export default function InventoryTable() {
                 />
             </div>
 
-            {showDeleteDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black backdrop-blur-sm font-custom">
+            {showDeleteDialog && ReactDOM.createPortal(
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
                         <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">
@@ -244,11 +245,12 @@ export default function InventoryTable() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
-            {showDetailsDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black font-custom">
+            {showDetailsDialog && ReactDOM.createPortal(
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
                         <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Stock Item Details</h3>
                         <div className="flex flex-wrap gap-4">
@@ -280,11 +282,12 @@ export default function InventoryTable() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
-            {showUpdateDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black mt-14 font-custom">
+            {showUpdateDialog && ReactDOM.createPortal(
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
                         <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Stock Item</h3>
                         <form>
@@ -374,7 +377,8 @@ export default function InventoryTable() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
 

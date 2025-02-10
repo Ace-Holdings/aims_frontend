@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import DataTable from "react-data-table-component";
 import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
 import DatePicker from "react-datepicker";
+import ReactDOM from "react-dom";
 
 export default function UsersTable() {
 
@@ -257,33 +258,27 @@ export default function UsersTable() {
                 />
             </div>
 
-            {showDeleteDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black backdrop-blur-sm font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
-                        <p className="text-sm text-gray-700 mb-6">
-                            Are you sure you want to delete this user?
-                        </p>
-                        <div className="mt-4 flex justify-end space-x-3">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition-colors duration-200 hover:bg-gray-400"
-                                onClick={() => setShowDeleteDialog(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="bg-red-500 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-600"
-                                onClick={handleDeleteUser}
-                            >
-                                Delete
-                            </button>
+            {showDeleteDialog &&
+                ReactDOM.createPortal(
+                    <div className="fixed inset-0 flex items-center justify-center bg-black  text-black  font-custom bg-opacity-30 backdrop-blur-sm z-50">
+                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                            <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this user?</p>
+                            <div className="mt-4 flex justify-end space-x-3">
+                                <button className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md" onClick={() => setShowDeleteDialog(false)}>
+                                    Cancel
+                                </button>
+                                <button className="bg-red-600 text-white px-4 py-2 rounded-md" onClick={handleDeleteUser}>
+                                    Delete
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
 
-            {showDetailsDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black font-custom">
+            {showDetailsDialog && ReactDOM.createPortal(
+                <div className="fixed inset-0 flex items-center justify-center bg-black  text-black font-custom bg-opacity-30 backdrop-blur-sm z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
                         <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">User Details</h3>
                         <div className="flex flex-wrap gap-4">
@@ -321,11 +316,12 @@ export default function UsersTable() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
-            {showUpdateDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black mt-14 font-custom">
+            {showUpdateDialog && ReactDOM.createPortal(
+                <div className="fixed inset-0 flex items-center justify-center bg-black  text-black  font-custom bg-opacity-30 backdrop-blur-sm z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
                         <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update user</h3>
                         <form>
@@ -422,7 +418,8 @@ export default function UsersTable() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
 

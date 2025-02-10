@@ -6,6 +6,7 @@ import {FiEdit, FiTrash2} from "react-icons/fi";
 import { FiEye } from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import ReactDOM from "react-dom";
 
 export default function AssignmentsTable() {
     const data = [
@@ -253,9 +254,9 @@ export default function AssignmentsTable() {
             </div>
 
             {
-                showDeleteDialog && (
+                showDeleteDialog && ReactDOM.createPortal(
                     <div
-                        className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black backdrop-blur-sm font-custom">
+                        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
                             <h3 className="text-lg font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
                             <p className="text-sm text-gray-700 mb-6">
@@ -276,11 +277,12 @@ export default function AssignmentsTable() {
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div>,
+                    document.body
                 )}
 
-            {showDetailsDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black font-custom">
+            {showDetailsDialog && ReactDOM.createPortal(
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
                         <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Assignment Details</h3>
                         <div className="flex flex-wrap gap-4">
@@ -312,11 +314,12 @@ export default function AssignmentsTable() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
-            {showUpdateDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black mt-14 font-custom">
+            {showUpdateDialog && ReactDOM.createPortal(
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
                         <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Assignment</h3>
                         <form>
@@ -419,7 +422,8 @@ export default function AssignmentsTable() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
         </>
