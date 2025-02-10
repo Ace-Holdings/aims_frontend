@@ -1,6 +1,7 @@
 import DataTable from "react-data-table-component";
 import React, { useEffect, useState } from "react";
 import {FiEye, FiTrash2, FiEdit} from "react-icons/fi";
+import DatePicker from "react-datepicker";
 
 
 export default function InventoryTable() {
@@ -10,7 +11,17 @@ export default function InventoryTable() {
     const [search, setSearch] = useState("");
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+    const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+
+    // states for updating inventory
+    const [quantity, setQuantity] = useState(0);
+    const [pricePerUnit, setPricePerUnit] = useState(0);
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [dateAdded, setDateAdded] = useState<Date | null>(null);
+    const [location, setLocation] = useState("");
+
 
     useEffect(() => {
         fetch('http://localhost:3002/inventory', {
@@ -33,6 +44,11 @@ export default function InventoryTable() {
         setShowDetailsDialog(true);
     }
 
+    const openUpdateDialog = (item: any) => {
+        setSelectedItem(item);
+        setShowUpdateDialog(true);
+    }
+
     // function to handle the deletion of a stock item
     const handleDeleteItem = async () => {
         try {
@@ -50,6 +66,40 @@ export default function InventoryTable() {
         }
     }
 
+    // handler function to update stock item
+    const handleUpdateStock = async () => {
+        try {
+            const updatedStock = {
+                inventoryId: selectedItem.inventoryId,
+                ...(quantity && { quantity }),
+                ...(pricePerUnit && { pricePerUnit }),
+                ...(name && { name }),
+                ...(description && { description }),
+                ...(dateAdded && { dateAdded: dateAdded.toISOString() }),
+                ...(location && { location }),
+                ...(status !== "" && { status }),
+            };
+
+            const response = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedStock),
+            });
+
+            if (!response.ok) {
+                console.log("Failed to update assignment");
+                return;
+            }
+
+            setShowUpdateDialog(false);
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     // Columns Definition
     const columns = [
         { name: "ID", selector: (row: any) => row.inventoryId, sortable: true },
@@ -65,6 +115,7 @@ export default function InventoryTable() {
                 <div className="flex">
                     <button
                         className="text-green-600 hover:text-green-800 transition-colors duration-200"
+                        onClick={() => {openUpdateDialog(row)}}
                     >
                         <FiEdit className="size-6"/>
                     </button>
@@ -231,6 +282,101 @@ export default function InventoryTable() {
                     </div>
                 </div>
             )}
+
+            {showUpdateDialog && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black mt-14 font-custom">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Stock Item</h3>
+                        <form>
+                            <div className="mb-4 ">
+                                <label>Quantity</label>
+                                <input
+                                    type="number"
+                                    className="border p-2 w-full bg-white"
+                                    value={quantity}
+                                    onChange={(e: any) => setQuantity(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-4 ">
+                                <label>Price per unit</label>
+                                <input
+                                    type="number"
+                                    name="locationName"
+                                    className="border p-2 w-full bg-white"
+                                    value={pricePerUnit}
+                                    onChange={(e: any) => setPricePerUnit(e.target.value)}
+
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label>Description</label>
+                                <input
+                                    type="text"
+                                    name="contact"
+                                    className="border p-2 w-full bg-white"
+                                    value={description}
+                                    onChange={(e: any) => setDescription(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                    Date Added:
+                                </label>
+                                <div className="relative overflow-visible">
+                                    <DatePicker
+                                        dateFormat="yyyy-MM-dd h:mm aa"
+                                        showTimeSelect
+                                        timeFormat="h:mm aa"
+                                        timeIntervals={15}
+                                        className="grow p-2 bg-white w-[220px]"
+                                        placeholderText="Select start date and time"
+                                        popperClassName="z-50"
+                                        popperPlacement="top"
+                                        showTimeSelectOnly={false}
+                                        selected={dateAdded}
+                                        onChange={(date) => setDateAdded(date as Date)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
+                                    Location
+                                </label>
+                                <select
+                                    id="role"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    defaultValue=""
+                                    value={location}
+                                    onChange={(e: any) => setLocation(e.target.value)}
+
+                                >
+                                    <option value="" disabled>
+                                        Select location
+                                    </option>
+                                    <option value="shop">Shop</option>
+                                    <option value="warehouse">Warehouse</option>
+                                </select>
+                            </div>
+                            <div className="mt-6 flex justify-end space-x-3">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                    onClick={() => setShowUpdateDialog(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                                    onClick={handleUpdateStock}
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
 
         </>
 

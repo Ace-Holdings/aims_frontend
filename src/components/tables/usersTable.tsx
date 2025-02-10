@@ -1,13 +1,24 @@
 import React, {useEffect, useState} from "react";
 import DataTable from "react-data-table-component";
 import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
+import DatePicker from "react-datepicker";
 
 export default function UsersTable() {
 
     const [users, setUsers] = useState([]);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+    const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+
+    // states for updating
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
+    const [idNumber, setIdNumber] = useState("");
+    const [role, setRole] = useState("");
 
 
     useEffect(() => {
@@ -32,6 +43,11 @@ export default function UsersTable() {
         setShowDetailsDialog(true);
     }
 
+    const openUpdateDialog = (user: any) => {
+        setSelectedUser(user);
+        setShowUpdateDialog(true);
+    }
+
     // function to delete user
     const handleDeleteUser = async () => {
         try {
@@ -48,6 +64,39 @@ export default function UsersTable() {
             console.log(e);
         }
     }
+
+    // handler function to update a user
+    const handleUpdateUser = async () => {
+        try {
+            const updatedUser = {
+                ...(firstName && { firstName }),
+                ...(lastName && {surname: lastName}),
+                ...(username && { username }),
+                ...(password && { password }),
+                ...(email && { email }),
+                ...(idNumber && { idNumber }),
+                ...(role && {roleId: [parseInt(role)]}),
+            };
+
+            const response = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedUser),
+            });
+
+            if (!response.ok) {
+                console.log("Failed to user");
+                return;
+            }
+
+            setShowUpdateDialog(false);
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
 
     // Columns Definition
@@ -95,6 +144,7 @@ export default function UsersTable() {
                 <div className="flex">
                     <button
                         className="text-green-600 hover:text-green-800 transition-colors duration-200"
+                        onClick={() => {openUpdateDialog(row)}}
                     >
                         <FiEdit className="size-6"/>
                     </button>
@@ -270,6 +320,107 @@ export default function UsersTable() {
                                 Close
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {showUpdateDialog && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 text-black mt-14 font-custom">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update user</h3>
+                        <form>
+                            <div className="mb-4 ">
+                                <label>First name</label>
+                                <input
+                                    type="text"
+                                    className="border p-2 w-full bg-white"
+                                    value={firstName}
+                                    onChange={(e: any) => setFirstName(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-4 ">
+                                <label>Last name</label>
+                                <input
+                                    type="text"
+                                    name="locationName"
+                                    className="border p-2 w-full bg-white"
+                                    value={lastName}
+                                    onChange={(e: any) => setLastName(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label>Username</label>
+                                <input
+                                    type="text"
+                                    name="contact"
+                                    className="border p-2 w-full bg-white"
+                                    value={username}
+                                    onChange={(e: any) => setUsername(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label>Password</label>
+                                <input
+                                    type="text"
+                                    name="contact"
+                                    className="border p-2 w-full bg-white"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label>Email</label>
+                                <input
+                                    type="text"
+                                    name="contact"
+                                    className="border p-2 w-full bg-white"
+                                    value={email}
+                                    onChange={(e: any) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label>Id number</label>
+                                <input
+                                    type="text"
+                                    name="contact"
+                                    className="border p-2 w-full bg-white"
+                                    value={idNumber}
+                                    onChange={(e: any) => setIdNumber(e.target.value)}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
+                                    Role
+                                </label>
+                                <select
+                                    id="role"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    defaultValue=""
+                                    onChange={(e) => setRole(e.target.value)}
+                                    value={role}
+                                >
+                                    <option value="" disabled>
+                                        Select a role
+                                    </option>
+                                    <option value="2">Manager</option>
+                                    <option value="3">Employee</option>
+                                </select>
+                            </div>
+                            <div className="mt-6 flex justify-end space-x-3">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                                    onClick={handleUpdateUser}
+                                >
+                                    Update
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
