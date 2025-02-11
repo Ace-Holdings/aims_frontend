@@ -317,6 +317,9 @@ export default function AdminSales() {
                                         quantity={sale.quantity}
                                         issuer={sale.user.username}
                                         customer={sale.customer}
+                                        inventory={sale.inventory.name}
+                                        description={sale.description}
+                                        pricePerUnit={sale.inventory.pricePerUnit}
                                     />
                                 ))
                             ) : (
