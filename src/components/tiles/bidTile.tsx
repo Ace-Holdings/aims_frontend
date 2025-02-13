@@ -1,4 +1,5 @@
 import { FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
+import { LiaFileDownloadSolid } from "react-icons/lia"
 import ReactDOM from "react-dom";
 import React, {useState} from "react";
 import DatePicker from "react-datepicker";
@@ -29,6 +30,11 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     const openDeleteDialog = (bid: any) => {
         setSelectedBid(bid);
         setShowDeleteDialog(true);
+    }
+
+    const directFileDownload= (bid: any) => {
+        setSelectedBid(bid);
+        handleDownloadFile(selectedBid.bidId, "pdf");
     }
 
     // handler function for deleting bid
@@ -71,16 +77,39 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                 return;
             }
 
-            // setShowUpdateDialog(false);
-            // window.location.reload();
+            setShowUpdateDialog(false);
+            window.location.reload();
         } catch (error) {
             console.log(error);
         }
     };
 
+    // handler function to download file
+    const handleDownloadFile = async (bidId: number, fileType: string) => {
+        try {
+            const response = await fetch(`http://localhost:3002/bids/${bidId}/file`);
+            if (!response.ok) {
+                throw new Error('failed to download bid');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = `bid_file.${fileType}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     return (
         <>
-            <div className={`p-4 relative rounded-lg shadow-md border border-gray-200 font-custom
+            <div className={`p-4 relative rounded-lg shadow-md border border-gray-200 font-custom h-48
             ${bid.status === "Active" ? "bg-green-500 text-white" : "bg-gray-200 text-black"}`}>
                 <div className="absolute top-3 right-3 flex flex-col space-y-2 z-10">
                     <button
@@ -90,6 +119,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     >
                         <FiEye className="w-5 h-5"/>
                     </button>
+                    <div className="h-1"/>
                     <button
                         className="text-green-600 hover:text-green-800 transition-colors duration-200"
                         title="Edit"
@@ -97,6 +127,15 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     >
                         <FiEdit className="w-5 h-5"/>
                     </button>
+                    <div className="h-1"/>
+                    <button
+                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                        title="Delete"
+                        onClick={() => directFileDownload(bid)}
+                    >
+                        <LiaFileDownloadSolid className="w-6 h-6"/>
+                    </button>
+                    <div className="h-1"/>
                     <button
                         className="text-red-600 hover:text-red-800 transition-colors duration-200"
                         title="Delete"
