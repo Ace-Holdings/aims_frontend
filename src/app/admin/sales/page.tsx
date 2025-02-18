@@ -187,7 +187,7 @@ export default function AdminSales() {
                     amount: amount,
                     timestamp: timestamp,
                     userId: userId,
-                    inventoryId: selectedItem,
+                    inventoryIds: [parseInt(selectedItem)],
                 })
             })
 
@@ -311,15 +311,15 @@ export default function AdminSales() {
                                     <SalesTile
                                         key={sale.saleId}
                                         id={sale.saleId}
-                                        title={sale.inventory.name}
+                                        title={sale.inventories.length > 0 ? sale.inventories[0].name : "Unknown"}
                                         date={sale.createdAt}
                                         amount={sale.amount}
                                         quantity={sale.quantity}
                                         issuer={sale.user.username}
                                         customer={sale.customer}
-                                        inventory={sale.inventory.name}
+                                        inventory={sale.inventories.length > 0 ? sale.inventories[0].name : "Unknown"}
                                         description={sale.description}
-                                        pricePerUnit={sale.inventory.pricePerUnit}
+                                        pricePerUnit={sale.inventories.length > 0 ? sale.inventories[0].pricePerUnit : 0}
                                     />
                                 ))
                             ) : (

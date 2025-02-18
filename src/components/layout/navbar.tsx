@@ -3,11 +3,13 @@
 // components/layout/AdminNavbar.tsx
 import React, { useEffect, useState } from "react";
 import { FiUser, FiSettings, FiLogOut } from "react-icons/fi";
-import { jwtDecode } from "jwt-decode"; // Ensure this is installed
+import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [username, setUsername] = useState("");
+    const router = useRouter();
     const toggleDialog = () => {
         setIsDialogOpen(!isDialogOpen);
     };
@@ -26,6 +28,16 @@ const Navbar = () => {
             setUsername("User");
         }
     }, []);
+
+    // handler function to route back to the login page when
+    const handleLogout =  () => {
+        try {
+            localStorage.removeItem("token");
+            router.push('/')
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     return (
         <div className="relative bg-white px-6 py-4 flex items-center justify-between rounded-b-md">
@@ -46,16 +58,7 @@ const Navbar = () => {
                         <li>
                             <button
                                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => alert("Go to settings")}
-                            >
-                                <FiSettings className="mr-2" />
-                                Settings
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => alert("Logging out")}
+                                onClick={() => handleLogout()}
                             >
                                 <FiLogOut className="mr-2" />
                                 Logout
