@@ -376,7 +376,7 @@ export default function AssignmentsTable() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px]"
+                                        className="grow p-2 bg-white w-[180px] border border-gray-300"
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="top"
@@ -396,7 +396,7 @@ export default function AssignmentsTable() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px]"
+                                        className="grow p-2 bg-white w-[180px] border border-gray-300"
                                         placeholderText="Select end date and time"
                                         popperClassName="z-50"
                                         popperPlacement="top"

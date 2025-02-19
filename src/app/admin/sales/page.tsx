@@ -93,6 +93,8 @@ export default function AdminSales() {
             }
         });
 
+        console.log(selectedItems);
+
         setIsQuantityModalOpen(false);
         setInputQuantity(1);
     }
@@ -167,7 +169,6 @@ export default function AdminSales() {
                 });
 
                 const data = await response.json({});
-                console.log(data);
                 setSales(data);
             } catch (e) {
                 console.error(e);
@@ -206,6 +207,9 @@ export default function AdminSales() {
                 body: JSON.stringify({
                     customer: customer,
                     amount: amount,
+                    quantity: selectedItems.map(item => (
+                        parseInt(item.quantity)
+                    )),
                     timestamp: timestamp,
                     userId: userId,
                     inventoryIds: selectedItems.map(item => (
@@ -327,21 +331,22 @@ export default function AdminSales() {
                         {/* Sales Tiles */}
                         <div className="max-w-4xl w-full mx-auto space-y-6 flex flex-col items-center">
                             {filteredSales.length > 0 ? (
-                                filteredSales.map((sale) => (
-                                    <SalesTile
-                                        key={sale.saleId}
-                                        id={sale.saleId}
-                                        title={sale.inventories.length > 0 ? sale.inventories[0].name : "Unknown"}
-                                        date={sale.createdAt}
-                                        amount={sale.amount}
-                                        quantity={sale.quantity}
-                                        issuer={sale.user.username}
-                                        customer={sale.customer}
-                                        inventory={sale.inventories.length > 0 ? sale.inventories[0].name : "Unknown"}
-                                        description={sale.description}
-                                        pricePerUnit={sale.inventories.length > 0 ? sale.inventories[0].pricePerUnit : 0}
-                                    />
-                                ))
+                                [...filteredSales]
+                                    .sort((a, b) => b.saleId - a.saleId)
+                                    .map((sale) => (
+                                        <SalesTile
+                                            key={sale.saleId}
+                                            id={sale.saleId}
+                                            title={sale.inventories.length > 0 ? sale.inventories.map(inv => inv.name).join(", ") : "Unknown"}
+                                            date={sale.createdAt}
+                                            amount={sale.amount}
+                                            quantity={sale.quantity.join(", ")}
+                                            issuer={sale.user.username}
+                                            customer={sale.customer}
+                                            description={sale.description}
+                                            pricePerUnit={sale.inventories.length > 0 ? sale.inventories.map(inv => inv.pricePerUnit).join(", ") : "Unknown"}
+                                        />
+                                    ))
                             ) : (
                                 <p className="text-gray-500">No sales found for this customer.</p>
                             )}
@@ -465,7 +470,7 @@ export default function AdminSales() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px]"
+                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="bottom"

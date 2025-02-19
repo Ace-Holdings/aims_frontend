@@ -331,7 +331,7 @@ export default function InventoryTable() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px]"
+                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="top"
