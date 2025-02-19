@@ -203,7 +203,7 @@ export default function AdminInventory() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="grow p-2 bg-white w-[200px]"
+                                        className="grow p-2 bg-white w-[220px]"
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="bottom"

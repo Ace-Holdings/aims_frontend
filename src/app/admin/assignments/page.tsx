@@ -235,7 +235,7 @@ export default function AssignmentsAdmin() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="w-full p-2 bg-white border border-gray-300 rounded-md" // Style input
+                                        className=" p-2 bg-white border border-gray-300 rounded-md w-[220px]" // Style input
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="bottom-start"  // Align properly
@@ -254,7 +254,7 @@ export default function AssignmentsAdmin() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="grow p-2 bg-white w-[200px]"
+                                        className="grow p-2 bg-white border border-gray-300  w-[220px]"
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="bottom"

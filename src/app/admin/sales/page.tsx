@@ -13,7 +13,7 @@ export default function AdminSales() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [inventories, setInventories] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedItem, setSelectedItem] = useState("");
+    const [selectedItems, setSelectedItems] = useState<any[]>([]);
 
     const [username, setUsername] = useState("");
     const [userId, setUserId] = useState<string | null>(null);
@@ -33,17 +33,21 @@ export default function AdminSales() {
     const [searchTerm, setSearchTerm] = useState("");
 
     const [filteredSales, setFilteredSales] = useState(sales);
+    const [selectedItemDetails, setSelectedItemDetails] = useState<any>(null);
+    const [isQuantityModalOpen, setIsQuantityModalOpen] = useState(false);
+    const [inputQuantity, setInputQuantity] = useState(1);
+
 
     // filtered sales by search
     useEffect(() => {
         const filtered = sales.filter((sale) =>
-            sale.customer.toLowerCase().includes(searchTerm.toLowerCase()) // Use searchTerm here directly
+            sale.customer.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredSales(filtered);
-    }, [searchTerm, sales]); // Re-run filtering when searchTerm or sales change
+    }, [searchTerm, sales]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(e.target.value); // Change searchQuery to searchTerm
+        setSearchTerm(e.target.value);
     };
 
     const toggleSidebar = () => {
@@ -59,13 +63,12 @@ export default function AdminSales() {
     }
 
     const handleSelectInventory = async (inventoryId: string) => {
-        setSelectedItem(inventoryId);
-        setSearchQuery("");
         try {
             const response = await fetch(`http://localhost:3002/inventory/${inventoryId}`);
             if (response.ok) {
                 const data = await response.json();
-                setUnitPrice(data.pricePerUnit);
+                setSelectedItemDetails({ id: inventoryId, name: data.name, unitPrice: data.pricePerUnit });
+                setIsQuantityModalOpen(true);
             } else {
                 console.log("Could not fetch inventory details");
             }
@@ -73,6 +76,26 @@ export default function AdminSales() {
             console.error("Error fetching inventory details:", error);
         }
     };
+
+    const handleAddItem = () => {
+        if (!selectedItemDetails || inputQuantity < 1) return;
+
+        setSelectedItems((prevItems) => {
+            const existingItem = prevItems.find((item) => item.id === selectedItemDetails.id);
+            if (existingItem) {
+                return prevItems.map((item) =>
+                    item.id === selectedItemDetails.id
+                        ? { ...item, quantity: item.quantity + inputQuantity }
+                        : item
+                );
+            } else {
+                return [...prevItems, { ...selectedItemDetails, quantity: inputQuantity }];
+            }
+        });
+
+        setIsQuantityModalOpen(false);
+        setInputQuantity(1);
+    }
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -98,7 +121,7 @@ export default function AdminSales() {
 
                 if (response.ok) {
                     const data = await response.json();
-                    setInventories(data); // Update the state with the fetched inventories
+                    setInventories(data);
                 } else {
                     console.log("Could not fetch inventories");
                 }
@@ -154,8 +177,9 @@ export default function AdminSales() {
     }, []);
 
     useEffect(() => {
-        setAmount(quantity * unitPrice);
-    }, [quantity, unitPrice]);
+        const total = selectedItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+        setAmount(total);
+    }, [selectedItems]);
 
 
 
@@ -169,7 +193,6 @@ export default function AdminSales() {
     // Sort sales by date (latest to earliest)
     const sortedSales = sales.sort((a: any, b: any) => a.createdAt - b.createdAt);
 
-
     // handler function to submit sales transaction
     const handleSalesSubmit = async (e: any) => {
         e.preventDefault();
@@ -181,51 +204,48 @@ export default function AdminSales() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    quantity: quantity,
-                    description: description,
                     customer: customer,
                     amount: amount,
                     timestamp: timestamp,
                     userId: userId,
-                    inventoryIds: [parseInt(selectedItem)],
+                    inventoryIds: selectedItems.map(item => (
+                        parseInt(item.id)
+                    ))
                 })
-            })
+            });
 
             if (!response.ok) {
                 console.log("Could not submit sales");
                 return;
             }
 
-            const inventoryResponse = await fetch(`http://localhost:3002/inventory/${selectedItem}`, {
-                method: "GET",
-            });
+            // Update inventory for each item
+            await Promise.all(
+                selectedItems.map(async (item) => {
+                    const inventoryResponse = await fetch(`http://localhost:3002/inventory/${item.id}`);
+                    if (!inventoryResponse.ok) {
+                        console.log('Could not fetch inventory');
+                        return;
+                    }
 
-            if (!inventoryResponse.ok) {
-                console.log('could not fetch inventories');
-                return;
-            }
-                const inventoryData = await inventoryResponse.json();
-                const newQuantity = inventoryData.quantity - quantity;
-                const fetchNewQuantity = await fetch(`http://localhost:3002/inventory/${selectedItem}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        quantity: newQuantity,
-                    })
-                });
+                    const inventoryData = await inventoryResponse.json();
+                    const newQuantity = inventoryData.quantity - item.quantity;
 
-                if (fetchNewQuantity.ok) {
-                    closeDialog();
-                    window.location.reload();
-                }
+                    await fetch(`http://localhost:3002/inventory/${item.id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ quantity: newQuantity }),
+                    });
+                })
+            );
 
+            closeDialog();
+            window.location.reload();
 
         } catch (e) {
             console.log(e);
         }
-    }
+    };
 
     return (
         <>
@@ -337,30 +357,14 @@ export default function AdminSales() {
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add sales transaction</h2>
                         <div className="h-2"/>
                         <form onSubmit={handleSalesSubmit}>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Quantity
-                                </label>
-                                <input
-                                    value={quantity}
-                                    onChange={(e: any) => {
-                                        setQuantity(e.target.value)
-                                    }}
-                                    type="number"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Item quantity"
-                                />
-                            </div>
                             <div className="mb-4 relative">
                                 <label htmlFor="item" className="block text-gray-700 font-medium mb-2">
                                     Search Inventories
                                 </label>
                                 <input
-                                    value={selectedItem ? inventories.find(item => item.inventoryId === selectedItem)?.name : searchQuery}
+                                    value={searchQuery}
                                     onChange={(e) => {
                                         setSearchQuery(e.target.value);
-                                        setSelectedItem(""); // Reset selected item when typing
                                     }}
                                     type="text"
                                     id="item"
@@ -376,19 +380,46 @@ export default function AdminSales() {
                                             .map((inventory) => (
                                                 <li
                                                     key={inventory.inventoryId}
-                                                    onClick={() => handleSelectInventory(inventory.inventoryId)}
+                                                    onClick={() => {
+                                                        handleSelectInventory(inventory.inventoryId);
+                                                        setSearchQuery("");
+                                                    }}
                                                     className="p-2 hover:bg-gray-100 cursor-pointer"
                                                 >
-                                                    {inventory.name} <p className="text-green-600 font-bold">
-                                                    {new Intl.NumberFormat('en-US', {
-                                                        style: 'currency',
-                                                        currency: 'MWK'
-                                                    }).format(inventory.pricePerUnit)}
-                                                </p>
+                                                    {inventory.name}
+                                                    <p className="text-green-600 font-bold">
+                                                        {new Intl.NumberFormat('en-US', {
+                                                            style: 'currency',
+                                                            currency: 'MWK'
+                                                        }).format(inventory.pricePerUnit)}
+                                                    </p>
                                                 </li>
                                             ))}
                                     </ul>
                                 )}
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">Selected Items</label>
+                                <ul>
+                                    {selectedItems.map((item, index) => (
+                                        <li key={index} className="flex justify-between items-center p-2 border-b">
+                                            <span>{item.name} (x{item.quantity})</span>
+                                            <span>{new Intl.NumberFormat('en-US', {
+                                                style: 'currency',
+                                                currency: 'MWK'
+                                            }).format(item.unitPrice * item.quantity)}</span>
+                                            <button
+                                                type="button"
+                                                className="text-red-500 ml-2"
+                                                onClick={() =>
+                                                    setSelectedItems(selectedItems.filter((_, i) => i !== index))
+                                                }
+                                            >
+                                                ❌
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
@@ -434,7 +465,7 @@ export default function AdminSales() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="grow p-2 bg-white w-[200px]"
+                                        className="grow p-2 bg-white w-[220px]"
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="bottom"
@@ -458,6 +489,29 @@ export default function AdminSales() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {isQuantityModalOpen && (
+                <div className="fixed inset-0  items-center justify-center z-50 flex   bg-opacity-50 bg-black ">
+                    <div className="bg-white p-6 rounded-lg shadow-lg text-black">
+                        <h2 className="text-lg font-semibold mb-4">Enter Quantity</h2>
+                        <input
+                            type="number"
+                            min="1"
+                            value={inputQuantity}
+                            onChange={(e) => setInputQuantity(parseInt(e.target.value) || 1)}
+                            className="w-full p-2 border border-gray-300 rounded-lg"
+                        />
+                        <div className="flex justify-end mt-4">
+                            <button onClick={() => setIsQuantityModalOpen(false)} className="px-4 py-2 mr-2 bg-gray-300 rounded">
+                                Cancel
+                            </button>
+                            <button onClick={handleAddItem} className="px-4 py-2 bg-blue-500 text-white rounded">
+                                Add Item
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
