@@ -157,9 +157,14 @@ export default function AdminInventory() {
                                     pricePerUnit
                                 </label>
                                 <input
-                                    value={itemPrice}
-                                    onChange={(e: any) => setItemPrice(e.target.value)}
-                                    type="number"
+                                    value={itemPrice.toLocaleString("en-US")}
+                                    onChange={(e: any) => {
+                                        const rawValue = e.target.value.replace(/,/g, "");
+                                        if (!isNaN(Number(rawValue))) {
+                                            setItemPrice(Number(rawValue));
+                                        }
+                                    }}
+                                    type="text"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     placeholder="Price per item"
@@ -203,7 +208,7 @@ export default function AdminInventory() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
+                                        className="grow p-2 bg-white w-[220px]"
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
                                         popperPlacement="bottom"

@@ -106,9 +106,27 @@ export default function InventoryTable() {
         { name: "ID", selector: (row: any) => row.inventoryId, sortable: true },
         { name: "Item name", selector: (row: any) => row.name, sortable: true },
         { name: "Quantity", selector: (row: any) => row.quantity, sortable: true },
-        { name: "Price per unit", selector: (row: any) => row.pricePerUnit },
+        {
+            name: "Price per unit",
+            selector: (row: any) => row.pricePerUnit.toLocaleString("en-US", {
+                style: "currency",
+                currency: "MWK",
+            }),
+        },
         { name: "Description", selector: (row: any) => row.description },
-        { name: "Date added", selector: (row: any) => row.dateAdded },
+        {
+            name: " Date Added",
+            selector: (row: any) => new Date(row.dateAdded).toLocaleString("en-US", {
+                weekday: "short",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+            }),
+            sortable: true,
+        },,
         { name: "Location", selector: (row: any) => row.location },
         {
             name: "Actions",
@@ -264,10 +282,21 @@ export default function InventoryTable() {
                                 <strong>Quantity:</strong> {selectedItem.quantity}
                             </div>
                             <div>
-                                <strong>Unit price:</strong> {selectedItem.pricePerUnit}
+                                <strong>Unit price:</strong> {new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                currency: "MWK",
+                            }).format(selectedItem.pricePerUnit)}
                             </div>
                             <div>
-                                <strong>Date added:</strong> {selectedItem.dateAdded}
+                                <strong>Date added:</strong> {new Date(selectedItem.dateAdded).toLocaleString("en-US", {
+                                weekday: "short",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                            })}
                             </div>
                             <div>
                                 <strong>Location:</strong> {selectedItem.location}

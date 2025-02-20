@@ -203,7 +203,10 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                                 <strong>Description:</strong> {selectedSale.description}
                             </div>
                             <div>
-                                <strong>Price per unit:</strong> {selectedSale.pricePerUnit}
+                                <strong>Price per unit:</strong> {selectedSale.pricePerUnit?.toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                            })}
                             </div>
                             <div>
                                 <strong>Issuer:</strong> {selectedSale.issuer}

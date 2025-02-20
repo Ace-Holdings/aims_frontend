@@ -126,12 +126,28 @@ export default function AssignmentsTable() {
         },
         {
             name: "Starts At",
-            selector: (row: any) => row.startsAt,
+            selector: (row: any) => new Date(row.startsAt).toLocaleString("en-US", {
+                weekday: "short",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+            }),
             sortable: true,
         },
         {
             name: "Ends At",
-            selector: (row: any) => row.endsAt,
+            selector: (row: any) => new Date(row.endsAt).toLocaleString("en-US", {
+                weekday: "short",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+            }),
             sortable: true,
         },
         {
@@ -287,7 +303,7 @@ export default function AssignmentsTable() {
                         <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Assignment Details</h3>
                         <div className="flex flex-wrap gap-4">
                             <div>
-                                <strong>Assignment:</strong> {selectedAssignment.assignmentNamea}
+                                <strong>Assignment:</strong> {selectedAssignment.assignmentName}
                             </div>
                             <div>
                                 <strong>Location:</strong> {selectedAssignment.location}
@@ -296,13 +312,32 @@ export default function AssignmentsTable() {
                                 <strong>Description:</strong> {selectedAssignment.description}
                             </div>
                             <div>
+                                <strong>Employees to attend:</strong> {selectedAssignment.users.map(user => user.username).join(", ")}
+                            </div>
+                            <div>
                                 <strong>Status:</strong> {selectedAssignment.status}
                             </div>
                             <div>
-                                <strong>Start At:</strong> {selectedAssignment.startsAt}
+                                <strong>Start At:</strong> {new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
+                                weekday: "short",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                            })}
                             </div>
                             <div>
-                                <strong>Ends At:</strong> {selectedAssignment.endsAt}
+                                <strong>Ends At:</strong> {new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
+                                weekday: "short",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                            })}
                             </div>
                         </div>
                         <div className="mt-6 flex justify-end">
