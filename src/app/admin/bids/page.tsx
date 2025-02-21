@@ -45,15 +45,15 @@ export default function AdminBids() {
 
         const formData = new FormData();
         formData.append("description", description);
-        formData.append("deadline", deadline.toISOString()); // Convert Date to string
-        formData.append("file", file); // Append actual file
+        formData.append("deadline", deadline.toISOString());
+        formData.append("file", file);
         formData.append("fileType", fileType);
         formData.append("status", "Active");
 
         try {
             const response = await fetch("http://localhost:3002/bids", {
                 method: "POST",
-                body: formData, // Send FormData
+                body: formData,
             });
 
             if (response.ok) {
