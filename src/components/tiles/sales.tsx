@@ -203,16 +203,13 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                                 <strong>Description:</strong> {selectedSale.description}
                             </div>
                             <div>
-                                <strong>Price per unit:</strong> {selectedSale.pricePerUnit?.toLocaleString("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                            })}
-                            </div>
-                            <div>
                                 <strong>Issuer:</strong> {selectedSale.issuer}
                             </div>
                             <div>
-                                <strong>Amount:</strong> {selectedSale.amount}
+                                <strong>Amount:</strong> {new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                currency: "MWK",
+                            }).format(selectedSale.amount)}
                             </div>
                         </div>
                         <div className="mt-6 flex justify-end">

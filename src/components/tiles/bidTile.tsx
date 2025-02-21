@@ -149,7 +149,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                 <h3 className="text-lg font-semibold">{bid.description}</h3>
                 <p className="text-sm">
                     Deadline: {new Date(bid.deadline).toLocaleDateString("en-US", {
-                    weekday: "short", 
+                    weekday: "short",
                     year: "numeric",
                     month: "long",
                     day: "numeric",

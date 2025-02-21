@@ -10,10 +10,13 @@
   },
   "dependencies": {
     "apexcharts": "^4.4.0",
+    "jspdf": "^3.0.0",
+    "jspdf-autotable": "^3.8.4",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "next": "15.1.5",
     "node-fetch": "^3.3.2",
+    "pspdfkit": "^2024.8.2",
     "react": "^19.0.0",
     "react-apexcharts": "^1.7.0",
     "react-data-table-component": "^7.6.2",
