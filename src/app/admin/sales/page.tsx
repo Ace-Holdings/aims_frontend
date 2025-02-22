@@ -221,19 +221,18 @@ export default function AdminSales() {
             }
 
             const responseData = await response.json();
-            const saleId = responseData.id;
+            const saleId = responseData.saleId;
 
             // Generate Invoice PDF
-            generateInvoicePdf(sale);
+            const pdfBlob = generateInvoicePdf(sale);
 
             const invoice = new FormData();
             invoice.append("saleId", saleId);
-            invoice.append("file", pdfFile);
-
+            invoice.append("file", pdfBlob)
 
             const responsePdf = await fetch('http://localhost:3002/invoices', {
                 method: "POST",
-                body: invoice
+                body: invoice,
             });
 
             if (!responsePdf.ok) {
@@ -261,8 +260,8 @@ export default function AdminSales() {
                 })
             );
 
-            // closeDialog();
-            // window.location.reload();
+            closeDialog();
+            window.location.reload();
 
         } catch (e) {
             console.log(e);
@@ -349,15 +348,12 @@ export default function AdminSales() {
         doc.setFont("helvetica", "bold");
         doc.text(`Total: ${formattedTotal}`, 14, doc.lastAutoTable.finalY + 10);
 
-        // store the pdf as a blob
-        const pdfBlob = doc.output('blob');
-
-        setPdfFile(pdfBlob);
-
-        console.log(pdfBlob);
-
         // Save the PDF
         doc.save("invoice.pdf");
+
+        // store the pdf as a blob
+        return doc.output('blob');
+
     };
 
     return (
