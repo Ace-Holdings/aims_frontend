@@ -143,7 +143,7 @@ export default function AdminBids() {
                     <div
                         className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                            <h2 className="text-lg font-medium mb-4 text-center text-bold">Add stock item</h2>
+                            <h2 className="text-lg font-medium mb-4 text-center text-bold">Add bid</h2>
                             <div className="h-2"/>
                             <form onSubmit={handleBidSubmit}>
                                 <div className="mb-4">

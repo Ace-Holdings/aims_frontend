@@ -125,6 +125,38 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
         }
     }, [searchQuery]);
 
+    const directFileDownload = (sale: any) => {
+        setSelectedSale(sale);
+        downloadInvoice(selectedSale.id);
+    }
+
+    // function to download
+    const downloadInvoice = async (saleId: number) => {
+        try {
+            const response: any = await fetch(`http://localhost:3002/invoices/${saleId}/file`, {
+                method: "GET",
+            });
+
+            if (!response.ok) {
+                console.log("Failed to download invoice");
+                return;
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = `invoice_file.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
 
 
 
@@ -154,6 +186,7 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                     <button
                         className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
                         title="Download"
+                        onClick={() => directFileDownload({id, title, date, amount, quantity, customer, issuer, description, inventory: inventory ? inventory : {name: ""}, user: user ? user : {username: ""}, pricePerUnit})}
                     >
                         <LiaFileDownloadSolid className="w-6 h-6"/>
                     </button>
