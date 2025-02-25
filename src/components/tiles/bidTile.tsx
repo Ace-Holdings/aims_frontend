@@ -170,9 +170,6 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                                 <strong>Description:</strong>{selectedBid.description}
                             </div>
                             <div>
-                                <strong>File:</strong>{selectedBid.file}
-                            </div>
-                            <div>
                                 <strong>Status:</strong>{selectedBid.status}
                             </div>
                             <div>

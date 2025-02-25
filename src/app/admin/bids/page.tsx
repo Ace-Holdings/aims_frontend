@@ -196,7 +196,19 @@ export default function AdminBids() {
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                        File
+                                        Bid document file
+                                    </label>
+                                    <input
+                                        type="file"
+                                        id="title"
+                                        className="w-full p-2 border border-gray-300 rounded-lg"
+                                        placeholder="Name of item"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                        Editable for for bid
                                     </label>
                                     <input
                                         type="file"
