@@ -28,7 +28,8 @@ export default function ActiveBids() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 font-custom">
             {activeBids.map((bid) => (
-                <BidTile key={bid.id} bid={bid} />
+                console.log('activeBid', bid),
+                <BidTile key={bid.bidId} bid={bid} />
             ))}
         </div>
     );

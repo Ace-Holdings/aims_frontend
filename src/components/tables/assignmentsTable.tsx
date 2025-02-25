@@ -225,7 +225,6 @@ export default function AssignmentsTable() {
         const value = e.target.value;
         setSearch(value);
 
-        // Filter data based on search text
         setFilteredData(
             data.filter((item) =>
                 item.name.toLowerCase().includes(value.toLowerCase())

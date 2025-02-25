@@ -484,7 +484,7 @@ export default function AdminSales() {
                                 {searchQuery && (
                                     <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
                                         {inventories
-                                            .filter((inventory) =>
+                                            .filter((inventory) => inventory.location.toLowerCase() === "shop" &&
                                                 inventory.name.toLowerCase().includes(searchQuery.toLowerCase())
                                             )
                                             .map((inventory) => (

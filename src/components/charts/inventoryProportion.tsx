@@ -41,14 +41,14 @@ export default function InventoryProportion() {
     return (
         <div
             className="bg-white shadow-lg rounded-lg p-6 flex flex-col justify-center items-center w-[400px] h-64 font-custom">
-            <h2 className="font-bold text-left">Inventory Proportion</h2>
+            <h2 className="font-bold text-left">Inventory proportion by location</h2>
             <br/>
             <ApexChart
                 options={chartOptions}
                 series={orgSeries}
                 type="pie"
-                width={300} // Reduced size for better fit
-                height={300} // Adjusted height
+                width={300}
+                height={300}
                 className="mb-2"
             />
         </div>
