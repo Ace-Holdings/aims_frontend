@@ -16,8 +16,8 @@ export default function AdminBids() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [description, setDescription] = useState("");
     const [deadline, setDeadline] = useState<Date | null>(null);
-    const [fileType, setFileType] = useState(null);
-    const [file, setFile] = useState("");
+    const [bidFile, setBidFile] = useState("");
+    const [editFile, setEditFile] = useState("");
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -31,14 +31,18 @@ export default function AdminBids() {
         setIsDialogOpen(false);
     }
 
-    const handleFileChange = (event: any) => {
-        setFile(event.target.files[0]);
+    const handleBidFileChange = (event: any) => {
+        setBidFile(event.target.files[0]);
     };
+
+    const handleEditFileChange = (event: any) => {
+        setEditFile(event.target.files[0]);
+    }
 
     const handleBidSubmit = async (event: any) => {
         event.preventDefault();
 
-        if (!file) {
+        if (!bidFile) {
             alert("Please select a file before submitting.");
             return;
         }
@@ -46,8 +50,8 @@ export default function AdminBids() {
         const formData = new FormData();
         formData.append("description", description);
         formData.append("deadline", deadline.toISOString());
-        formData.append("file", file);
-        formData.append("fileType", fileType);
+        formData.append("bidDocumentFile", bidFile);
+        formData.append("editableFileForBid", editFile);
         formData.append("status", "Active");
 
         try {
@@ -181,20 +185,6 @@ export default function AdminBids() {
                                     </div>
                                 </div>
                                 <div className="mb-4">
-                                    <label htmlFor="fileType" className="block text-gray-700 font-medium mb-2">
-                                        File Type
-                                    </label>
-                                    <select
-                                        id="fileType"
-                                        className="w-full p-2 border border-gray-300 rounded-lg bg-white"
-                                        value={fileType}
-                                        onChange={(e) => setFileType(e.target.value)}
-                                    >
-                                        <option value="pdf">PDF</option>
-                                        <option value="docx">DOCX</option>
-                                    </select>
-                                </div>
-                                <div className="mb-4">
                                     <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                         Bid document file
                                     </label>
@@ -203,7 +193,7 @@ export default function AdminBids() {
                                         id="title"
                                         className="w-full p-2 border border-gray-300 rounded-lg"
                                         placeholder="Name of item"
-                                        onChange={handleFileChange}
+                                        onChange={handleBidFileChange}
                                     />
                                 </div>
                                 <div className="mb-4">
@@ -215,7 +205,7 @@ export default function AdminBids() {
                                         id="title"
                                         className="w-full p-2 border border-gray-300 rounded-lg"
                                         placeholder="Name of item"
-                                        onChange={handleFileChange}
+                                        onChange={handleEditFileChange}
                                     />
                                 </div>
 
