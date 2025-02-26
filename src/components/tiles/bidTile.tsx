@@ -10,6 +10,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [selectedBid, setSelectedBid] = useState(null);
+    const [downloadDialog, setDownloadDialog] = useState(false);
 
     // update states
     const [description, setDescription] = useState("");
@@ -30,6 +31,11 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     const openDeleteDialog = (bid: any) => {
         setSelectedBid(bid);
         setShowDeleteDialog(true);
+    }
+
+    const openDownloadDialog = (bid: any ) => {
+        setSelectedBid(bid);
+        setDownloadDialog(true);
     }
 
     const directFileDownload= (bid: any) => {
@@ -107,6 +113,29 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
         }
     }
 
+    const handleDownloadEditable = async (bidId: number, fileType: string) => {
+        try {
+            const response = await fetch(`http://localhost:3002/bids/${bidId}/editable`);
+            if (!response.ok) {
+                throw new Error('failed to fetch editable file');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = `editable_file.${fileType}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     return (
         <>
             <div className={`p-4 relative rounded-lg shadow-md border border-gray-200 font-custom h-48
@@ -131,7 +160,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     <button
                         className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
                         title="Delete"
-                        onClick={() => directFileDownload(bid)}
+                        onClick={() => openDownloadDialog(bid)}
                     >
                         <LiaFileDownloadSolid className="w-6 h-6"/>
                     </button>
@@ -292,6 +321,42 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     </div>,
                     document.body
                 )}
+
+            {downloadDialog && (
+                <div className="fixed inset-0  flex items-center justify-center bg-black  text-black bg-opacity-30 backdrop-blur-sm z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                        <h2 className="text-lg font-medium mb-4 text-center font-bold">Download Bid Files</h2>
+                        <div className="h-6"/>
+
+                        <div className="flex justify-between">
+                            <button
+
+                                className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+                                onClick={() => handleDownloadFile(selectedBid?.bidId, "pdf")}
+                            >
+                                Download Bid File
+                            </button>
+                            <button
+                                className="bg-green-500 hover:bg-green-400 text-white py-2 px-4 rounded-lg"
+                                onClick={() => handleDownloadEditable(selectedBid?.bidId, "docx")}
+                            >
+                                Download Editable File
+                            </button>
+                        </div>
+
+                        <div className="h-6"/>
+
+                        <div className="mt-4 text-center">
+                            <button
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                                onClick={() => setDownloadDialog(false)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </>
     );

@@ -14,10 +14,13 @@ import "react-datepicker/dist/react-datepicker.css";
 export default function AdminBids() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
     const [description, setDescription] = useState("");
     const [deadline, setDeadline] = useState<Date | null>(null);
     const [bidFile, setBidFile] = useState("");
     const [editFile, setEditFile] = useState("");
+    const [bidFileUrl, setBidFileUrl] = useState<string | null>(null);
+    const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -38,6 +41,13 @@ export default function AdminBids() {
     const handleEditFileChange = (event: any) => {
         setEditFile(event.target.files[0]);
     }
+
+    const openDownloadDialog = (bidId: string) => {
+        // Replace with your actual API endpoints to fetch file URLs
+        setBidFileUrl(`http://localhost:3002/bids/${bidId}/file?type=bidDocument`);
+        setEditFileUrl(`http://localhost:3002/bids/${bidId}/file?type=editableDocument`);
+        setIsDialogOpen(true);
+    };
 
     const handleBidSubmit = async (event: any) => {
         event.preventDefault();
@@ -228,6 +238,7 @@ export default function AdminBids() {
                         </div>
                     </div>
                 )}
+
             </>
 
         )
