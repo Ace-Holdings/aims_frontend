@@ -15,7 +15,8 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     // update states
     const [description, setDescription] = useState("");
     const [deadline, setDeadline] = useState<Date | null>(null);
-    const [fileSend, setFileSend] = useState("");
+    const [fileSend, setFileSend] = useState<File | null>(null);
+    const [editableFileSend, setEditableFileSend] = useState<File | null>(null);
     const [fileType, setFileType] = useState("");
 
     const openDetailsDialog= (bid: any) => {
@@ -63,19 +64,17 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     // handler function to update a user
     const handleUpdateBid = async () => {
         try {
-            const updatedBid = {
-                ...(description && {description: description }),
-                ...(deadline && {deadline: deadline}),
-                ...(fileSend && {file: fileSend }),
-                ...(fileType && {fileType: fileType}),
-            };
+            const formData = new FormData();
+
+            if (description) formData.append("description", description);
+            if (deadline) formData.append("deadline", deadline);
+            if (fileSend) formData.append("bidDocumentFile", fileSend);
+            if (editableFileSend) formData.append("editableFileForBid", editableFileSend);
+            if (fileType) formData.append("fileType", fileType);
 
             const response = await fetch(`http://localhost:3002/bids/${selectedBid.bidId}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updatedBid),
+                body: formData,
             });
 
             if (!response.ok) {
@@ -83,8 +82,8 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                 return;
             }
 
-            setShowUpdateDialog(false);
-            window.location.reload();
+            // setShowUpdateDialog(false);
+            // window.location.reload();
         } catch (error) {
             console.log(error);
         }
@@ -134,6 +133,15 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
         } catch (e) {
             console.error(e);
         }
+    }
+
+    // handlers for file changes
+    const handleUpdateBidFileChange = (e: any) => {
+        setFileSend(e.target.files[0]);
+    }
+
+    const handleUpdateEditableFileChange = (e: any) => {
+        setEditableFileSend(e.target.files[0]);
     }
 
     return (
@@ -255,33 +263,29 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                                 </div>
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="fileType" className="block text-gray-700 font-medium mb-2">
-                                    File Type
-                                </label>
-                                <select
-                                    id="fileType"
-                                    className="w-full p-2 border border-gray-300 rounded-lg bg-white"
-                                    value={fileType}
-                                    onChange={(e: any) => setFileType(e.target.value)}
-                                >
-                                    <option value="pdf">PDF</option>
-                                    <option value="docx">DOCX</option>
-                                </select>
-                            </div>
-                            <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    File
+                                    Bid File
                                 </label>
                                 <input
                                     type="file"
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     placeholder="Name of item"
-                                    value={fileSend}
-                                    onChange={(e: any) => setFileSend(e.target.value)}
+                                    onChange={handleUpdateBidFileChange}
                                 />
                             </div>
-
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-red-600 font-medium mb-2">
+                                    Editable file
+                                </label>
+                                <input
+                                    type="file"
+                                    id="title"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Name of item"
+                                    onChange={handleUpdateEditableFileChange}
+                                />
+                            </div>
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button
                                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
