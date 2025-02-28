@@ -152,7 +152,7 @@ export default function AssignmentsTable() {
         },
         {
             name: "Status",
-            selector: (row: any) => row.status,
+            selector: (row: any) => row.status === true ? "Active" : "Inactive",
             sortable: true,
         },
         {
@@ -385,20 +385,6 @@ export default function AssignmentsTable() {
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
-                            </div>
-                            <div className="mb-4">
-                                <label>Status</label>
-                                <select
-                                    name="status"
-                                    className="border p-2 w-full bg-white"
-                                    value={status}
-                                    onChange={(e) => setStatus(e.target.value)}
-                                >
-                                    <option value="" disabled>
-                                    </option>
-                                    <option value="Inactive">Inactive</option>
-                                    <option value="Active">Active</option>
-                                </select>
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">

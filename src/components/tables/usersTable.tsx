@@ -135,11 +135,6 @@ export default function UsersTable() {
             sortable: true,
         },
         {
-            name: "Status",
-            selector: (row: any) => row.assignmentStaus,
-            sortable: true,
-        },
-        {
             name: "Actions",
             selector: (row: any) => (
                 <div className="flex">

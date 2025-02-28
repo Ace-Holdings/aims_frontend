@@ -12,7 +12,8 @@ export default function ActiveAssignments() {
 
                 if (response.ok) {
                     const data = await response.json();
-                    const assignments = data.filter((assignment: any) => assignment.status == 'active');
+                    console.log(data);
+                    const assignments = data.filter((assignment: any) => assignment.status == true);
                     setActiveAssignmentsCount(assignments.length);
                 }
             } catch(e) {
