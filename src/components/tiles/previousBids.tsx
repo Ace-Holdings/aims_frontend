@@ -14,7 +14,7 @@ export default function PreviousBids() {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    const filteredData = data.filter((bid: any) => bid.status === 'Inactive');
+                    const filteredData = data.filter((bid: any) => bid.status === false);
                     setPreviousBids(filteredData);
                 } else {
                     console.log('could not fetch for bids');

@@ -147,7 +147,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     return (
         <>
             <div className={`p-4 relative rounded-lg shadow-md border border-gray-200 font-custom h-48
-            ${bid.status === "Active" ? "bg-green-500 text-white" : "bg-gray-200 text-black"}`}>
+            ${bid.status === true ? "bg-green-500 text-white" : "bg-gray-200 text-black"}`}>
                 <div className="absolute top-3 right-3 flex flex-col space-y-2 z-10">
                     <button
                         className="text-blue-600 hover:text-blue-800 transition-colors duration-200"

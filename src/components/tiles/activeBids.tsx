@@ -13,7 +13,8 @@ export default function ActiveBids() {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    const filteredData = data.filter((bid: any) => bid.status === "Active");
+                    console.log(data);
+                    const filteredData = data.filter((bid: any) => bid.status === true);
                     setActiveBids(filteredData);
                 }
             } catch(e) {

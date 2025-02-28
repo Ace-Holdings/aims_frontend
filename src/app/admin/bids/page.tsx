@@ -62,7 +62,7 @@ export default function AdminBids() {
         formData.append("deadline", deadline.toISOString());
         formData.append("bidDocumentFile", bidFile);
         formData.append("editableFileForBid", editFile);
-        formData.append("status", "Active");
+
 
         try {
             const response = await fetch("http://localhost:3002/bids", {
