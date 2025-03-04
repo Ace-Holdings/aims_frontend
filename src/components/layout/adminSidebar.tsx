@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { FiHome, FiBriefcase, FiUsers, FiSettings, FiChevronLeft, FiChevronRight, FiUser, FiLogOut } from "react-icons/fi";
 import { MdOutlineInventory2, MdOutlinePointOfSale } from "react-icons/md";
+import { LuReceipt } from "react-icons/lu";
 import { GrDocumentPerformance } from "react-icons/gr";
 import { LuLogs } from "react-icons/lu";
 import Link from "next/link"
@@ -18,6 +19,7 @@ const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
         { icon: <MdOutlineInventory2 />, label: "Inventory", path: "/admin/inventory" },
         { icon: <MdOutlinePointOfSale />, label: "Sales", path: "/admin/sales" },
         { icon: <GrDocumentPerformance />, label: "Bid documents", path: "/admin/bids" },
+        { icon: <LuReceipt/>, label: "Pay slips", path: "/admin/payslips"},
         { icon: <LuLogs />, label: "Logs", path: "/admin/logs" },
     ];
 
