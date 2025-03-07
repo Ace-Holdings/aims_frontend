@@ -28,6 +28,10 @@ export default function Payslips() {
 
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [payslips, setPayslips] = useState([]);
+    const [filteredPaySlips, setFilteredPaySlips] = useState(payslips);
+    const [period, setPeriod] = useState(1);
+
+    const [searchTerm, setSearchTerm] = useState("");
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -42,6 +46,17 @@ export default function Payslips() {
         if (!deductionItemDescription.trim()) return;
         setIsDeductionValueDialogOpen(true);
     }
+
+    useEffect(() => {
+        const filtered = payslips.filter((payslip) =>
+            payslip.user.username.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredPaySlips(filtered);
+    }, [searchTerm, payslips]);
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+    };
 
     const handleSaveEarning = () => {
         if (!earningValue.trim()) return;
@@ -92,7 +107,7 @@ export default function Payslips() {
         }
 
         fetchPaySlips();
-    }, [payslips]);
+    }, []);
 
     const generatePaySlipPdf = (payslip: any) => {
         const doc = new jsPDF();
@@ -127,8 +142,20 @@ export default function Payslips() {
 
         for (let i = 0; i < maxRows; i++) {
             tableData.push([
-                payslip.earnings[i] ? payslip.earnings[i].description + ": " + payslip.earnings[i].value.toLocaleString("en-US", { style: "currency", currency: "MWK" }) : "",
-                payslip.deductions[i] ? payslip.deductions[i].description + ": " + payslip.deductions[i].value.toLocaleString("en-US", { style: "currency", currency: "MWK" }) : ""
+                payslip.earnings[i]
+                    ? `${payslip.earnings[i].description}: ` +
+                    (payslip.earnings[i].value * payslip.period).toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "MWK",
+                    })
+                    : "",
+                payslip.deductions[i]
+                    ? `${payslip.deductions[i].description}: ` +
+                    (payslip.deductions[i].value * payslip.period).toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "MWK",
+                    })
+                    : "",
             ]);
         }
 
@@ -166,8 +193,8 @@ export default function Payslips() {
             return;
         }
 
-        const totalEarnings = additionalEarnings.reduce((sum, item) => sum + parseFloat(item.value), 0);
-        const totalDeductions = deductions.reduce((sum, item) => sum + parseFloat(item.value), 0);
+        const totalEarnings = additionalEarnings.reduce((sum, item) => sum + parseFloat(item.value), 0) * period;
+        const totalDeductions = deductions.reduce((sum, item) => sum + parseFloat(item.value), 0) * period;
         const netPay = totalEarnings - totalDeductions;
 
         const payslipData = {
@@ -180,11 +207,11 @@ export default function Payslips() {
             accountNumber: selectedEmployee.accountNumber || "N/A",
             branchName: selectedEmployee.branchName || "N/A",
             earnings: additionalEarnings,
+            period: period,
             deductions: deductions,
             netPay: netPay,
         };
 
-        console.log(payslipData);
 
         const slipPdf = generatePaySlipPdf(payslipData);
 
@@ -192,6 +219,7 @@ export default function Payslips() {
         const payslip = new FormData();
         payslip.append("userId", selectedEmployee.userId);
         payslip.append("totalEarnings", totalEarnings.toString());
+        payslip.append("period_in_months", period.toString());
         payslip.append("deductions", totalDeductions.toString());
         payslip.append("file", slipPdf);
 
@@ -284,20 +312,23 @@ export default function Payslips() {
                         <input
                             type="text"
                             placeholder="Search by employee..."
+                            onChange={handleSearchChange}
                             className="mb-4 p-2 border border-gray-300 rounded-lg shadow-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                         />
 
                         {/* Payslips Tiles */}
                         <div className="max-w-4xl w-full mx-auto space-y-6 flex flex-col items-center">
-                            {payslips.length > 0 ? (
-                                [...payslips]
+                            {filteredPaySlips.length > 0 ? (
+                                [...filteredPaySlips]
                                     .sort((a, b) => b.payslipId - a.payslipId)
                                     .map((payslip) => (
                                         <PaySlipsTile
                                             key={payslip.payslipId}
                                             id={payslip.payslipId}
+                                            employee={payslip.user.username}
                                             earnings={payslip.totalEarnings}
                                             deductions={payslip.deductions}
+                                            date={payslip.updatedAt}
                                         />
                                     ))
                             ) : (
@@ -353,6 +384,21 @@ export default function Payslips() {
                                 {selectedEmployee && (
                                     <p className="mt-2 text-green-600">Selected: {selectedEmployee.username}</p>
                                 )}
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                    Period (in months)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="period"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    value={period}
+                                    onChange={(e: any) => {
+                                        const newValue = Math.max(1, parseInt(e.target.value, 10) || 1);
+                                        setPeriod(newValue);
+                                    }}
+                                />
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
