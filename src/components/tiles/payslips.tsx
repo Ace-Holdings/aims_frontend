@@ -4,8 +4,7 @@ import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
 import {LiaFileDownloadSolid} from "react-icons/lia";
 import ReactDOM from "react-dom";
 
-const PaySlipsTile = ({ id, title, date, amount, quantity, customer, issuer, description, inventory, user, pricePerUnit }) => {
-    const formattedDate = format(new Date(date), "dd/MM/yyyy");
+const PaySlipsTile = ({ id, employee, earnings, deductions }) => {
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [selectedSale, setSelectedSale] = useState(null);
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
@@ -25,16 +24,19 @@ const PaySlipsTile = ({ id, title, date, amount, quantity, customer, issuer, des
     return (
         <>
             <div
-                className="relative bg-white shadow-md p-6 rounded-lg mt-4 w-[500px] font-custom text-center flex flex-col border border-gray-500"
+                className="relative bg-white shadow-md p-6 mt-4 w-[500px] h-[200px] font-custom text-center flex flex-col"
                 style={{
                     background: `
-            url("data:image/svg+xml,%3Csvg width='100%' height='10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,5 L5,0 L10,5 L15,0 L20,5 L25,0 L30,5 L35,0 L40,5 L45,0 L50,5 L55,0 L60,5 L65,0 L70,5 L75,0 L80,5 L85,0 L90,5 L95,0 L100,5' stroke='black' fill='transparent'/%3E%3C/svg%3E")
-            top center / 100% 10px repeat-x,
-            url("data:image/svg+xml,%3Csvg width='100%' height='10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,5 L5,10 L10,5 L15,10 L20,5 L25,10 L30,5 L35,10 L40,5 L45,10 L50,5 L55,10 L60,5 L65,10 L70,5 L75,10 L80,5 L85,10 L90,5 L95,10 L100,5' stroke='black' fill='transparent'/%3E%3C/svg%3E")
-            bottom center / 100% 10px repeat-x
-        `,
-                }}>
+        url("data:image/svg+xml,%3Csvg width='500' height='10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,5 L12,0 L24,5 L36,0 L48,5 L60,0 L72,5 L84,0 L96,5 L108,0 L120,5 L132,0 L144,5 L156,0 L168,5 L180,0 L192,5 L204,0 L216,5 L228,0 L240,5 L252,0 L264,5 L276,0 L288,5 L300,0 L312,5 L324,0 L336,5 L348,0 L360,5 L372,0 L384,5 L396,0 L408,5 L420,0 L432,5 L444,0 L456,5 L468,0 L480,5 L492,0 L500,5' stroke='black' fill='transparent'/%3E%3C/svg%3E")
+        top center / 500px 10px no-repeat,
+        url("data:image/svg+xml,%3Csvg width='500' height='10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,5 L12,10 L24,5 L36,10 L48,5 L60,10 L72,5 L84,10 L96,5 L108,10 L120,5 L132,10 L144,5 L156,10 L168,5 L180,10 L192,5 L204,10 L216,5 L228,10 L240,5 L252,10 L264,5 L276,10 L288,5 L300,10 L312,5 L324,10 L336,5 L348,10 L360,5 L372,10 L384,5 L396,10 L408,5 L420,10 L432,5 L444,10 L456,5 L468,10 L480,5 L492,10 L500,5' stroke='black' fill='transparent'/%3E%3C/svg%3E")
+        bottom center / 500px 10px no-repeat
+    `,
+                }}
+            >
+                <div className="h-3"/>
                 <div className="absolute top-3 right-3 flex flex-col space-y-2">
+                    <div/>
                     <button
                         className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
                         title="View Details"
@@ -68,157 +70,15 @@ const PaySlipsTile = ({ id, title, date, amount, quantity, customer, issuer, des
                 <h2 className="text-lg text-gray-500 text-left">ID: <span
                     className="font-semibold text-black">{id}</span>
                 </h2>
-                <h2 className="text-lg text-gray-500 text-left">Item: <span
-                    className="font-semibold text-black">{title}</span></h2>
-                <h2 className="text-lg text-gray-500 text-left">Customer: <span
-                    className="font-semibold text-black">{customer}</span></h2>
-                <h2 className="text-lg text-gray-500 text-left">Quantity: <span
-                    className="font-semibold text-black">{quantity}</span></h2>
-                <h2 className="text-lg text-gray-500 text-left">Issuer: <span
-                    className="font-semibold text-black">{issuer}</span></h2>
-                <p className="text-gray-500 text-left">Date: <span className="text-black font-semibold">{formattedDate}</span></p>
-                <hr className="border-dotted border-gray-400 w-full my-3"/>
-                <p className="text-green-600 font-bold text-lg text-left">
-                    {new Intl.NumberFormat('en-US', {style: 'currency', currency: 'MWK'}).format(amount)}
-                </p>
+                <h2 className="text-lg text-gray-500 text-left">Employee: <span
+                    className="font-semibold text-black">{employee}</span></h2>
+                <h2 className="text-lg text-gray-500 text-left">Total earnings: <span
+                    className="font-semibold text-black">{earnings}</span></h2>
+                <h2 className="text-lg text-gray-500 text-left">Total deductions: <span
+                    className="font-semibold text-black">{deductions}</span></h2>
             </div>
+            <div className="h-2"/>
 
-            {showDetailsDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black font-custom backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Sale Details</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <div>
-                                <strong>Item:</strong>
-                            </div>
-                            <div>
-                                <strong>Customer:</strong>
-                            </div>
-                            <div>
-                                <strong>Quantity:</strong>
-                            </div>
-                            <div>
-                                <strong>Description:</strong>
-                            </div>
-                            <div>
-                                <strong>Issuer:</strong>
-                            </div>
-                            <div>
-                                <strong>Amount:</strong> {new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: "MWK",
-                            }).format(}
-                            </div>
-                        </div>
-                        <div className="mt-6 flex justify-end">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowDetailsDialog(false)}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
-
-            {showUpdateDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black  text-black  font-custom bg-opacity-30 backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update sale</h3>
-                        <form>
-                            <div className="mb-4 relative">
-                                <label htmlFor="item" className="block text-gray-700 font-medium mb-2">
-                                    Search Inventories
-                                </label>
-                                <input
-                                    type="text"
-                                    id="item"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Type to search for items"
-                                />
-                                {searchQuery && (
-                                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
-                                    </ul>
-                                )}
-                            </div>
-                            <div className="mb-4">
-                                <label>Quantity</label>
-                                <input
-                                    type="number"
-                                    name="contact"
-                                    className="border p-2 w-full bg-white"
-                                    value={quantityState}
-                                    onChange={(e: any) => setQuantity(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label>Description</label>
-                                <input
-                                    type="text"
-                                    name="contact"
-                                    className="border p-2 w-full bg-white"
-                                    value={descriptionState}
-                                    onChange={(e: any) => setDescription(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label>Customer</label>
-                                <input
-                                    type="text"
-                                    name="contact"
-                                    className="border p-2 w-full bg-white"
-                                    value={customerState}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label>Issuer</label>
-                                <input
-                                    type="text"
-                                    name="contact"
-                                    className="border p-2 w-full bg-white"
-                                />
-                            </div>
-
-                            <div className="mt-6 flex justify-end space-x-3">
-                                <button
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                    onClick={() => setShowUpdateDialog(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                                >
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>,
-                document.body
-            )}
-
-            {showDeleteDialog &&
-                ReactDOM.createPortal(
-                    <div className="fixed inset-0 flex items-center justify-center bg-black  text-black  font-custom bg-opacity-30 backdrop-blur-sm z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
-                            <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
-                            <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this sale?</p>
-                            <div className="mt-4 flex justify-end space-x-3">
-                                <button className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md" onClick={() => setShowDeleteDialog(false)}>
-                                    Cancel
-                                </button>
-                                <button className="bg-red-600 text-white px-4 py-2 rounded-md" >
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>,
-                    document.body
-                )}
 
         </>
 

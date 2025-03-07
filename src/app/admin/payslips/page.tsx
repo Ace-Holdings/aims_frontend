@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import PaySlipsTile from "@/components/tiles/payslips";
 
 
 export default function Payslips() {
@@ -26,6 +27,7 @@ export default function Payslips() {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [payslips, setPayslips] = useState([]);
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -73,6 +75,24 @@ export default function Payslips() {
             fetchUsers(searchQuery);
         }
     }, [searchQuery]);
+
+    useEffect(() => {
+        const fetchPaySlips = async () => {
+            try {
+                const response = await fetch('http://localhost:3002/payslips');
+                if (!response.ok) {
+                    console.log(response);
+                    return;
+                }
+                const data = await response.json();
+                setPayslips(data);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        fetchPaySlips();
+    }, [payslips]);
 
     const generatePaySlipPdf = (payslip: any) => {
         const doc = new jsPDF();
@@ -269,7 +289,20 @@ export default function Payslips() {
 
                         {/* Payslips Tiles */}
                         <div className="max-w-4xl w-full mx-auto space-y-6 flex flex-col items-center">
-
+                            {payslips.length > 0 ? (
+                                [...payslips]
+                                    .sort((a, b) => b.payslipId - a.payslipId)
+                                    .map((payslip) => (
+                                        <PaySlipsTile
+                                            key={payslip.payslipId}
+                                            id={payslip.payslipId}
+                                            earnings={payslip.totalEarnings}
+                                            deductions={payslip.deductions}
+                                        />
+                                    ))
+                            ) : (
+                                <p className="text-gray-500">No sales found for this customer.</p>
+                            )}
                         </div>
 
 

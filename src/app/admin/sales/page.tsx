@@ -107,7 +107,7 @@ export default function AdminSales() {
         const token = localStorage.getItem("token");
         if (token) {
             try {
-                const decodedToken: any = jwtDecode(token); // Adjust this to match your token structure
+                const decodedToken: any = jwtDecode(token);
                 console.log(decodedToken);
                 setUsername(decodedToken.user || "User");
             } catch (e) {
