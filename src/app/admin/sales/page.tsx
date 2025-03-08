@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import {jwtDecode} from "jwt-decode";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 
 export default function AdminSales() {
@@ -329,10 +330,10 @@ export default function AdminSales() {
             currencyFormatter.format(item.quantity * item.unitPrice)
         ]);
 
-        doc.autoTable({
+        autoTable(doc, {
             head: [["Item", "Quantity", "Unit Price (MWK)", "Total (MWK)"]],
             body: tableData,
-            startY: 100, // Start the table slightly higher
+            startY: 100,
             theme: "grid"
         });
 
