@@ -137,18 +137,26 @@ export default function Payslips() {
         doc.line(10, 55, 200, 55);
 
         // Combine Earnings & Deductions into one table
-        const maxRows = Math.max(payslip.earnings.length, payslip.deductions.length);
+        const maxRows = Math.max(payslip.earnings.length + 1, payslip.deductions.length);
         const tableData = [];
+
+        console.log(payslip.earnings)
 
         for (let i = 0; i < maxRows; i++) {
             tableData.push([
-                payslip.earnings[i]
-                    ? `${payslip.earnings[i].description}: ` +
-                    (payslip.earnings[i].value * payslip.period).toLocaleString("en-US", {
+                i === 0
+                    ? `Basic Salary: (x${payslip.period}) ` +
+                    (payslip.salary * payslip.period).toLocaleString("en-US", {
                         style: "currency",
                         currency: "MWK",
                     })
-                    : "",
+                    : payslip.earnings[i - 1]
+                        ? `${payslip.earnings[i - 1].description}: ` +
+                        (payslip.earnings[i - 1].value * payslip.period).toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "MWK",
+                        })
+                        : "",
                 payslip.deductions[i]
                     ? `${payslip.deductions[i].description}: ` +
                     (payslip.deductions[i].value * payslip.period).toLocaleString("en-US", {
@@ -193,7 +201,7 @@ export default function Payslips() {
             return;
         }
 
-        const totalEarnings = additionalEarnings.reduce((sum, item) => sum + parseFloat(item.value), 0) * period;
+        const totalEarnings = (additionalEarnings.reduce((sum, item) => sum + parseFloat(item.value), 0) + selectedEmployee.salary.amount) * period;
         const totalDeductions = deductions.reduce((sum, item) => sum + parseFloat(item.value), 0) * period;
         const netPay = totalEarnings - totalDeductions;
 
@@ -207,6 +215,7 @@ export default function Payslips() {
             accountNumber: selectedEmployee.accountNumber || "N/A",
             branchName: selectedEmployee.branchName || "N/A",
             earnings: additionalEarnings,
+            salary: selectedEmployee.salary.amount || "N/A",
             period: period,
             deductions: deductions,
             netPay: netPay,
@@ -370,6 +379,7 @@ export default function Payslips() {
                                                     key={user.userId}
                                                     onClick={() => {
                                                         setSelectedEmployee(user);
+                                                        console.log(user);
                                                         setSearchQuery("");
                                                     }}
                                                     className="p-2 hover:bg-gray-100 cursor-pointer"
