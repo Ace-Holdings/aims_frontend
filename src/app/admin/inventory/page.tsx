@@ -2,9 +2,6 @@
 
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
-import TotalAssignments from "@/components/tiles/totalAssignments";
-import ActiveAssignments from "@/components/tiles/activeAssignments";
-import AssignmentsTable from "@/components/tables/assignmentsTable";
 import {useState} from "react";
 import InventoryShop from "@/components/tiles/inventoryShop";
 import InventoryWarehouse from "@/components/tiles/inventoryWarehouse";
@@ -43,6 +40,7 @@ export default function AdminInventory() {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({
                     quantity: itemQuantity,

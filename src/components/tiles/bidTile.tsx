@@ -49,6 +49,9 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
         try {
             const response = await fetch(`http://localhost:3002/bids/${selectedBid.bidId}`, {
                 method: "DELETE",
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                }
             });
 
             if (!response.ok) {
@@ -74,6 +77,9 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
             const response = await fetch(`http://localhost:3002/bids/${selectedBid.bidId}`, {
                 method: "PUT",
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                },
                 body: formData,
             });
 
@@ -92,7 +98,11 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     // handler function to download file
     const handleDownloadFile = async (bidId: number, fileType: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/file`);
+            const response = await fetch(`http://localhost:3002/bids/${bidId}/file`, {
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                }
+            });
             if (!response.ok) {
                 throw new Error('failed to download bid');
             }
@@ -114,7 +124,11 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
     const handleDownloadEditable = async (bidId: number, fileType: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/editable`);
+            const response = await fetch(`http://localhost:3002/bids/${bidId}/editable`, {
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                }
+            });
             if (!response.ok) {
                 throw new Error('failed to fetch editable file');
             }

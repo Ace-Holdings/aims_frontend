@@ -70,7 +70,7 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
 
             const response = await fetch(`http://localhost:3002/sales/${selectedSale.id}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "authorization": `Bearer ${localStorage.getItem("token")}` },
                 body: JSON.stringify(updatedSale),
             });
 
@@ -90,6 +90,9 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
         try {
             const response = await fetch(`http://localhost:3002/sales/${selectedSale.id}`, {
                 method: "DELETE",
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                }
             });
 
             if (!response.ok) {
@@ -107,6 +110,9 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
             try {
                 const response = await fetch(`http://localhost:3002/inventory/search?name=${query}`, {
                     method: "GET",
+                    headers: {
+                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    }
                 });
 
                 if (response.ok) {
@@ -135,6 +141,9 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
         try {
             const response: any = await fetch(`http://localhost:3002/invoices/${saleId}/file`, {
                 method: "GET",
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                }
             });
 
             if (!response.ok) {

@@ -27,6 +27,9 @@ export default function InventoryTable() {
     useEffect(() => {
         fetch('http://localhost:3002/inventory', {
             method: 'GET',
+            headers: {
+                "authorization": 'Bearer ' + localStorage.getItem("token"),
+            }
         })
             .then((response) => response.json())
             .then((data) => {
@@ -55,6 +58,9 @@ export default function InventoryTable() {
         try {
             const response = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
                 method: "DELETE",
+                headers: {
+                    "authorization": 'Bearer ' + localStorage.getItem("token"),
+                }
             });
 
             if (!response.ok) {
@@ -85,6 +91,7 @@ export default function InventoryTable() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    "authorization": 'Bearer ' + localStorage.getItem("token"),
                 },
                 body: JSON.stringify(updatedStock),
             });

@@ -9,6 +9,9 @@ export default function TotalUsers() {
             try {
                 const response = await fetch('http://localhost:3002/users', {
                     method: 'GET',
+                    headers: {
+                        "authorization": "Bearer " + localStorage.getItem("token")
+                    }
                 });
                 const data = await response.json();
                 setUsersCount(data.length);

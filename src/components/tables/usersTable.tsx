@@ -25,6 +25,9 @@ export default function UsersTable() {
     useEffect(() => {
         fetch("http://localhost:3002/users", {
             method: "GET",
+            headers: {
+                "authorization": `Bearer ${localStorage.getItem('token')}`,
+            }
         })
             .then((res) => res.json())
             .then((fetchedUsers) => {
@@ -54,6 +57,9 @@ export default function UsersTable() {
         try {
             const response = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
                 method: "DELETE",
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                }
             });
 
             if (!response.ok) {
@@ -83,6 +89,7 @@ export default function UsersTable() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    "authorization": `Bearer ${localStorage.getItem('token')}`,
                 },
                 body: JSON.stringify(updatedUser),
             });

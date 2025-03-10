@@ -8,6 +8,9 @@ export default function ActiveAssignments() {
             try {
                 const response = await fetch('http://localhost:3002/assignments', {
                     method: 'GET',
+                    headers: {
+                        "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    }
                 });
 
                 if (response.ok) {

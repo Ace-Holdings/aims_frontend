@@ -34,6 +34,9 @@ export default function AssignmentsTable() {
     useEffect(() => {
         fetch("http://localhost:3002/assignments", {
             method: "GET",
+            headers: {
+                "authorization": `Bearer ${localStorage.getItem("token")}`,
+            }
         }).then((response) => response.json())
             .then((data) => {
                 setAssignments(data)
@@ -74,6 +77,7 @@ export default function AssignmentsTable() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify(updatedAssignment),
             });
@@ -95,6 +99,9 @@ export default function AssignmentsTable() {
         try {
             const response = await fetch(`http://localhost:3002/assignments/${selectedAssignment.assignmentId}`, {
                 method: "DELETE",
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                }
             });
 
             if (!response.ok) {

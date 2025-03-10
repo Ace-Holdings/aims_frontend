@@ -5,7 +5,11 @@ export default function TotalActiveUsers() {
 
     useEffect(() => {
         const fetchActiveUsers = async () => {
-            const response = await fetch("http://localhost:3002/assignments");
+            const response = await fetch("http://localhost:3002/assignments", {
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                }
+            });
             if (!response.ok) throw new Error("Failed to fetch assignments");
 
             const assignments = await response.json();

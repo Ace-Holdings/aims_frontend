@@ -39,7 +39,11 @@ const PaySlipsTile = ({ id, employee, earnings, deductions, date }) => {
 
     const handleGetPaySlipFile = async (payslipId: any) => {
         try {
-            const response = await fetch(`http://localhost:3002/payslips/${payslipId}/file`);
+            const response = await fetch(`http://localhost:3002/payslips/${payslipId}/file`, {
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                }
+            });
             if (!response.ok) {
                 console.error('failed to get payslip file');
             }
@@ -64,6 +68,9 @@ const PaySlipsTile = ({ id, employee, earnings, deductions, date }) => {
         try {
             const response = await fetch(`http://localhost:3002/payslips/${selectedSlip.id}`, {
                 method: "DELETE",
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                }
             })
             if (!response.ok) {
                 console.error('failed to delete payslip file');

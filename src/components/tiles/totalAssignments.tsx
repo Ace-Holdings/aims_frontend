@@ -10,6 +10,9 @@ export default function TotalAssignments() {
           const fetchAssignments = async () => {
               const response: any = await fetch('http://localhost:3002/assignments', {
                   method: 'GET',
+                  headers: {
+                      "authorization": "Bearer " + localStorage.getItem("token")
+                  }
               });
 
               if (response.ok) {

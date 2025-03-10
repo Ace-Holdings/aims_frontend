@@ -67,6 +67,9 @@ export default function AdminBids() {
         try {
             const response = await fetch("http://localhost:3002/bids", {
                 method: "POST",
+                headers: {
+                    "authorization": 'Bearer ' + localStorage.getItem('token'),
+                },
                 body: formData,
             });
 

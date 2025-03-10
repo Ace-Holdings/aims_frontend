@@ -82,6 +82,7 @@ export default function AssignmentsAdmin() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({
                     assignmentName: assignmentName,
@@ -105,6 +106,7 @@ export default function AssignmentsAdmin() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "authorization": `Bearer ${localStorage.getItem("token")}`,
                     },
                     body: JSON.stringify({
                         employeeIds: selectedEmployees.map(emp => emp.userId),

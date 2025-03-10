@@ -7,6 +7,9 @@ export default function InventoryWarehouse() {
         // Fetch inventory data
         fetch('http://localhost:3002/inventory', {
             method: 'GET',
+            headers: {
+                "authorization": 'Bearer ' + localStorage.getItem("token"),
+            }
         })
             .then((response) => response.json())
             .then((data) => {

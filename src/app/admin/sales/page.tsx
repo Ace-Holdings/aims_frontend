@@ -69,7 +69,11 @@ export default function AdminSales() {
 
     const handleSelectInventory = async (inventoryId: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/inventory/${inventoryId}`);
+            const response = await fetch(`http://localhost:3002/inventory/${inventoryId}`, {
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                }
+            });
             if (response.ok) {
                 const data = await response.json();
                 setSelectedItemDetails({ id: inventoryId, name: data.name, unitPrice: data.pricePerUnit });
@@ -124,6 +128,9 @@ export default function AdminSales() {
             try {
                 const response = await fetch(`http://localhost:3002/inventory/search?name=${query}`, {
                     method: "GET",
+                    headers: {
+                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    }
                 });
 
                 if (response.ok) {
@@ -148,6 +155,9 @@ export default function AdminSales() {
                 try {
                     const response = await fetch(`http://localhost:3002/users/search?username=${username}`, {
                         method: "GET",
+                        headers: {
+                            "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        }
                     });
 
                     if (response.ok) {
@@ -171,6 +181,9 @@ export default function AdminSales() {
             try {
                 const response: any = await fetch('http://localhost:3002/sales', {
                     method: "GET",
+                    headers: {
+                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    }
                 });
 
                 const data = await response.json({});
@@ -212,6 +225,7 @@ export default function AdminSales() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify(sale)
             });
@@ -233,6 +247,9 @@ export default function AdminSales() {
 
             const responsePdf = await fetch('http://localhost:3002/invoices', {
                 method: "POST",
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
                 body: invoice,
             });
 
@@ -244,7 +261,11 @@ export default function AdminSales() {
             // Update inventory for each item
             await Promise.all(
                 selectedItems.map(async (item) => {
-                    const inventoryResponse = await fetch(`http://localhost:3002/inventory/${item.id}`);
+                    const inventoryResponse = await fetch(`http://localhost:3002/inventory/${item.id}`, {
+                        headers: {
+                            "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        }
+                    });
                     if (!inventoryResponse.ok) {
                         console.log('Could not fetch inventory');
                         return;

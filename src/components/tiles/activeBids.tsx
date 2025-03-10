@@ -10,6 +10,9 @@ export default function ActiveBids() {
             try {
                 const response = await fetch('http://localhost:3002/bids', {
                     method: 'GET',
+                    headers: {
+                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    }
                 });
                 if (response.ok) {
                     const data = await response.json();

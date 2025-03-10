@@ -78,7 +78,11 @@ export default function Payslips() {
 
     useEffect(() => {
         const fetchUsers = async (query: string) => {
-            const response = await fetch(`http://localhost:3002/users/search?username=${query}`);
+            const response = await fetch(`http://localhost:3002/users/search?username=${query}`, {
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                }
+            });
             if (!response.ok) {
                 return
             }
@@ -94,7 +98,11 @@ export default function Payslips() {
     useEffect(() => {
         const fetchPaySlips = async () => {
             try {
-                const response = await fetch('http://localhost:3002/payslips');
+                const response = await fetch('http://localhost:3002/payslips', {
+                    headers: {
+                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    }
+                });
                 if (!response.ok) {
                     console.log(response);
                     return;
@@ -235,6 +243,9 @@ export default function Payslips() {
         try {
             const response = await fetch('http://localhost:3002/payslips', {
                 method: "POST",
+                headers: {
+                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                },
                 body: payslip,
             })
 

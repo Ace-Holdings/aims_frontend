@@ -8,6 +8,9 @@ export default function NumberOfSales() {
            try {
                const response: any = await fetch('http://localhost:3002/sales', {
                    method: 'GET',
+                   headers: {
+                       "authorization": `Bearer ${localStorage.getItem("token")}`,
+                   }
                });
                const data = await response.json();
                setSalesCount(data.length);

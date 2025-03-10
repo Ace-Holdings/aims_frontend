@@ -35,7 +35,11 @@ export default function SalesBarChart() {
     useEffect(() => {
         async function fetchSales() {
             try {
-                const response = await fetch("http://localhost:3002/sales");
+                const response = await fetch("http://localhost:3002/sales", {
+                    headers: {
+                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    }
+                });
                 if (!response.ok) throw new Error("Failed to fetch data");
 
                 const data = await response.json();
@@ -45,8 +49,8 @@ export default function SalesBarChart() {
 
                 data.forEach((sale: any) => {
                     const date = new Date(sale.timestamp); // Convert timestamp to Date
-                    const monthIndex = date.getMonth(); // Extract month (0 = Jan, 11 = Dec)
-                    monthlySales[monthIndex] += sale.amount; // Add amount to corresponding month
+                    const monthIndex = date.getMonth();
+                    monthlySales[monthIndex] += sale.amount;
                 });
 
                 // Update chart data

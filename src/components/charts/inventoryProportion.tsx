@@ -13,6 +13,9 @@ export default function InventoryProportion() {
             try {
                 const response = await fetch('http://localhost:3002/inventory', {
                     method: "GET",
+                    headers: {
+                        "authorization": 'Bearer ' + localStorage.getItem("token"),
+                    }
                 });
 
                 if (response.ok) {
