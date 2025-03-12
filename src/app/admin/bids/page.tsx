@@ -42,13 +42,6 @@ export default function AdminBids() {
         setEditFile(event.target.files[0]);
     }
 
-    const openDownloadDialog = (bidId: string) => {
-        // Replace with your actual API endpoints to fetch file URLs
-        setBidFileUrl(`http://localhost:3002/bids/${bidId}/file?type=bidDocument`);
-        setEditFileUrl(`http://localhost:3002/bids/${bidId}/file?type=editableDocument`);
-        setIsDialogOpen(true);
-    };
-
     const handleBidSubmit = async (event: any) => {
         event.preventDefault();
 

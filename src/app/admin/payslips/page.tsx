@@ -254,6 +254,7 @@ export default function Payslips() {
             }
 
             setIsDialogOpen(false);
+            window.location.reload();
         } catch (e) {
             console.log('could not submit slip to database')
         }

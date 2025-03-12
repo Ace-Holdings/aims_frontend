@@ -88,8 +88,8 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                 return;
             }
 
-            // setShowUpdateDialog(false);
-            // window.location.reload();
+            setShowUpdateDialog(false);
+            window.location.reload();
         } catch (error) {
             console.log(error);
         }

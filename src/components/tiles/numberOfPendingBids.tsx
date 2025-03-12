@@ -6,7 +6,11 @@ export default function NumberOfBids() {
     useEffect(() => {
         const fetchBids = async () => {
             try {
-                const response = await fetch('http://localhost:3002/bids');
+                const response = await fetch('http://localhost:3002/bids', {
+                    headers: {
+                        "authorization": "Bearer " + localStorage.getItem("token"),
+                    }
+                });
                 if (!response.ok) {
                     console.error('Bid not found.');
                     return;

@@ -276,7 +276,10 @@ export default function AdminSales() {
 
                     await fetch(`http://localhost:3002/inventory/${item.id}`, {
                         method: "PUT",
-                        headers: { "Content-Type": "application/json" },
+                        headers: {
+                            "Content-Type": "application/json",
+                            "authorization": `Bearer ${localStorage.getItem("token")}`
+                        },
                         body: JSON.stringify({ quantity: newQuantity }),
                     });
                 })

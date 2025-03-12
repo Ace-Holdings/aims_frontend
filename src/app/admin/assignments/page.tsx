@@ -45,7 +45,11 @@ export default function AssignmentsAdmin() {
         }
 
         try {
-            const response = await fetch(`http://localhost:3002/users/search?username=${query}`);
+            const response = await fetch(`http://localhost:3002/users/search?username=${query}`, {
+                headers: {
+                    "authorization": 'Bearer ' + localStorage.getItem('token')
+                },
+            });
             if (response.ok) {
                 const data = await response.json();
                 setEmployeeResults(data);
@@ -62,7 +66,6 @@ export default function AssignmentsAdmin() {
                 return [...prevSelectedEmployees, employee];
             });
         }
-        console.log(selectedEmployees);
         setSearchTerm(""); // Clear search box
         setEmployeeResults([]); // Clear search results
     };
@@ -294,8 +297,8 @@ export default function AssignmentsAdmin() {
                                 {selectedEmployees.map(emp => (
                                     <span key={emp.userId} className="bg-gray-200 p-1 rounded m-1 inline-block">
                                         {emp.username}
-                                        <button onClick={() => handleRemoveEmployee(emp.id)}
-                                                className="ml-2 text-red-500">
+                                        <button onClick={() => handleRemoveEmployee(emp.userId)}
+                                                className="ml-2 text-red-500" type="button">
                                             &times;
                                         </button>
                                     </span>
