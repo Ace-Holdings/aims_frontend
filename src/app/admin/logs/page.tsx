@@ -1,14 +1,24 @@
+"use client"
+
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
-
+import {useState} from "react";
+import LogTable from "@/components/tables/logTable";
 export default function AdminLogs() {
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    const toggleSidebar = () => {
+        setIsSidebarCollapsed(!isSidebarCollapsed);
+    };
 
     return (
         <div className="h-screen flex bg-gray-100">
-            <SidebarAdmin/>
+            <div
+                className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
+                <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
+            </div>
 
-            <div className="flex-1 flex flex-col">
-
+            <div className={`flex-1 flex flex-col ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} transition-all duration-300`}>
                 <div className="bg-white  p-4 sticky top-0 z-10">
                     <header className="flex gap-2 items-center text-gray-600">
                         <svg
@@ -29,9 +39,10 @@ export default function AdminLogs() {
                         <div className="ml-auto">
                             <Navbar/>
                         </div>
-
                     </header>
                 </div>
+                <div className="h-7" />
+                <LogTable/>
             </div>
         </div>
     )

@@ -9,14 +9,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import ReactDOM from "react-dom";
 
 export default function AssignmentsTable() {
-    const data = [
-        { id: 1, name: "John Doe", role: "Admin", status: "Active" },
-        { id: 2, name: "Jane Smith", role: "User", status: "Inactive" },
-        { id: 3, name: "Alice Johnson", role: "Moderator", status: "Active" },
-        { id: 4, name: "Bob Brown", role: "User", status: "Inactive" },
-        { id: 5, name: "Charlie White", role: "Admin", status: "Active" },
-    ];
-
     const [assignments, setAssignments] = useState([])
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
@@ -212,7 +204,7 @@ export default function AssignmentsTable() {
     // States for filtering and searching
     const [filter, setFilter] = useState("All");
     const [search, setSearch] = useState("");
-    const [filteredData, setFilteredData] = useState(data);
+    const [filteredData, setFilteredData] = useState();
 
     // Handle Filter Change
     const handleFilterChange = (e: any) => {
