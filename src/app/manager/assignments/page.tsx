@@ -6,9 +6,11 @@ import TotalAssignments from "@/components/tiles/totalAssignments";
 import ActiveAssignments from "@/components/tiles/activeAssignments";
 import AssignmentsTable from "@/components/tables/assignmentsTable";
 import ManagerSidebar from "@/components/layout/managerSidebar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
 
 export default function AssignmentsManager() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -24,6 +26,7 @@ export default function AssignmentsManager() {
     const [searchTerm, setSearchTerm] = useState("");
     const [employeeResults, setEmployeeResults] = useState<any[]>([]);
     const [selectedEmployees, setSelectedEmployees] = useState<any[]>([]);
+    const router = useRouter();
 
     const openDialog = () => {
         setIsDialogOpen(true);
@@ -52,6 +55,27 @@ export default function AssignmentsManager() {
     const handleRemoveEmployee = (employeeId: string) => {
         setSelectedEmployees(selectedEmployees.filter(e => e.userId !== employeeId));
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles = decodedToken.roles || [];
+
+            if (!roles.includes("ROLE_MANAGER")) {
+                router.push("/");
+            }
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+
+    }, [router]);
 
     // Fetch employees based on search term
     const handleSearch = async (query: string) => {
@@ -233,7 +257,7 @@ export default function AssignmentsManager() {
                                     Starts at
                                 </label>
                                 <div
-                                    className="relative w-[350px]">  {/* Ensure enough width for side-by-side layout */}
+                                    className="relative w-[350px]">
                                     <DatePicker
                                         selected={startDate}
                                         onChange={(date) => setStartDate(date)}
@@ -241,10 +265,10 @@ export default function AssignmentsManager() {
                                         showTimeSelect
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
-                                        className=" p-2 bg-white border border-gray-300 rounded-md w-[220px]" // Style input
+                                        className=" p-2 bg-white border border-gray-300 rounded-md w-[220px]"
                                         placeholderText="Select start date and time"
                                         popperClassName="z-50"
-                                        popperPlacement="bottom-start"  // Align properly
+                                        popperPlacement="bottom-start"
                                     />
                                 </div>
                             </div>

@@ -6,8 +6,10 @@ import TotalUsers from "@/components/tiles/numberOfUsers";
 import TotalActiveUsers from "@/components/tiles/numberOfActiveUsers";
 import UsersTable from "@/components/tables/usersTable";
 import ManagerSidebar from "@/components/layout/managerSidebar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import "react-datepicker/dist/react-datepicker.css";
+import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
 
 export default function UsersManager() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -22,6 +24,7 @@ export default function UsersManager() {
     const [idNumber, setIdNumber] = useState("");
     const [roleId, setRoleId] = useState("");
     const [salaryId, setSalaryId] = useState("");
+    const router = useRouter();
 
     const openDialog = () => {
         setIsDialogOpen(true);
@@ -34,6 +37,27 @@ export default function UsersManager() {
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles = decodedToken.roles || [];
+
+            if (!roles.includes("ROLE_MANAGER")) {
+                router.push("/");
+            }
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+
+    }, [router]);
 
     const handleUserRegistration = async (e: any) => {
         e.preventDefault();

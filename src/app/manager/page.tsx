@@ -7,7 +7,9 @@ import SalesBarChart from "@/components/charts/salesBarChart";
 import NumberOfBids from "@/components/tiles/numberOfPendingBids";
 import InventoryProportion from "@/components/charts/inventoryProportion";
 import ManagerSidebar from "@/components/layout/managerSidebar";
-import {useState} from "react";
+import {useState, useEffect} from "react";
+import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
 
 export default function ManagerHome() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -15,6 +17,31 @@ export default function ManagerHome() {
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    const router = useRouter();
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            router.push("/");
+        }
+
+        try {
+           const decodedToken = jwtDecode(token);
+           const roles = decodedToken.roles || [];
+
+           if (!roles.includes("ROLE_MANAGER")) {
+               router.push("/");
+           }
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+
+    }, [router]);
+
+
 
     return(
         <div className="h-screen flex bg-gray-100">

@@ -6,9 +6,11 @@ import InventoryShop from "@/components/tiles/inventoryShop";
 import InventoryWarehouse from "@/components/tiles/inventoryWarehouse";
 import InventoryTable from "@/components/tables/inventoryTable";
 import ManagerSidebar from "@/components/layout/managerSidebar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
 
 export default function ManagerInventory() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -20,6 +22,7 @@ export default function ManagerInventory() {
     const [itemDescription, setItemDescription] = useState("");
     const [dateAdded, setDateAdded] = useState<Date | null>(null);
     const [location, setLocation] = useState("");
+    const router = useRouter();
 
     const openDialog = () => {
         setIsDialogOpen(true);
@@ -61,6 +64,27 @@ export default function ManagerInventory() {
             console.log(e);
         }
     }
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles = decodedToken.roles || [];
+
+            if (!roles.includes("ROLE_MANAGER")) {
+                router.push("/");
+            }
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+
+    }, [router]);
 
     return(
         <>

@@ -9,6 +9,8 @@ import {jsPDF} from "jspdf";
 import autoTable from "jspdf-autotable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
 
 export default function ManagerPayslips() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -31,6 +33,7 @@ export default function ManagerPayslips() {
     const [period, setPeriod] = useState(1);
 
     const [searchTerm, setSearchTerm] = useState("");
+    const router = useRouter();
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -86,6 +89,27 @@ export default function ManagerPayslips() {
 
         fetchPaySlips();
     }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles = decodedToken.roles || [];
+
+            if (!roles.includes("ROLE_MANAGER")) {
+                router.push("/");
+            }
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+
+    }, [router]);
 
     useEffect(() => {
         const fetchUsers = async (query: string) => {

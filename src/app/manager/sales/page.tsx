@@ -10,6 +10,7 @@ import {jwtDecode} from "jwt-decode";
 import {jsPDF} from "jspdf";
 import autoTable from "jspdf-autotable";
 import DatePicker from "react-datepicker";
+import {useRouter} from "next/navigation";
 
 export default function ManagerSales() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -23,7 +24,7 @@ export default function ManagerSales() {
 
     const [username, setUsername] = useState("");
     const [userId, setUserId] = useState<string | null>(null);
-   ;
+    const router = useRouter();
 
     const [selectedItems, setSelectedItems] = useState<any[]>([]);
     const [amount, setAmount] = useState(0);
@@ -61,6 +62,27 @@ export default function ManagerSales() {
     const closeDialog = () => {
         setIsDialogOpen(false);
     }
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if(!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles = decodedToken.roles || [];
+
+            if (!roles.includes("ROLE_MANAGER")) {
+                router.push("/");
+            }
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+
+    }, [router]);
 
     useEffect(() => {
         const fetchSales = async () =>  {
