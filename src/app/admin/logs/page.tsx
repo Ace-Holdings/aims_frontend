@@ -2,14 +2,39 @@
 
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import LogTable from "@/components/tables/logTable";
+import {jwtDecode} from "jwt-decode";
+import { useRouter } from "next/navigation";
+
 export default function AdminLogs() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const router = useRouter();
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles: string[] = decodedToken.roles || [];
+
+            if(!roles.includes("ROLE_ADMIN")) {
+                router.push("/");
+            }
+
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+    }, [router]);
 
     return (
         <div className="h-screen flex bg-gray-100">

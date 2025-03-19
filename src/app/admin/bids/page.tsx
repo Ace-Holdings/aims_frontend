@@ -2,7 +2,7 @@
 
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import TotalAssignments from "@/components/tiles/totalAssignments";
 import ActiveAssignments from "@/components/tiles/activeAssignments";
 import AssignmentsTable from "@/components/tables/assignmentsTable";
@@ -10,6 +10,8 @@ import ActiveBids from "@/components/tiles/activeBids";
 import PreviousBids from "@/components/tiles/previousBids";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useRouter } from "next/navigation";
+import {jwtDecode} from "jwt-decode";
 
 export default function AdminBids() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -21,6 +23,8 @@ export default function AdminBids() {
     const [editFile, setEditFile] = useState("");
     const [bidFileUrl, setBidFileUrl] = useState<string | null>(null);
     const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
+    const router = useRouter();
+
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -41,6 +45,27 @@ export default function AdminBids() {
     const handleEditFileChange = (event: any) => {
         setEditFile(event.target.files[0]);
     }
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles: string[] = decodedToken.roles || [];
+
+            if(!roles.includes("ROLE_ADMIN")) {
+                router.push("/");
+            }
+
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+    }, [router]);
 
     const handleBidSubmit = async (event: any) => {
         event.preventDefault();

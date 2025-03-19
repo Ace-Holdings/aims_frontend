@@ -2,7 +2,7 @@
 
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import TotalAssignments from "@/components/tiles/totalAssignments";
 import ActiveAssignments from "@/components/tiles/activeAssignments";
 import TotalUsers from "@/components/tiles/numberOfUsers";
@@ -10,6 +10,8 @@ import TotalActiveUsers from "@/components/tiles/numberOfActiveUsers";
 import AssignmentsTable from "@/components/tables/assignmentsTable";
 import UsersTable from "@/components/tables/usersTable";
 import DatePicker from "react-datepicker";
+import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
 
 export default function UsersAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -24,6 +26,7 @@ export default function UsersAdmin() {
     const [idNumber, setIdNumber] = useState("");
     const [roleId, setRoleId] = useState("");
     const [salaryId, setSalaryId] = useState("");
+    const router = useRouter();
 
 
 
@@ -38,6 +41,27 @@ export default function UsersAdmin() {
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles: string[] = decodedToken.roles || [];
+
+            if(!roles.includes("ROLE_ADMIN")) {
+                router.push("/");
+            }
+
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+    }, [router]);
 
     // handler function to submit user details
     const handleUserRegistration = async (e: any) => {

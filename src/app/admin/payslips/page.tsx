@@ -9,6 +9,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import PaySlipsTile from "@/components/tiles/payslips";
+import {jwtDecode} from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 
 export default function Payslips() {
@@ -32,6 +34,7 @@ export default function Payslips() {
     const [period, setPeriod] = useState(1);
 
     const [searchTerm, setSearchTerm] = useState("");
+    const router = useRouter();
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -46,6 +49,27 @@ export default function Payslips() {
         if (!deductionItemDescription.trim()) return;
         setIsDeductionValueDialogOpen(true);
     }
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles: string[] = decodedToken.roles || [];
+
+            if(!roles.includes("ROLE_ADMIN")) {
+                router.push("/");
+            }
+
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+    }, [router]);
 
     useEffect(() => {
         const filtered = payslips.filter((payslip) =>

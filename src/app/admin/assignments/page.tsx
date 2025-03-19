@@ -5,13 +5,16 @@ import Navbar from "@/components/layout/navbar";
 import ActiveAssignments from "@/components/tiles/activeAssignments";
 import TotalAssignments from "@/components/tiles/totalAssignments";
 import AssignmentsTable from "@/components/tables/assignmentsTable";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useRouter } from "next/navigation";
+import {jwtDecode} from "jwt-decode";
 
 export default function AssignmentsAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const router = useRouter();
 
     // form attributes
     const [assignmentName, setAssignmentName] = useState("");
@@ -35,6 +38,26 @@ export default function AssignmentsAdmin() {
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        
+        if(!token) {
+            router.push("/");
+        }
+        
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles: string[] = decodedToken.roles || [];
+
+            if(!roles.includes("ROLE_ADMIN")) {
+                router.push("/");
+            }
+        } catch (e) {
+            console.log(e);
+            router.push("/");
+        }
+    }, [router])
 
     // Fetch employees based on search term
     const handleSearch = async (query: string) => {

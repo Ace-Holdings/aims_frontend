@@ -2,16 +2,19 @@
 
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import InventoryShop from "@/components/tiles/inventoryShop";
 import InventoryWarehouse from "@/components/tiles/inventoryWarehouse";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import InventoryTable from "@/components/tables/inventoryTable";
+import {jwtDecode} from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 export default function AdminInventory() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const router = useRouter();
 
     const [itemQuantity, setItemQuantity] = useState(0);
     const [itemPrice, setItemPrice] = useState(0);
@@ -32,6 +35,27 @@ export default function AdminInventory() {
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles: string[] = decodedToken.roles || [];
+
+            if(!roles.includes("ROLE_ADMIN")) {
+                router.push("/");
+            }
+
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+    }, [router]);
 
     // handler function to submit inventory item creation form
     const handleSubmitInventory = async() => {

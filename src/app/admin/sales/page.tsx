@@ -6,10 +6,11 @@ import {useEffect, useState} from "react";
 import SalesTile from "@/components/tiles/sales";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import {jwtDecode} from "jwt-decode";
+import  {jwtDecode} from "jwt-decode";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import autoTable from "jspdf-autotable";
+import {useRouter} from "next/navigation";
 
 
 export default function AdminSales() {
@@ -41,6 +42,7 @@ export default function AdminSales() {
     const [isQuantityModalOpen, setIsQuantityModalOpen] = useState(false);
     const [inputQuantity, setInputQuantity] = useState(1);
     const [pdfFile, setPdfFile] = useState<Blob>(new Blob());
+    const router = useRouter();
 
 
     // filtered sales by search
@@ -199,6 +201,27 @@ export default function AdminSales() {
         const total = selectedItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
         setAmount(total);
     }, [selectedItems]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles: string[] = decodedToken.roles || [];
+
+            if(!roles.includes("ROLE_ADMIN")) {
+                router.push("/");
+            }
+
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+    }, [router]);
 
 
 

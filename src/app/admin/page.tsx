@@ -6,15 +6,43 @@ import ActiveAssignments from "@/components/tiles/activeAssignments";
 import NumberOfSales from "@/components/tiles/numberOfSales";
 import NumberOfBids from "@/components/tiles/numberOfPendingBids";
 import InventoryProportion from "@/components/charts/inventoryProportion";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import SalesBarChart from "@/components/charts/salesBarChart";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
 export default function AdminHome() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const router = useRouter();
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+        }
+
+        try {
+            const decodedToken = jwtDecode(token);
+            const roles: string[] = decodedToken.roles || [];
+
+            console.log(roles);
+
+            if (!roles.includes("ROLE_ADMIN")) {
+                console.log('item removed');
+                router.push("/");
+            }
+        } catch (e) {
+            console.error(e);
+            router.push("/");
+        }
+
+    }, [router])
+
 
     return (
         <div className="h-screen flex bg-gray-100">
