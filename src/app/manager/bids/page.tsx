@@ -7,10 +7,17 @@ import PreviousBids from "@/components/tiles/previousBids";
 import ManagerSidebar from "@/components/layout/managerSidebar";
 import {useState} from "react";
 import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 
 export default function ManagerBids() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [description, setDescription] = useState("");
+    const [deadline, setDeadline] = useState<Date | null>(null);
+    const [bidFile, setBidFile] = useState("");
+    const [editFile, setEditFile] = useState("");
+    const [bidFileUrl, setBidFileUrl] = useState<string | null>(null);
+    const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
 
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -23,6 +30,50 @@ export default function ManagerBids() {
     const closeDialog = () => {
         setIsDialogOpen(false);
     }
+
+    const handleBidFileChange = (event: any) => {
+        setBidFile(event.target.files[0]);
+    };
+
+    const handleEditFileChange = (event: any) => {
+        setEditFile(event.target.files[0]);
+    }
+
+    const handleBidSubmit = async (event: any) => {
+        event.preventDefault();
+
+        if (!bidFile) {
+            alert("Please select a file before submitting.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("description", description);
+        formData.append("deadline", deadline.toISOString());
+        formData.append("bidDocumentFile", bidFile);
+        formData.append("editableFileForBid", editFile);
+
+
+        try {
+            const response = await fetch("http://localhost:3002/bids", {
+                method: "POST",
+                headers: {
+                    "authorization": 'Bearer ' + localStorage.getItem('token'),
+                },
+                body: formData,
+            });
+
+            if (response.ok) {
+                closeDialog();
+                window.location.reload();
+            } else {
+                console.log("Could not create bid");
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
 
     return (
         <>
@@ -95,6 +146,93 @@ export default function ManagerBids() {
                 </div>
 
             </div>
+
+            {isDialogOpen && (
+                <div
+                    className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                        <h2 className="text-lg font-medium mb-4 text-center text-bold">Add bid</h2>
+                        <div className="h-2"/>
+                        <form onSubmit={handleBidSubmit}>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                    Description
+                                </label>
+                                <input
+                                    type="text"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    id="title"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Bid description"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                    Deadline
+                                </label>
+                                <div className="relative overflow-visible">
+                                    <DatePicker
+                                        selected={deadline}
+                                        onChange={(date) => {
+                                            setDeadline(date)
+                                        }}
+                                        dateFormat="yyyy-MM-dd h:mm aa"
+                                        showTimeSelect
+                                        timeFormat="h:mm aa"
+                                        timeIntervals={15}
+                                        className="grow p-2 bg-white w-[200px] border border-gray-300"
+                                        placeholderText="Select start date and time"
+                                        popperClassName="z-50"
+                                        popperPlacement="bottom"
+                                    />
+                                </div>
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                    Bid document file
+                                </label>
+                                <input
+                                    type="file"
+                                    id="title"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Name of item"
+                                    onChange={handleBidFileChange}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                    Editable for for bid
+                                </label>
+                                <input
+                                    type="file"
+                                    id="title"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Name of item"
+                                    onChange={handleEditFileChange}
+                                />
+                            </div>
+
+                            <div className="flex justify-end gap-4">
+                                <button
+                                    type="button"
+                                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                                    onClick={closeDialog}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
         </>
     )
 }
