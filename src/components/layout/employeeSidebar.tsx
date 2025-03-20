@@ -4,8 +4,11 @@ import React from "react";
 import {MdOutlineInventory2, MdOutlinePointOfSale} from "react-icons/md";
 import {GrDocumentPerformance} from "react-icons/gr";
 import {LuReceipt} from "react-icons/lu";
+import {useRouter} from "next/navigation";
 
 export default function EmployeeSidebar({isCollapsed, toggleSidebar}: any) {
+    const router = useRouter();
+
     const menuItems = [
         { icon: <FiHome />, label: "Home", path: "/employee" },
         { icon: <FiBriefcase />, label: "Assignments", path: "/employee/assignments" },
@@ -30,15 +33,15 @@ export default function EmployeeSidebar({isCollapsed, toggleSidebar}: any) {
                     <ul className="space-y-4">
                         {menuItems.map((item, index) => (
                             <li key={index}>
-                                <Link
-                                    href={item.path}
-                                    className={`flex items-center px-4 py-2  font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
+                                <button
+                                    onClick={() => router.push(item.path)}
+                                    className={`flex items-center px-4 py-2 w-full  font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
                                         isCollapsed ? "justify-center" : "space-x-3"
                                     }`}
                                 >
                                     <span className="text-xl text-neon-blue">{item.icon}</span>
                                     {!isCollapsed && <span className="text-neon-pink">{item.label}</span>}
-                                </Link>
+                                </button>
                             </li>
                         ))}
                     </ul>
