@@ -10,6 +10,8 @@ import PreviousBids from "@/components/tiles/previousBids";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
+import ActiveBidsEmployee from "@/components/tiles/activeBidsEmployee";
+import PreviousBidsEmployee from "@/components/tiles/previousBidsEmployee";
 
 export default function EmployeeBids() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -158,13 +160,13 @@ export default function EmployeeBids() {
                         {/* Active Bids Section */}
                         <div className="w-full mt-10 text-black">
                             <h2 className="text-lg font-semibold mb-4">Active Bids</h2>
-                            <ActiveBids/>
+                            <ActiveBidsEmployee/>
                         </div>
 
                         {/* Previous Bids Section */}
                         <div className="w-full mt-10 text-black">
                             <h2 className="text-lg font-semibold mb-4">Previous Bids</h2>
-                            <PreviousBids/>
+                            <PreviousBidsEmployee/>
                         </div>
                     </div>
                 </div>

@@ -11,6 +11,7 @@ import SalesTile from "@/components/tiles/sales";
 import DatePicker from "react-datepicker";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
 import "react-datepicker/dist/react-datepicker.css";
+import SalesTileEmployee from "@/components/tiles/salesTileEmployee";
 
 export default function EmployeeSales() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -506,7 +507,7 @@ export default function EmployeeSales() {
                                 [...filteredSales]
                                     .sort((a, b) => b.saleId - a.saleId)
                                     .map((sale) => (
-                                        <SalesTile
+                                        <SalesTileEmployee
                                             key={sale.saleId}
                                             id={sale.saleId}
                                             title={sale.inventories.length > 0 ? sale.inventories.map(inv => inv.name).join(", ") : "Unknown"}

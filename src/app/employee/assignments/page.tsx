@@ -9,6 +9,7 @@ import TotalAssignments from "@/components/tiles/totalAssignments";
 import ActiveAssignments from "@/components/tiles/activeAssignments";
 import AssignmentsTable from "@/components/tables/assignmentsTable";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
+import AssignmentsTableEmployee from "@/components/tables/assignmentsTableEmployee";
 
 export default function EmployeeAssignments() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -192,7 +193,7 @@ export default function EmployeeAssignments() {
                         </div>
                     </div>
                     <div className="h-7" />
-                    <AssignmentsTable />
+                    <AssignmentsTableEmployee/>
                 </div>
 
             </div>

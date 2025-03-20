@@ -11,6 +11,7 @@ import InventoryTable from "@/components/tables/inventoryTable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
+import InventoryTableEmployee from "@/components/tables/inventoryTableEmployee";
 
 export default function EmployeeInventory() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -150,7 +151,7 @@ export default function EmployeeInventory() {
                         </button>
                     </div>
                     <div className="h-7"/>
-                    <InventoryTable/>
+                    <InventoryTableEmployee/>
                 </div>
             </div>
 
