@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import {useState, useEffect} from "react";
 import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
 import {LiaFileDownloadSolid} from "react-icons/lia";
 import ReactDOM from "react-dom";
@@ -10,6 +10,8 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [selectedBid, setSelectedBid] = useState(null);
     const [downloadDialog, setDownloadDialog] = useState(false);
+    const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+    const [editablePreviewUrl, setEditablePreviewUrl] = useState<string | null>(null);
 
     // update states
     const [description, setDescription] = useState("");
@@ -17,6 +19,13 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
     const [fileSend, setFileSend] = useState<File | null>(null);
     const [editableFileSend, setEditableFileSend] = useState<File | null>(null);
     const [fileType, setFileType] = useState("");
+
+    useEffect(() => {
+        if (downloadDialog && selectedBid?.bidId) {
+            previewBidFile(selectedBid.bidId);
+            previewEditableFile(selectedBid.bidId);
+        }
+    }, [downloadDialog, selectedBid]);
 
     const openDetailsDialog= (bid: any) => {
         setSelectedBid(bid);
@@ -115,6 +124,78 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
             console.error(e);
         }
     }
+
+    // Fetch and preview the bid file (PDF)
+    const fetchBidFile = async (bidId: string) => {
+        try {
+            const response = await fetch(`http://localhost:3002/bids/${bidId}/file`, {
+                headers: {
+                    "authorization": "Bearer " + localStorage.getItem("token"),
+                },
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                setPdfPreviewUrl(url);
+            } else {
+                setPdfPreviewUrl(null);
+                console.error("Failed to fetch bid file");
+            }
+        } catch (error) {
+            console.error("Error fetching bid file:", error);
+        }
+    };
+
+    // Fetch PDF and preview in iframe
+    const previewBidFile = async (bidId: string) => {
+        try {
+            const response = await fetch(`http://localhost:3002/bids/${bidId}/filePreview`, {
+                headers: {
+                    "authorization": "Bearer " + localStorage.getItem("token"),
+                },
+            });
+
+            if (!response.ok) throw new Error("Failed to fetch bid file");
+
+            const blob = await response.blob();
+            const fileType = blob.type;
+
+            if (fileType === "application/pdf") {
+                const url = URL.createObjectURL(blob);
+                console.log(url);
+                setPdfPreviewUrl(url);
+            } else {
+                setPdfPreviewUrl(null);
+                console.error("Unsupported file type for preview");
+            }
+        } catch (error) {
+            console.error("Error fetching bid file:", error);
+            setPdfPreviewUrl(null);
+        }
+    };
+
+    // Fetch Editable File (DOCX)
+    const previewEditableFile = async (bidId: string) => {
+        try {
+            const response = await fetch(`http://localhost:3002/bids/${bidId}/editablePreview`, {
+                headers: {
+                    "authorization": "Bearer " + localStorage.getItem("token"),
+                },
+            });
+
+            if (!response.ok) throw new Error("Failed to fetch editable file");
+
+            const blob = await response.blob();
+            const fileUrl = URL.createObjectURL(blob);
+
+            setEditablePreviewUrl(fileUrl);
+            console.log(fileUrl);
+        } catch (error) {
+            console.error("Error fetching editable file:", error);
+            setEditablePreviewUrl(null);
+        }
+    };
 
     const handleDownloadEditable = async (bidId: number, fileType: string) => {
         try {
@@ -327,14 +408,42 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                 )}
 
             {downloadDialog && (
-                <div className="fixed inset-0  flex items-center justify-center bg-black  text-black bg-opacity-30 backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-lg font-medium mb-4 text-center font-bold">Download Bid Files</h2>
-                        <div className="h-6"/>
+                <div className="fixed inset-0 flex items-center justify-center bg-black text-black bg-opacity-30 backdrop-blur-sm z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-2/3">
+                        <h2 className="text-lg font-medium mb-4 text-center font-bold">Preview Bid Files</h2>
 
+                        {/* Two iframes side by side */}
+                        <div className="flex justify-between space-x-4 mb-4">
+                            {/* PDF Preview */}
+                            <div className="flex flex-col items-center w-1/2">
+                                <h3 className="text-sm font-semibold text-gray-700 mb-2">Bid File (PDF)</h3>
+                                {pdfPreviewUrl ? (
+                                    <iframe
+                                        src={pdfPreviewUrl}
+                                        className="w-full h-60 border border-gray-300 rounded-lg"
+                                    />
+                                ) : (
+                                    <p className="text-center text-gray-500">No preview available</p>
+                                )}
+                            </div>
+
+                            {/* Editable File Preview */}
+                            <div className="flex flex-col items-center w-1/2">
+                                <h3 className="text-sm font-semibold text-gray-700 mb-2">Editable File (DOCX)</h3>
+                                {editablePreviewUrl ? (
+                                    <iframe
+                                        src={editablePreviewUrl}
+                                        className="w-full h-60 border border-gray-300 rounded-lg"
+                                    />
+                                ) : (
+                                    <p className="text-center text-gray-500">No preview available</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Buttons Below Previews */}
                         <div className="flex justify-between">
                             <button
-
                                 className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
                                 onClick={() => handleDownloadFile(selectedBid?.bidId, "pdf")}
                             >
@@ -348,8 +457,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                             </button>
                         </div>
 
-                        <div className="h-6"/>
-
+                        {/* Close Button */}
                         <div className="mt-4 text-center">
                             <button
                                 className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
