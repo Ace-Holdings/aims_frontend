@@ -112,6 +112,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
             if (!response.ok) throw new Error("Failed to fetch bid file");
 
             const blob = await response.blob();
+            console.log(blob);
             const fileType = blob.type;
 
             if (fileType === "application/pdf") {
@@ -140,6 +141,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
             if (!response.ok) throw new Error("Failed to fetch editable file");
 
             const blob = await response.blob();
+            console.log(blob);
             const fileUrl = URL.createObjectURL(blob);
 
             setEditablePreviewUrl(fileUrl);
