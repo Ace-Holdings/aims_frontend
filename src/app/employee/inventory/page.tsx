@@ -39,6 +39,8 @@ export default function EmployeeInventory() {
 
     // handler function to submit inventory item creation form
     const handleSubmitInventory = async() => {
+        const user = jwtDecode(localStorage.getItem('toke')).user;
+
         try {
             const response = await fetch('http://localhost:3002/inventory', {
                 method: 'POST',
@@ -53,6 +55,7 @@ export default function EmployeeInventory() {
                     name: itemName,
                     dateAdded: dateAdded,
                     location: location,
+                    lastModifiedBy: user,
                 })
             });
 

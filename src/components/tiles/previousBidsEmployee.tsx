@@ -33,7 +33,7 @@ export default function PreviousBidsEmployee() {
     }, []);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 font-custom">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 font-custom mb-5">
             {loading ? (
                 <div className="w-full h-48 flex justify-center items-center">
                     {/* Tailwind CSS Spinner with longer blue line and transparent outline */}

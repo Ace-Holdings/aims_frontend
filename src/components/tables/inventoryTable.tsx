@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import {FiEye, FiTrash2, FiEdit} from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import ReactDOM from "react-dom";
+import {jwtDecode} from "jwt-decode";
 
 
 export default function InventoryTable() {
@@ -75,6 +76,10 @@ export default function InventoryTable() {
 
     // handler function to update stock item
     const handleUpdateStock = async () => {
+        const user = jwtDecode(localStorage.getItem("token")).user;
+
+        console.log(user);
+
         try {
             const updatedStock = {
                 inventoryId: selectedItem.inventoryId,
@@ -93,7 +98,10 @@ export default function InventoryTable() {
                     "Content-Type": "application/json",
                     "authorization": 'Bearer ' + localStorage.getItem("token"),
                 },
-                body: JSON.stringify(updatedStock),
+                body: JSON.stringify({
+                    ...updatedStock,
+                    lastModifiedBy: user,
+                }),
             });
 
             if (!response.ok) {

@@ -3,6 +3,7 @@ import DataTable from "react-data-table-component";
 import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import ReactDOM from "react-dom";
+import {jwtDecode} from "jwt-decode";
 
 export default function UsersTable() {
 
@@ -85,6 +86,9 @@ export default function UsersTable() {
                 ...(role && {roleId: [parseInt(role)]}),
             };
 
+            const user: any = jwtDecode(localStorage.getItem('token')).user;
+            console.log(user);
+
             const response = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
                 method: "PUT",
                 headers: {
@@ -100,7 +104,7 @@ export default function UsersTable() {
             }
 
             setShowUpdateDialog(false);
-            window.location.reload();
+            // window.location.reload();
         } catch (error) {
             console.log(error);
         }
