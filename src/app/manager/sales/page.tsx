@@ -380,12 +380,12 @@ export default function ManagerSales() {
         doc.setFont("helvetica", "normal");
 
         // Customer
-        doc.text("Customer:", 14, 85); // Moved up
-        doc.text(sale.customer, 40, 85); // Moved up
+        doc.text("Customer:", 14, 85);
+        doc.text(sale.customer, 40, 85);
 
         // Sale Date
-        doc.text("Sale Date:", 14, 93); // Moved up
-        doc.text(formattedDate, 40, 93); // Moved up
+        doc.text("Sale Date:", 14, 93);
+        doc.text(formattedDate, 40, 93);
 
         // Item List
         const tableData = sale.items.map((item: any) => [

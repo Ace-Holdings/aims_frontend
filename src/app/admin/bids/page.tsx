@@ -30,6 +30,8 @@ export default function AdminBids() {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
+    const user = jwtDecode(localStorage.getItem("token")).user
+
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -80,6 +82,7 @@ export default function AdminBids() {
         formData.append("deadline", deadline.toISOString());
         formData.append("bidDocumentFile", bidFile);
         formData.append("editableFileForBid", editFile);
+        formData.append("lastModifiedBy", user);
 
 
         try {

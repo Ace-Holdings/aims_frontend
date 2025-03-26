@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import React, {useEffect, useState} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {jwtDecode} from "jwt-decode";
 
 export default function BidTile({ bid }: { bid: { id: number, description: string, deadline: Date, status: string } }) {
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
@@ -25,6 +26,8 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
         setSelectedBid(bid);
         setShowDetailsDialog(true);
     }
+
+    const user = jwtDecode(localStorage.getItem("token")).user;
 
     const openUpdateDialog= (bid: any) => {
         setSelectedBid(bid);
@@ -79,6 +82,8 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
             if (fileSend) formData.append("bidDocumentFile", fileSend);
             if (editableFileSend) formData.append("editableFileForBid", editableFileSend);
             if (fileType) formData.append("fileType", fileType);
+            formData.append("lastModifiedBy", user);
+
 
             const response = await fetch(`http://localhost:3002/bids/${selectedBid.bidId}`, {
                 method: "PUT",

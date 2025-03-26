@@ -3,6 +3,7 @@ import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
 import {LiaFileDownloadSolid} from "react-icons/lia";
 import ReactDOM from "react-dom";
 import DatePicker from "react-datepicker";
+import {jwtDecode} from "jwt-decode";
 
 export default function BidTileEmployee ({ bid }: { bid: { id: number, description: string, deadline: Date, status: string } }) {
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
@@ -36,6 +37,8 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
         setSelectedBid(bid);
         setShowUpdateDialog(true);
     }
+
+    const user = jwtDecode(localStorage.getItem("token")).user;
 
     const openDownloadDialog = (bid: any ) => {
         setSelectedBid(bid);
@@ -77,6 +80,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
             if (fileSend) formData.append("bidDocumentFile", fileSend);
             if (editableFileSend) formData.append("editableFileForBid", editableFileSend);
             if (fileType) formData.append("fileType", fileType);
+            formData.append("lastModifiedBy", user);
 
             const response = await fetch(`http://localhost:3002/bids/${selectedBid.bidId}`, {
                 method: "PUT",
