@@ -160,6 +160,7 @@ export default function EmployeeBids() {
                             Add Bid
                         </button>
 
+
                         {/* Active Bids Section */}
                         <div className="w-full mt-10 text-black">
                             <h2 className="text-lg font-semibold mb-4">Active Bids</h2>

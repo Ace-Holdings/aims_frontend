@@ -16,6 +16,7 @@ import {useRouter} from "next/navigation";
 export default function UsersAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [isSalariesDialogOpen, setIsSalariesDialogOpen] = useState(false);
 
     // states for forms
     const [firstname, setFirstname] = useState("");
@@ -27,6 +28,28 @@ export default function UsersAdmin() {
     const [roleId, setRoleId] = useState("");
     const [salaryId, setSalaryId] = useState("");
     const router = useRouter();
+
+    const [salaries, setSalaries] = useState({
+        A: 5000,
+        B: 4500,
+        C: 4000,
+        D: 3500,
+        E: 3000,
+        F: 2500
+    });
+
+    const [updatedSalaries, setUpdatedSalaries] = useState(salaries);
+
+    const handleInputChange = (e, key) => {
+        setUpdatedSalaries({
+            ...updatedSalaries,
+            [key]: e.target.value
+        });
+    };
+
+    const handleSave = () => {
+        setSalaries(updatedSalaries);
+    };
 
 
 
@@ -41,6 +64,10 @@ export default function UsersAdmin() {
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    const openSalariesDialog = () => {
+        setIsSalariesDialogOpen(true);
+    }
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -134,26 +161,51 @@ export default function UsersAdmin() {
                             <TotalActiveUsers/>
                         </div>
                         <div className="h-7"/>
-                        <button
-                            onClick={openDialog}
-                            className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-5 h-5"
+                        <div className='flex items-center gap-4'>
+                            <button
+                                onClick={openDialog}
+                                className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 4.5v15m7.5-7.5h-15"
-                                />
-                            </svg>
-                            Add user
-                        </button>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M12 4.5v15m7.5-7.5h-15"
+                                    />
+                                </svg>
+                                Add user
+                            </button>
+
+                            <div className='w-2'/>
+                            <button
+                                className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
+                                onClick={openSalariesDialog}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M5 12h14"
+                                    />
+                                </svg>
+                                Salaries
+                            </button>
+                        </div>
+
                     </div>
                     <div className="h-7"/>
                     <UsersTable/>
@@ -294,6 +346,41 @@ export default function UsersAdmin() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {isSalariesDialogOpen && (
+                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                        <h2 className="text-lg font-medium mb-4 text-center">Manage Salaries</h2>
+                        <div className="mb-4">
+                            {Object.entries(updatedSalaries).map(([key, value]) => (
+                                <div key={key} className="mb-2">
+                                    <label className="block text-gray-700 font-medium mb-1">{key}</label>
+                                    <input
+                                        type="number"
+                                        className="w-full p-2 border border-gray-300 rounded-lg"
+                                        value={value}
+                                        onChange={(e) => handleInputChange(e, key)}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-end mt-4">
+                            <button
+                                className="btn bg-gray-300 hover:bg-gray-400 text-black font-medium py-2 px-4 rounded-lg mr-2"
+                                onClick={() => setIsSalariesDialogOpen(false)}
+                            >
+                                Close
+                            </button>
+                            <button
+                                className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg"
+                                onClick={handleSave}
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

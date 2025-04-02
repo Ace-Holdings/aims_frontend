@@ -142,13 +142,6 @@ export default function Home() {
                       >
                         Forgot password?
                       </a>
-                      <div className="h-5 border-l border-gray-300"></div>
-                      <a
-                          href="#"
-                          className="text-sm text-blue-500 hover:underline font-custom"
-                      >
-                        Create account
-                      </a>
                     </div>
                     <div className="text-center -mb-10">
                       <button
