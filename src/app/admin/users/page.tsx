@@ -29,23 +29,32 @@ export default function UsersAdmin() {
     const [salaryId, setSalaryId] = useState("");
     const router = useRouter();
 
-    const [salaries, setSalaries] = useState({
-        A: 5000,
-        B: 4500,
-        C: 4000,
-        D: 3500,
-        E: 3000,
-        F: 2500
-    });
+    const [salaries, setSalaries] = useState([]);
 
     const [updatedSalaries, setUpdatedSalaries] = useState(salaries);
 
-    const handleInputChange = (e, key) => {
-        setUpdatedSalaries({
-            ...updatedSalaries,
-            [key]: e.target.value
-        });
-    };
+    // states for updating salary
+    const [id, setId] = useState(0);
+    const [salaryClass, setSalaryClass] = useState("A");
+    const [amount, setAmount] = useState(0);
+
+    useEffect(() => {
+        const fetchSalaries = async () => {
+            try {
+                const response = await fetch('http://localhost:3002/salaries', {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    }
+                });
+                const data = await response.json();
+                setSalaries(data);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        fetchSalaries();
+    }, [])
 
     const handleSave = () => {
         setSalaries(updatedSalaries);
@@ -67,6 +76,43 @@ export default function UsersAdmin() {
 
     const openSalariesDialog = () => {
         setIsSalariesDialogOpen(true);
+    }
+
+    const handleUpdateSalaryClick = () => {
+        const selectedSalary = salaries.find(salary => salary.class === salaryClass);
+        console.log(selectedSalary)
+        if (!selectedSalary) {
+            alert("Please select a valid salary class.");
+            return;
+        }
+
+        const salaryId = selectedSalary.salaryId;
+        handleUpdateSalary(salaryId);
+        // window.location.reload();
+    };
+
+    const handleUpdateSalary = async (id: number) => {
+        try {
+            const updatedSalary = {
+                    ...(amount && {amount}),
+                ...(salaryClass && {class: salaryClass })
+            };
+
+            const response = await fetch(`http://localhost:3002/salaries/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedSalary),
+            })
+
+            if (!response.ok) {
+                console.log('an error occured');
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     useEffect(() => {
@@ -355,17 +401,32 @@ export default function UsersAdmin() {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center">Manage Salaries</h2>
                         <div className="mb-4">
-                            {Object.entries(updatedSalaries).map(([key, value]) => (
-                                <div key={key} className="mb-2">
-                                    <label className="block text-gray-700 font-medium mb-1">{key}</label>
-                                    <input
-                                        type="number"
-                                        className="w-full p-2 border border-gray-300 rounded-lg"
-                                        value={value}
-                                        onChange={(e) => handleInputChange(e, key)}
-                                    />
-                                </div>
-                            ))}
+                            {/* Dropdown to select salary class */}
+                            <label className="block text-gray-700 font-medium mb-1">Select Class</label>
+                            <select
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                value={salaryClass}
+                                onChange={(e) => setSalaryClass(e.target.value)}
+                            >
+                                <option value="" disabled>Select a class</option>
+                                {salaries.map((salary) => (
+                                    <option key={salary.class} value={salary.class}>
+                                        {salary.class} ({new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(salary.amount)})
+                                    </option>
+                                ))}
+                            </select>
+
+                            {/* Amount input field */}
+                            <div className="mt-4">
+                                <label className="block text-gray-700 font-medium mb-1">Amount</label>
+                                <input
+                                    type="number"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    value={amount}
+                                    onChange={(e) => setAmount(Number(e.target.value))}
+
+                                />
+                            </div>
                         </div>
                         <div className="flex justify-end mt-4">
                             <button
@@ -376,7 +437,7 @@ export default function UsersAdmin() {
                             </button>
                             <button
                                 className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg"
-                                onClick={handleSave}
+                                onClick={handleUpdateSalaryClick}
                             >
                                 Save
                             </button>

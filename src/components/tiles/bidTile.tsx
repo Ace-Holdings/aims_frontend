@@ -365,7 +365,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button
                                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                    onClick={() => setShowUpdateDialog(true)}
+                                    onClick={() => setShowUpdateDialog(false)}
                                 >
                                     Cancel
                                 </button>
