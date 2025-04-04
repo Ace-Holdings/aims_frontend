@@ -34,9 +34,18 @@ export default function UsersAdmin() {
     const [updatedSalaries, setUpdatedSalaries] = useState(salaries);
 
     // states for updating salary
-    const [id, setId] = useState(0);
     const [salaryClass, setSalaryClass] = useState("A");
-    const [amount, setAmount] = useState(0);
+    const [amount, setAmount] = useState("");
+
+
+
+        const handleAmountChange = (e) => {
+            let value = e.target.value.replace(/,/g, '');
+            if (!isNaN(value) && value !== "") {
+                value = Number(value).toLocaleString();
+            }
+            setAmount(value);
+        };
 
     useEffect(() => {
         const fetchSalaries = async () => {
@@ -88,7 +97,7 @@ export default function UsersAdmin() {
 
         const salaryId = selectedSalary.salaryId;
         handleUpdateSalary(salaryId);
-        // window.location.reload();
+        window.location.reload();
     };
 
     const handleUpdateSalary = async (id: number) => {
@@ -420,11 +429,10 @@ export default function UsersAdmin() {
                             <div className="mt-4">
                                 <label className="block text-gray-700 font-medium mb-1">Amount</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     value={amount}
-                                    onChange={(e) => setAmount(Number(e.target.value))}
-
+                                    onChange={handleAmountChange}
                                 />
                             </div>
                         </div>

@@ -14,6 +14,7 @@ import {useRouter} from "next/navigation";
 export default function UsersManager() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [isSalariesDialogOpen, setIsSalariesDialogOpen] = useState(false);
 
     // states for forms
     const [firstname, setFirstname] = useState("");
@@ -26,6 +27,12 @@ export default function UsersManager() {
     const [salaryId, setSalaryId] = useState("");
     const router = useRouter();
 
+    // states for updating salary
+    const [salaryClass, setSalaryClass] = useState("A");
+    const [amount, setAmount] = useState(0);
+    const [salaries, setSalaries] = useState([]);
+
+
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -37,6 +44,28 @@ export default function UsersManager() {
     const toggleSidebar = () => {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
+
+    const openSalariesDialog = () => {
+        setIsSalariesDialogOpen(true);
+    }
+
+    useEffect(() => {
+        const fetchSalaries = async () => {
+            try {
+                const response = await fetch('http://localhost:3002/salaries', {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    }
+                });
+                const data = await response.json();
+                setSalaries(data);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        fetchSalaries();
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -58,6 +87,43 @@ export default function UsersManager() {
         }
 
     }, [router]);
+
+    const handleUpdateSalaryClick = () => {
+        const selectedSalary = salaries.find(salary => salary.class === salaryClass);
+        console.log(selectedSalary)
+        if (!selectedSalary) {
+            alert("Please select a valid salary class.");
+            return;
+        }
+
+        const salaryId = selectedSalary.salaryId;
+        handleUpdateSalary(salaryId);
+        window.location.reload();
+    };
+
+    const handleUpdateSalary = async (id: number) => {
+        try {
+            const updatedSalary = {
+                ...(amount && {amount}),
+                ...(salaryClass && {class: salaryClass })
+            };
+
+            const response = await fetch(`http://localhost:3002/salaries/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedSalary),
+            })
+
+            if (!response.ok) {
+                console.log('an error occured');
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     const handleUserRegistration = async (e: any) => {
         e.preventDefault();
@@ -83,7 +149,7 @@ export default function UsersManager() {
 
             if (response.ok) {
                 closeDialog();
-                window.location.reload();
+                // window.location.reload();
             }
         } catch(e) {
             console.log(e);
@@ -129,26 +195,50 @@ export default function UsersManager() {
                             <TotalActiveUsers/>
                         </div>
                         <div className="h-7"/>
-                        <button
-                            onClick={openDialog}
-                            className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-5 h-5"
+                        <div className='flex items-center gap-4'>
+                            <button
+                                onClick={openDialog}
+                                className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 4.5v15m7.5-7.5h-15"
-                                />
-                            </svg>
-                            Add user
-                        </button>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M12 4.5v15m7.5-7.5h-15"
+                                    />
+                                </svg>
+                                Add user
+                            </button>
+
+                            <div className='w-2'/>
+                            <button
+                                className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
+                                onClick={openSalariesDialog}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M5 12h14"
+                                    />
+                                </svg>
+                                Salaries
+                            </button>
+                        </div>
                     </div>
                     <div className="h-7"/>
                     <UsersTable/>
@@ -270,6 +360,8 @@ export default function UsersManager() {
                                     id="title"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     placeholder="Enter location name"
+                                    value={idNumber}
+                                    onChange={(e)=>setIdNumber(e.target.value)}
                                 />
                             </div>
 
@@ -289,6 +381,56 @@ export default function UsersManager() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {isSalariesDialogOpen && (
+                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                        <h2 className="text-lg font-medium mb-4 text-center">Manage Salaries</h2>
+                        <div className="mb-4">
+                            {/* Dropdown to select salary class */}
+                            <label className="block text-gray-700 font-medium mb-1">Select Class</label>
+                            <select
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                value={salaryClass}
+                                onChange={(e) => setSalaryClass(e.target.value)}
+                            >
+                                <option value="" disabled>Select a class</option>
+                                {salaries.map((salary) => (
+                                    <option key={salary.class} value={salary.class}>
+                                        {salary.class} ({new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(salary.amount)})
+                                    </option>
+                                ))}
+                            </select>
+
+                            {/* Amount input field */}
+                            <div className="mt-4">
+                                <label className="block text-gray-700 font-medium mb-1">Amount</label>
+                                <input
+                                    type="number"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    value={amount}
+                                    onChange={(e) => setAmount(Number(e.target.value))}
+
+                                />
+                            </div>
+                        </div>
+                        <div className="flex justify-end mt-4">
+                            <button
+                                className="btn bg-gray-300 hover:bg-gray-400 text-black font-medium py-2 px-4 rounded-lg mr-2"
+                                onClick={() => setIsSalariesDialogOpen(false)}
+                            >
+                                Close
+                            </button>
+                            <button
+                                className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg"
+                                onClick={handleUpdateSalaryClick}
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

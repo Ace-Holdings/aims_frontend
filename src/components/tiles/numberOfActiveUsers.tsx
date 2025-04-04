@@ -10,16 +10,20 @@ export default function TotalActiveUsers() {
                     "authorization": `Bearer ${localStorage.getItem("token")}`,
                 }
             });
+
             if (!response.ok) throw new Error("Failed to fetch assignments");
 
             const assignments = await response.json();
 
+            const activeAssignments = assignments.filter((assignment: any) => assignment.status === true);
+
             const uniqueUsernames = new Set(
-                assignments.flatMap((assignment: any) => assignment.users.map((user: any) => user.username))
+                activeAssignments.flatMap((assignment: any) =>
+                    assignment.users.map((user: any) => user.username)
+                )
             );
 
             setActiveUsersCount(uniqueUsernames.size);
-
         };
 
         fetchActiveUsers();
@@ -27,7 +31,7 @@ export default function TotalActiveUsers() {
         const interval = setInterval(fetchActiveUsers, 120000);
 
         return () => clearInterval(interval);
-    }, [])
+    }, []);
 
     return (
         <div className="bg-white shadow-lg rounded-lg p-6 flex flex-col justify-center  w-1/3 h-64 font-custom">

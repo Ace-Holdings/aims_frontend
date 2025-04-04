@@ -286,10 +286,15 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                                 <strong>Status:</strong>{selectedBid.status}
                             </div>
                             <div>
-                                <strong>Deadline:</strong>{selectedBid.deadline}
-                            </div>
-                            <div>
-                                <strong>Recently accessed user:</strong>{selectedBid.userId}
+                                <strong>Deadline:</strong>{' '}
+                                {new Date(selectedBid.deadline).toLocaleString('en-GB', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true,
+                                })}
                             </div>
                         </div>
                         <div className="mt-6 flex justify-end">

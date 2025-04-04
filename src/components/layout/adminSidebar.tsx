@@ -23,10 +23,8 @@ const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
         { icon: <LuLogs />, label: "Logs", path: "/admin/logs" },
     ];
 
-
-
     return (
-        <div className={`sticky bg-gray-900 text-white transition-all duration-300 ease-in-out h-screen ${isCollapsed ? "w-16" : "w-64"}`}>
+        <div className={`sticky bg-gradient-to-b from-gray-900 to-blue-500 text-white transition-all duration-300 ease-in-out h-screen ${isCollapsed ? "w-16" : "w-64"}`}>
             <div className="flex justify-end p-4">
                 <button
                     onClick={toggleSidebar}
@@ -42,7 +40,7 @@ const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
                         <li key={index}>
                             <button
                                 onClick={() => {router.push(item.path)}}
-                                className={`flex items-center px-4 py-2 w-full  font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
+                                className={`flex items-center px-4 py-2 w-full font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
                                     isCollapsed ? "justify-center" : "space-x-3"
                                 }`}
                             >

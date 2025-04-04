@@ -104,7 +104,7 @@ export default function UsersTable() {
             }
 
             setShowUpdateDialog(false);
-            // window.location.reload();
+            window.location.reload();
         } catch (error) {
             console.log(error);
         }
@@ -302,9 +302,6 @@ export default function UsersTable() {
                             </div>
                             <div>
                                 <strong>ID number:</strong> {selectedUser.idNumber}
-                            </div>
-                            <div>
-                                <strong>Assignment status:</strong> {selectedUser.assignmentStatus}
                             </div>
                             <div>
                                 <strong>Assignment ID:</strong> {selectedUser.assignmentId}

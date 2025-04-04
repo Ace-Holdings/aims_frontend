@@ -464,7 +464,30 @@ export default function ManagerSales() {
 
                     {/* Section with Add Sale Button and Horizontal Line */}
                     <div className="py-6 mt-4 items-center font-custom">
-                        <div className="flex justify-center">
+                        <div className="flex justify-center gap-4">
+                            {/* Sales Report Button */}
+                            <button
+                                className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-6 rounded-lg flex items-center gap-2"
+                                onClick={() => console.log("Sales Report clicked")}
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M16.5 3.75v4.5a.75.75 0 00.75.75h4.5M19.5 21h-15a1.5 1.5 0 01-1.5-1.5v-15A1.5 1.5 0 014.5 3h9.75L21 9.75v9.75A1.5 1.5 0 0119.5 21z"
+                                    />
+                                </svg>
+                                Sales Report
+                            </button>
+
+                            {/* Add Sale Button */}
                             <button
                                 className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
                                 onClick={openDialog}
@@ -487,18 +510,49 @@ export default function ManagerSales() {
                             </button>
                         </div>
                         <div className="mt-4">
-
+                            {/* Extra content here if needed */}
                         </div>
                     </div>
 
+                    <div className="h-4"/>
+
                     <div className="flex flex-col items-center">
-                        <input
-                            type="text"
-                            placeholder="Search by customer..."
-                            value={searchTerm}
-                            onChange={handleSearchChange}
-                            className="mb-4 p-2 border border-gray-300 rounded-lg shadow-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                        />
+                        {/* Search, Date, and Time Filters */}
+                        <div className="flex gap-4 mb-4">
+                            {/* Customer Search Input */}
+                            <input
+                                type="text"
+                                placeholder="Search by customer..."
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                className="p-2 border border-gray-300 rounded-lg shadow-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                            />
+
+                            {/* Date Filter */}
+                            <select
+                                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                            >
+                                <option value="">All Months</option>
+                                {[
+                                    "January", "February", "March", "April", "May", "June",
+                                    "July", "August", "September", "October", "November", "December"
+                                ].map((month, index) => (
+                                    <option key={index} value={index + 1}>
+                                        {month}
+                                    </option>
+                                ))}
+                            </select>
+
+                            {/* Time Filter */}
+                            <select
+                                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                            >
+                                <option value="">All Days</option>
+                                {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                                    <option key={day} value={day}>{day}</option>
+                                ))}
+                            </select>
+                        </div>
 
                         {/* Sales Tiles */}
                         <div className="max-w-4xl w-full mx-auto space-y-6 flex flex-col items-center">
