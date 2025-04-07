@@ -149,7 +149,7 @@ export default function UsersManager() {
 
             if (response.ok) {
                 closeDialog();
-                // window.location.reload();
+                window.location.reload();
             }
         } catch(e) {
             console.log(e);

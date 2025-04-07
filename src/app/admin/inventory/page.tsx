@@ -22,6 +22,7 @@ export default function AdminInventory() {
     const [itemDescription, setItemDescription] = useState("");
     const [dateAdded, setDateAdded] = useState<Date | null>(null);
     const [location, setLocation] = useState("");
+
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
     const [serialNumbers, setSerialNumbers] = useState<string[]>([]);
 
@@ -113,27 +114,18 @@ export default function AdminInventory() {
                 inventoryId: inventoryId
             }));
 
+            const inventoryUnitResponse = await fetch('http://localhost:3002/unit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inventoryUnits)
+            });
 
+            if (!inventoryUnitResponse.ok) {
+                throw new Error('Error creating inventory units');
+            }
 
-
-
-                const inventoryUnitResponse = await fetch('http://localhost:3002/unit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(inventoryUnits)
-                });
-
-                // Check if the response is OK (status 200-299)
-                if (!inventoryUnitResponse.ok) {
-                    throw new Error('Error creating inventory units');
-                }
-
-                const data = await inventoryResponse.json();
-                console.log('Inventory Units Created', data);
-
-            setIsSerialDialogOpen(false);
             window.location.reload();
 
         } catch (e) {
@@ -334,7 +326,7 @@ export default function AdminInventory() {
 
             {isSerialDialogOpen && (
                 <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
                         <h2 className="text-lg font-medium mb-4 text-center">Enter Serial Numbers</h2>
                         <div className="space-y-3 max-h-[300px] overflow-y-auto">
                             {/* Dynamically generating inputs based on the itemQuantity */}

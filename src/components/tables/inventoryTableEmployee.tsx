@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
+import {FiEdit, FiEye, FiMenu, FiTrash2} from "react-icons/fi";
 import DataTable from "react-data-table-component";
 import ReactDOM from "react-dom";
 import DatePicker from "react-datepicker";
@@ -21,6 +21,9 @@ export default function InventoryTableEmployee() {
     const [description, setDescription] = useState("");
     const [dateAdded, setDateAdded] = useState<Date | null>(null);
     const [location, setLocation] = useState("");
+
+    const [showSerialDialog, setShowSerialDialog] = useState(false);
+    const [serials, setSerials] = useState([]);
 
 
     useEffect(() => {
@@ -47,6 +50,27 @@ export default function InventoryTableEmployee() {
         setSelectedItem(item);
         setShowUpdateDialog(true);
     }
+
+    const openSerialDialog = async (item: any) => {
+        setSelectedItem(item);
+        try {
+            const response = await fetch(`http://localhost:3002/unit/serials/${item.inventoryId}`, {
+                method: 'GET',
+                headers: {
+                    "authorization": 'Bearer ' + localStorage.getItem("token"),
+                }
+            });
+            if (!response.ok) {
+                console.error("Failed to fetch serials");
+                return;
+            }
+            const data = await response.json();
+            setSerials(data);
+            setShowSerialDialog(true);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     // handler function to update stock item
     const handleUpdateStock = async () => {
@@ -101,24 +125,18 @@ export default function InventoryTableEmployee() {
             }),
         },
         { name: "Description", selector: (row: any) => row.description },
-        {
-            name: " Date Added",
-            selector: (row: any) => new Date(row.dateAdded).toLocaleString("en-US", {
-                weekday: "short",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-            }),
-            sortable: true,
-        },,
         { name: "Location", selector: (row: any) => row.location },
         {
             name: "Actions",
             selector: (row: any) => (
                 <div className="flex">
+                    <button
+                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                        onClick={() => openSerialDialog(row)}
+                    >
+                        <FiMenu className="w-5 h-5" />
+                    </button>
+                    <div className="w-2"/>
                     <button
                         className="text-green-600 hover:text-green-800 transition-colors duration-200"
                         onClick={() => {openUpdateDialog(row)}}
@@ -363,6 +381,33 @@ export default function InventoryTableEmployee() {
                 document.body
             )}
 
+            {showSerialDialog && ReactDOM.createPortal(
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-[80vh] overflow-y-auto">
+                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-600">Serial numbers of items in stock for {selectedItem?.name}</h3>
+                        <div className="border border-gray-300 rounded-md max-h-60 overflow-y-auto p-2 max-h-[9.5rem]">
+                            {serials.length > 0 ? (
+                                serials.map((serial: any, idx: number) => (
+                                    <div key={idx} className="border-b py-2 px-1">
+                                        <span className="font-medium text-sm text-gray-700">{serial.serialNumber || "N/A"}</span>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-500 text-sm">No serials found.</p>
+                            )}
+                        </div>
+                        <div className="mt-4 flex justify-end">
+                            <button
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                onClick={() => setShowSerialDialog(false)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
 
         </>
 

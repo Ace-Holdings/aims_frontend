@@ -25,6 +25,9 @@ export default function EmployeeInventory() {
     const [location, setLocation] = useState("");
     const router = useRouter();
 
+    const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
+    const [serialNumbers, setSerialNumbers] = useState<string[]>([]);
+
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -37,12 +40,24 @@ export default function EmployeeInventory() {
         setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
-    // handler function to submit inventory item creation form
-    const handleSubmitInventory = async() => {
-        const user = jwtDecode(localStorage.getItem('toke')).user;
+    const handleInitialSubmit = (e: any) => {
+        e.preventDefault();
+
+        // Prepare empty serial fields based on quantity
+        const quantityNum = Number(itemQuantity);
+        if (quantityNum > 0) {
+            setSerialNumbers(Array(quantityNum).fill(""));
+            setIsDialogOpen(false);
+            setIsSerialDialogOpen(true);
+        }
+    };
+
+    const handleFinalSubmit = async () => {
+        const user = jwtDecode(localStorage.getItem('token')).user;
 
         try {
-            const response = await fetch('http://localhost:3002/inventory', {
+            // Step 1: Create the inventory record
+            const inventoryResponse = await fetch('http://localhost:3002/inventory', {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
@@ -59,13 +74,41 @@ export default function EmployeeInventory() {
                 })
             });
 
-            if (response.ok) {
-                // closeDialog();
-            } else {
-                console.log('could not submit form');
+            if (!inventoryResponse.ok) {
+                console.error('Failed to create inventory');
+                return;
             }
-        } catch(e) {
-            console.log(e);
+
+            const inventoryData = await inventoryResponse.json();
+            const inventoryId = inventoryData.inventoryId || inventoryData.id || inventoryData._id;
+
+            if (!inventoryId) {
+                console.error('No inventory ID returned');
+                return;
+            }
+
+
+            const inventoryUnits = serialNumbers.map((serialNumber) => ({
+                serialNumber,
+                inventoryId: inventoryId
+            }));
+
+            const inventoryUnitResponse = await fetch('http://localhost:3002/unit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(inventoryUnits)
+            });
+
+            if (!inventoryUnitResponse.ok) {
+                throw new Error('Error creating inventory units');
+            }
+
+            window.location.reload();
+
+        } catch (e) {
+            console.error("Submission error:", e);
         }
     }
 
@@ -164,7 +207,7 @@ export default function EmployeeInventory() {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add stock item</h2>
                         <div className="h-2"/>
-                        <form onSubmit={handleSubmitInventory}>
+                        <form>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     quantity
@@ -271,11 +314,54 @@ export default function EmployeeInventory() {
                                 <button
                                     type="submit"
                                     className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+                                    onClick={handleInitialSubmit}
                                 >
                                     Save
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {isSerialDialogOpen && (
+                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
+                        <h2 className="text-lg font-medium mb-4 text-center">Enter Serial Numbers</h2>
+                        <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                            {/* Dynamically generating inputs based on the itemQuantity */}
+                            {Array.from({ length: itemQuantity }).map((_, idx) => (
+                                <input
+                                    key={idx}
+                                    type="text"
+                                    value={serialNumbers[idx] || ''}
+                                    onChange={(e) => {
+                                        const updated = [...serialNumbers];
+                                        updated[idx] = e.target.value;
+                                        setSerialNumbers(updated);
+                                    }}
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder={`Serial #${idx + 1}`}
+                                />
+                            ))}
+                        </div>
+                        <div className="flex justify-end gap-4 mt-6">
+                            <button
+                                onClick={() => {
+                                    setIsSerialDialogOpen(false);
+                                    setIsDialogOpen(true);
+                                }}
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                            >
+                                Back
+                            </button>
+                            <button
+                                className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+                                onClick={handleFinalSubmit}
+                            >
+                                Submit
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
