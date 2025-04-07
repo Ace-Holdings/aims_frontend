@@ -1,9 +1,10 @@
 import DataTable from "react-data-table-component";
 import React, { useEffect, useState } from "react";
-import {FiEye, FiTrash2, FiEdit} from "react-icons/fi";
+import {FiEye, FiTrash2, FiEdit, FiMenu} from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import ReactDOM from "react-dom";
 import {jwtDecode} from "jwt-decode";
+import { FaRegClone } from "react-icons/fa";
 
 
 export default function InventoryTable() {
@@ -148,12 +149,19 @@ export default function InventoryTable() {
             selector: (row: any) => (
                 <div className="flex">
                     <button
+                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                        onClick={() => {openUpdateDialog(row)}}
+                    >
+                        <FiMenu className="w-5 h-5" />
+                    </button>
+                    <div className="w-1"/>
+                    <button
                         className="text-green-600 hover:text-green-800 transition-colors duration-200"
                         onClick={() => {openUpdateDialog(row)}}
                     >
                         <FiEdit className="size-6"/>
                     </button>
-                    <div className="w-2"/>
+                    <div className="w-1"/>
                     <button
                         className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
                         title="View Details"
@@ -163,7 +171,7 @@ export default function InventoryTable() {
                     >
                         <FiEye className="w-5 h-5"/>
                     </button>
-                    <div className="w-2"/>
+                    <div className="w-1"/>
                     <button
                         className="text-red-600 hover:text-red-800 transition-colors duration-200"
                         title="Delete User"
