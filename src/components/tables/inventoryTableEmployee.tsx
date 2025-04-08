@@ -384,7 +384,7 @@ export default function InventoryTableEmployee() {
             {showSerialDialog && ReactDOM.createPortal(
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-[80vh] overflow-y-auto">
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-600">Serial numbers of items in stock for {selectedItem?.name}</h3>
+                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-600">Serial numbers of items in stock for {selectedItem?.name} {selectedItem?.description}</h3>
                         <div className="border border-gray-300 rounded-md max-h-60 overflow-y-auto p-2 max-h-[9.5rem]">
                             {serials.length > 0 ? (
                                 serials.map((serial: any, idx: number) => (
