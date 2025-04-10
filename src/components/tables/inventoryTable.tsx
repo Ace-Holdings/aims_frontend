@@ -99,6 +99,16 @@ export default function InventoryTable() {
             if (!response.ok) {
                 console.log('could not delete item');
             }
+
+            const deleteUnitResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem.inventoryId}`, {
+                method: 'DELETE',
+            });
+
+            if (!deleteUnitResponse.ok) {
+                console.error("Failed to delete unit");
+                return;
+            }
+
             setShowDeleteDialog(false);
             window.location.reload();
         } catch(e) {
