@@ -40,6 +40,10 @@ export default function ManagerSales() {
     const [inputQuantity, setInputQuantity] = useState(1);
     const [pdfFile, setPdfFile] = useState<Blob>(new Blob());
 
+    const [isSerialModalOpen, setIsSerialModalOpen] = useState(false);
+    const [availableSerials, setAvailableSerials] = useState<any[]>([]);
+    const [selectedSerials, setSelectedSerials] = useState<string[]>([]);
+
     useEffect(() => {
         const filtered = sales.filter((sale) =>
             sale.customer.toLowerCase().includes(searchTerm.toLowerCase())
@@ -127,26 +131,25 @@ export default function ManagerSales() {
         }
     };
 
-    const handleAddItem = () => {
+    const handleAddItem = async () => {
         if (!selectedItemDetails || inputQuantity < 1) return;
 
-        setSelectedItems((prevItems) => {
-            const existingItem = prevItems.find((item) => item.id === selectedItemDetails.id);
-            if (existingItem) {
-                return prevItems.map((item) =>
-                    item.id === selectedItemDetails.id
-                        ? { ...item, quantity: item.quantity + inputQuantity }
-                        : item
-                );
+        try {
+            const response = await fetch(`http://localhost:3002/unit/serials/${selectedItemDetails.id}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                setAvailableSerials(data);
+                console.log(data);
+                setIsQuantityModalOpen(false);
+                setIsSerialModalOpen(true);
             } else {
-                return [...prevItems, { ...selectedItemDetails, quantity: inputQuantity }];
+                console.log('failed to fetch inventory details');
             }
-        });
+        } catch (e) {
+            console.error("Error fetching inventory details");
+        }
 
-        console.log(selectedItems);
-
-        setIsQuantityModalOpen(false);
-        setInputQuantity(1);
     }
 
     useEffect(() => {
@@ -241,7 +244,22 @@ export default function ManagerSales() {
         setAmount(total);
     }, [selectedItems]);
 
+    const handleSerialConfirm = () => {
+        if (selectedSerials.length !== inputQuantity) {
+            alert(`You must select exactly ${inputQuantity} serial(s).`);
+            return;
+        }
 
+        const serialData = availableSerials.filter((s) => selectedSerials.includes(s.id));
+        const itemWithSerials = {
+            ...selectedItemDetails,
+            quantity: inputQuantity,
+            serials: serialData,
+        };
+
+        setSelectedItems((prev) => [...prev, itemWithSerials]);
+        setIsSerialModalOpen(false);
+    };
 
     // handler function to submit sales transaction
     const handleSalesSubmit = async (e: any) => {
@@ -250,87 +268,93 @@ export default function ManagerSales() {
         const sale = {
             customer,
             amount,
-            quantity: selectedItems.map((item) => item.quantity),
+            quantity: selectedItems.map(item => item.quantity),
             timestamp: new Date().toISOString(),
-            userId: userId,
-            inventoryIds: selectedItems.map((item) => item.id),
-            items: selectedItems.map((item) => ({
-                name: item.name,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice
-            }))
+            userId,
+            inventoryIds: selectedItems.map(item => item.id),
+            items: selectedItems.map(({ name, quantity, unitPrice }) => ({ name, quantity, unitPrice })),
         };
 
         try {
-            const response = await fetch('http://localhost:3002/sales', {
+            // 1. Submit the sale
+            const saleRes = await fetch("http://localhost:3002/sales", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                body: JSON.stringify(sale)
+                body: JSON.stringify(sale),
             });
 
-            if (!response.ok) {
-                console.log("Could not submit sales");
-                return;
-            }
+            if (!saleRes.ok) throw new Error("Failed to submit sale");
+            const { saleId } = await saleRes.json();
 
-            const responseData = await response.json();
-            const saleId = responseData.saleId;
-
-            // Generate Invoice PDF
+            // 2. Generate and upload invoice
             const pdfBlob = generateInvoicePdf(sale);
+            const invoiceForm = new FormData();
+            invoiceForm.append("saleId", saleId);
+            invoiceForm.append("file", pdfBlob);
 
-            const invoice = new FormData();
-            invoice.append("saleId", saleId);
-            invoice.append("file", pdfBlob)
-
-            const responsePdf = await fetch('http://localhost:3002/invoices', {
+            const invoiceRes = await fetch("http://localhost:3002/invoices", {
                 method: "POST",
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                body: invoice,
+                body: invoiceForm,
             });
 
-            if (!responsePdf.ok) {
-                console.log("Could not submit invoice");
-                return;
-            }
+            if (!invoiceRes.ok) throw new Error("Failed to upload invoice PDF");
 
-            // Update inventory for each item
-            await Promise.all(
+            // 3. Update inventory quantities
+            await Promise.allSettled(
                 selectedItems.map(async (item) => {
-                    const inventoryResponse = await fetch(`http://localhost:3002/inventory/${item.id}`, {
-                        headers: {
-                            "authorization": `Bearer ${localStorage.getItem("token")}`,
-                        }
-                    });
-                    if (!inventoryResponse.ok) {
-                        console.log('Could not fetch inventory');
-                        return;
+                    try {
+                        const invRes = await fetch(`http://localhost:3002/inventory/${item.id}`, {
+                            headers: {
+                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                        });
+
+                        if (!invRes.ok) throw new Error(`Failed to fetch inventory for ID: ${item.id}`);
+                        const inventoryData = await invRes.json();
+                        const updatedQuantity = inventoryData.quantity - item.quantity;
+
+                        await fetch(`http://localhost:3002/inventory/${item.id}`, {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                            body: JSON.stringify({ quantity: updatedQuantity }),
+                        });
+                    } catch (err) {
+                        console.error(err);
                     }
-
-                    const inventoryData = await inventoryResponse.json();
-                    const newQuantity = inventoryData.quantity - item.quantity;
-
-                    await fetch(`http://localhost:3002/inventory/${item.id}`, {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "authorization": `Bearer ${localStorage.getItem("token")}`
-                        },
-                        body: JSON.stringify({ quantity: newQuantity }),
-                    });
                 })
             );
+
+            // 4. Delete used serials
+            await Promise.allSettled(
+                selectedSerials.map((unitId: string) =>
+                    fetch(`http://localhost:3002/unit/${unitId}`, {
+                        method: "DELETE",
+                        headers: {
+                            authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    }).catch(err => console.error(`Error deleting serial ${unitId}`, err))
+                )
+            );
+
+            setSelectedSerials([]);
+            setAvailableSerials([]);
+            setInputQuantity(1);
 
             closeDialog();
             window.location.reload();
 
-        } catch (e) {
-            console.log(e);
+
+        } catch (err) {
+            console.error("Sales submission error:", err);
         }
     };
 
@@ -743,6 +767,67 @@ export default function ManagerSales() {
                                 Add Item
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {isSerialModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]  text-black flex flex-col">
+                        <h3 className="text-lg font-semibold mb-4 text-center">Select Serials</h3>
+
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleSerialConfirm();
+                            }}
+                            className="flex flex-col flex-grow"
+                        >
+                            {/* Scrollable section */}
+                            <div className="overflow-y-auto mb-4 pr-2" style={{ maxHeight: '200px' }}>
+                                {availableSerials.map((serial: any) => (
+                                    <label
+                                        key={serial.id}
+                                        className="flex justify-between items-center mb-3 px-2 cursor-pointer"
+                                    >
+                                        <span className="text-sm">{serial.serialNumber}</span>
+                                        <input
+                                            type="checkbox"
+                                            value={serial.unitId}
+                                            checked={selectedSerials.includes(serial.unitId)}
+                                            className="w-5 h-5 accent-blue-600"
+                                            onChange={(e) => {
+                                                const id = serial.unitId;
+                                                setSelectedSerials((prev) =>
+                                                    e.target.checked
+                                                        ? [...prev, id]
+                                                        : prev.filter((s) => s !== id)
+                                                );
+
+                                                setTimeout(() => console.log(selectedSerials), 300);
+                                            }}
+                                        />
+                                    </label>
+                                ))}
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsSerialModalOpen(false)}
+                                    className="text-gray-500"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                                >
+                                    Confirm
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

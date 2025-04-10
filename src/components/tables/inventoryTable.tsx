@@ -25,8 +25,15 @@ export default function InventoryTable() {
     const [dateAdded, setDateAdded] = useState<Date | null>(null);
     const [location, setLocation] = useState("");
 
+    const [itemQuantity, setItemQuantity] = useState(0);
+
     const [showSerialDialog, setShowSerialDialog] = useState(false);
-    const [serials, setSerials] = useState([]);
+    const [serialNumbers, setSerialNumbers] = useState([]);
+
+    const [serialNumbersUpdate, setSerialNumbersUpdate] = useState<string[]>([]);
+
+    const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
+
 
 
     useEffect(() => {
@@ -72,7 +79,7 @@ export default function InventoryTable() {
                 return;
             }
             const data = await response.json();
-            setSerials(data);
+            setSerialNumbers(data);
             setShowSerialDialog(true);
         } catch (error) {
             console.error(error);
@@ -99,47 +106,21 @@ export default function InventoryTable() {
         }
     }
 
-    // handler function to update stock item
-    const handleUpdateStock = async () => {
-        const user = jwtDecode(localStorage.getItem("token")).user;
-
-        console.log(user);
-
-        try {
-            const updatedStock = {
-                inventoryId: selectedItem.inventoryId,
-                ...(quantity && { quantity }),
-                ...(pricePerUnit && { pricePerUnit }),
-                ...(name && { name }),
-                ...(description && { description }),
-                ...(dateAdded && { dateAdded: dateAdded.toISOString() }),
-                ...(location && { location }),
-                ...(status !== "" && { status }),
-            };
-
-            const response = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "authorization": 'Bearer ' + localStorage.getItem("token"),
-                },
-                body: JSON.stringify({
-                    ...updatedStock,
-                    lastModifiedBy: user,
-                }),
-            });
-
-            if (!response.ok) {
-                console.log("Failed to update assignment");
-                return;
-            }
-
-            setShowUpdateDialog(false);
-            window.location.reload();
-        } catch (error) {
-            console.log(error);
+    const handleUpdateStock1 = () => {
+        if (!quantity || quantity <= 0) {
+            alert("Please enter a valid quantity");
+            return;
         }
+
+        setSerialNumbersUpdate(Array(quantity).fill(""));
+
+        setShowUpdateDialog(false);
+
+        setIsSerialDialogOpen(true);
     };
+
+    // handler function to update stock item
+
 
     // Columns Definition
     const columns = [
@@ -237,6 +218,78 @@ export default function InventoryTable() {
                 ? filtered
                 : filtered.filter((item: any) => item.status === filter)
         );
+    };
+
+    const submitSerialsAndUpdateStock = async () => {
+        const user = jwtDecode(localStorage.getItem("token")).user;
+
+        try {
+            // 1. DELETE all existing inventory units for the inventoryId
+            const deleteResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem.inventoryId}`, {
+                method: "DELETE",
+            });
+
+            if (!deleteResponse.ok) {
+                console.error("Failed to delete existing inventory units");
+                return;
+            }
+
+            // 2. Prepare updated inventory payload
+            const updatedStock = {
+                inventoryId: selectedItem.inventoryId,
+                ...(quantity && { quantity }),
+                ...(pricePerUnit && { pricePerUnit }),
+                ...(name && { name }),
+                ...(description && { description }),
+                ...(dateAdded && { dateAdded: dateAdded.toISOString() }),
+                ...(location && { location }),
+                ...(status !== "" && { status }),
+            };
+
+            // 3. UPDATE the inventory record
+            const updateResponse = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": 'Bearer ' + localStorage.getItem("token"),
+                },
+                body: JSON.stringify({
+                    ...updatedStock,
+                    lastModifiedBy: user,
+                }),
+            });
+
+            if (!updateResponse.ok) {
+                console.error("Failed to update inventory");
+                return;
+            }
+
+            // 4. CREATE new inventory units with updated serial numbers
+            const inventoryUnits = serialNumbersUpdate.map((serialNumber) => ({
+                serialNumber,
+                inventoryId: selectedItem.inventoryId,
+            }));
+
+            const createUnitsResponse = await fetch("http://localhost:3002/unit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(inventoryUnits),
+            });
+
+            if (!createUnitsResponse.ok) {
+                console.error("Error creating inventory units");
+                return;
+            }
+
+            // 5. Close dialogs and refresh
+            setIsSerialDialogOpen(false);
+            setShowUpdateDialog(false);
+            window.location.reload();
+        } catch (error) {
+            console.error("Submission error:", error);
+        }
     };
 
     return (
@@ -354,34 +407,38 @@ export default function InventoryTable() {
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
                         <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Stock Item</h3>
                         <form>
-                            <div className="mb-4 ">
-                                <label>Quantity</label>
+                            <div className="mb-4">
+                                <label className="block mb-2">Quantity</label>
                                 <input
                                     type="number"
-                                    className="border p-2 w-full bg-white"
                                     value={quantity}
-                                    onChange={(e: any) => setQuantity(e.target.value)}
+                                    onChange={(e) => {
+                                        const newQty = parseInt(e.target.value, 10);
+                                        if (!isNaN(newQty)) {
+                                            setQuantity(newQty);
+                                        }
+                                    }}
+                                    className="p-2 border border-gray-300 rounded-lg w-full"
                                 />
                             </div>
-                            <div className="mb-4 ">
-                                <label>Price per unit</label>
+                            <div className="mb-4">
+                                <label className="block mb-2">Price per unit</label>
                                 <input
                                     type="number"
                                     name="locationName"
                                     className="border p-2 w-full bg-white"
                                     value={pricePerUnit}
-                                    onChange={(e: any) => setPricePerUnit(e.target.value)}
-
+                                    onChange={(e) => setPricePerUnit(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
-                                <label>Description</label>
+                                <label className="block mb-2">Description</label>
                                 <input
                                     type="text"
                                     name="contact"
                                     className="border p-2 w-full bg-white"
                                     value={description}
-                                    onChange={(e: any) => setDescription(e.target.value)}
+                                    onChange={(e) => setDescription(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
@@ -413,8 +470,7 @@ export default function InventoryTable() {
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     defaultValue=""
                                     value={location}
-                                    onChange={(e: any) => setLocation(e.target.value)}
-
+                                    onChange={(e) => setLocation(e.target.value)}
                                 >
                                     <option value="" disabled>
                                         Select location
@@ -433,7 +489,7 @@ export default function InventoryTable() {
                                 <button
                                     type="button"
                                     className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                                    onClick={handleUpdateStock}
+                                    onClick={handleUpdateStock1}
                                 >
                                     Update
                                 </button>
@@ -449,14 +505,12 @@ export default function InventoryTable() {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-[80vh] overflow-y-auto">
                         <h3 className="text-lg font-semibold mb-4 text-center text-gray-600">Serial numbers of items in stock for {selectedItem?.name} {selectedItem?.description}</h3>
                         <div className="border border-gray-300 rounded-md max-h-60 overflow-y-auto p-2 max-h-[9.5rem]">
-                            {serials.length > 0 ? (
-                                serials.map((serial: any, idx: number) => (
+                            { (
+                                serialNumbers.map((serial: any, idx: number) => (
                                     <div key={idx} className="border-b py-2 px-1">
                                         <span className="font-medium text-sm text-gray-700">{serial.serialNumber || "N/A"}</span>
                                     </div>
                                 ))
-                            ) : (
-                                <p className="text-gray-500 text-sm">No serials found.</p>
                             )}
                         </div>
                         <div className="mt-4 flex justify-end">
@@ -470,6 +524,47 @@ export default function InventoryTable() {
                     </div>
                 </div>,
                 document.body
+            )}
+
+            {isSerialDialogOpen && (
+                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
+                        <h2 className="text-lg font-medium mb-4 text-center">Enter Serial Numbers</h2>
+                        <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                            {Array.from({ length: quantity }).map((_, idx) => (
+                                <input
+                                    key={idx}
+                                    type="text"
+                                    value={serialNumbersUpdate[idx] || ''}
+                                    onChange={(e) => {
+                                        const updated = [...serialNumbersUpdate];
+                                        updated[idx] = e.target.value;
+                                        setSerialNumbersUpdate(updated);
+                                    }}
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder={`Serial #${idx + 1}`}
+                                />
+                            ))}
+                        </div>
+                        <div className="flex justify-end gap-4 mt-6">
+                            <button
+                                onClick={() => {
+                                    setIsSerialDialogOpen(false);
+                                    setShowUpdateDialog(true);
+                                }}
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                            >
+                                Back
+                            </button>
+                            <button
+                                className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+                                onClick={submitSerialsAndUpdateStock}
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
 
 
