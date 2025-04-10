@@ -116,17 +116,51 @@ export default function InventoryTable() {
         }
     }
 
-    const handleUpdateStock1 = () => {
-        if (!quantity || quantity <= 0) {
-            alert("Please enter a valid quantity");
-            return;
+    const handleUpdateStock1 = async () => {
+        const user = jwtDecode(localStorage.getItem("token")).user;
+
+        if (!quantity || quantity === selectedItem.quantity) {
+            try {
+                const updatedStock = {
+                    inventoryId: selectedItem.inventoryId,
+                    ...(quantity && { quantity }),
+                    ...(pricePerUnit && { pricePerUnit }),
+                    ...(name && { name }),
+                    ...(description && { description }),
+                    ...(dateAdded && { dateAdded: dateAdded.toISOString() }),
+                    ...(location && { location }),
+                    ...(status !== "" && { status }),
+                };
+
+                const response = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "authorization": 'Bearer ' + localStorage.getItem("token"),
+                    },
+                    body: JSON.stringify({
+                        ...updatedStock,
+                        lastModifiedBy: user,
+                    }),
+                });
+
+                if (!response.ok) {
+                    console.log("Failed to update inventory");
+                    return;
+                }
+
+                setShowUpdateDialog(false);
+                window.location.reload();
+            } catch (error) {
+                console.log(error);
+            }
+
+        } else {
+            // Quantity changed – ask for new serial numbers
+            setSerialNumbersUpdate(Array(quantity).fill(""));
+            setShowUpdateDialog(false);
+            setIsSerialDialogOpen(true);
         }
-
-        setSerialNumbersUpdate(Array(quantity).fill(""));
-
-        setShowUpdateDialog(false);
-
-        setIsSerialDialogOpen(true);
     };
 
     // handler function to update stock item
