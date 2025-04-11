@@ -28,6 +28,7 @@ export default function InventoryTable() {
     const [itemQuantity, setItemQuantity] = useState(0);
 
     const [showSerialDialog, setShowSerialDialog] = useState(false);
+
     const [serialNumbers, setSerialNumbers] = useState([]);
 
     const [serialNumbersUpdate, setSerialNumbersUpdate] = useState<string[]>([]);
