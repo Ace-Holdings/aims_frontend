@@ -40,7 +40,7 @@ const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
                         <li key={index}>
                             <button
                                 onClick={() => {router.push(item.path)}}
-                                className={`flex items-center px-4 py-2 w-full font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
+                                className={`flex items-center px-4 py-2 w-full font-medium rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
                                     isCollapsed ? "justify-center" : "space-x-3"
                                 }`}
                             >

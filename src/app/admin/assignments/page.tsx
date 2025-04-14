@@ -27,6 +27,11 @@ export default function AssignmentsAdmin() {
     const [employeeResults, setEmployeeResults] = useState<any[]>([]);
     const [selectedEmployees, setSelectedEmployees] = useState<any[]>([]);
 
+    const [isObjectivePromptOpen, setIsObjectivePromptOpen] = useState(false);
+    const [assignmentObjectives, setAssignmentObjectives] = useState([""]);
+
+    const [isObjectiveListPromptOpen, setIsObjectiveListPromptOpen] = useState(false);
+
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -59,7 +64,6 @@ export default function AssignmentsAdmin() {
         }
     }, [router])
 
-    // Fetch employees based on search term
     const handleSearch = async (query: string) => {
         setSearchTerm(query);
         if (query.length < 2) {
@@ -89,14 +93,25 @@ export default function AssignmentsAdmin() {
                 return [...prevSelectedEmployees, employee];
             });
         }
-        setSearchTerm(""); // Clear search box
-        setEmployeeResults([]); // Clear search results
+        setSearchTerm("");
+        setEmployeeResults([]);
     };
 
-    // Remove selected employee
     const handleRemoveEmployee = (employeeId: string) => {
         setSelectedEmployees(selectedEmployees.filter(e => e.userId !== employeeId));
     };
+
+    const handleOpenObjectivesDialog = (e: any) => {
+        e.preventDefault();
+        setIsObjectivePromptOpen(true);
+    }
+
+    const handleObjectivesListOpen = (e) => {
+        e.preventDefault();
+        setIsObjectivePromptOpen(false);
+        setIsObjectiveListPromptOpen(true);
+    }
+
 
     // handler function to submit assignment form data to server
     const handleAssignmentSubmit = async (e) => {
@@ -115,7 +130,7 @@ export default function AssignmentsAdmin() {
                     location: location,
                     startsAt: startDate,
                     endsAt: endDate,
-                    description: description, // Employees are NOT included here
+                    description: description,
                 })
             });
 
@@ -124,7 +139,7 @@ export default function AssignmentsAdmin() {
             }
 
             const assignmentData = await assignmentResponse.json();
-            const assignmentId = assignmentData.assignmentId; // Assuming API returns assignment ID
+            const assignmentId = assignmentData.assignmentId;
 
             // Step 2: Assign employees to the created assignment
             if (selectedEmployees.length > 0) {
@@ -140,7 +155,6 @@ export default function AssignmentsAdmin() {
                 });
             }
 
-            // Close the dialog and reset form after success
             setIsDialogOpen(false);
             window.location.reload();
             setAssignmentName("");
@@ -154,7 +168,6 @@ export default function AssignmentsAdmin() {
         }
     };
 
-    // @ts-ignore
     return (
         <>
             <div className={`flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
@@ -223,7 +236,7 @@ export default function AssignmentsAdmin() {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                         <h2 className="text-lg font-medium mb-4 text-center text-bold">Add Assignment</h2>
                         <div className="h-2"/>
-                        <form onSubmit={handleAssignmentSubmit}>
+                        <form onSubmit={handleOpenObjectivesDialog}>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                                     Assignment name
@@ -356,6 +369,78 @@ export default function AssignmentsAdmin() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {isObjectivePromptOpen && (
+                <div className="fixed inset-0 z-30 flex items-center justify-center bg-black text-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 text-center">
+                        <h2 className="text-lg font-semibold mb-4">Would you like to add assignment objectives?</h2>
+                        <div className="flex justify-center gap-4">
+                            <button
+                                onClick={handleObjectivesListOpen}
+                                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+                            >
+                                Yes
+                            </button>
+                            <button
+                                className="px-6 py-2 bg-gray-300 text-black rounded hover:bg-gray-200"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isObjectiveListPromptOpen && (
+                <div className="fixed inset-0 z-30 flex items-center justify-center text-black bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
+                        <h3 className="text-lg font-semibold mb-4 text-center">Add Assignment Objectives</h3>
+
+                        {assignmentObjectives.map((objective, index) => (
+                            <div key={index} className="mb-2 flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    className="flex-1 p-2 border border-gray-300 rounded"
+                                    placeholder={`Objective ${index + 1}`}
+                                    value={objective}
+                                    onChange={(e) => {
+                                        const newObjectives = [...assignmentObjectives];
+                                        newObjectives[index] = e.target.value;
+                                        setAssignmentObjectives(newObjectives);
+                                    }}
+                                />
+                                {index === assignmentObjectives.length - 1 && (
+                                    <button
+                                        type="button"
+                                        className="text-green-500 hover:text-green-700"
+                                        onClick={() => setAssignmentObjectives([...assignmentObjectives, ""])}
+                                    >
+                                        +
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+
+                        <div className="flex justify-end gap-2 mt-6">
+                            <button
+                                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                                onClick={() => setIsObjectivePromptOpen(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                onClick={(e) => {
+                                    setIsObjectivePromptOpen(false);
+                                    handleAssignmentSubmit(e);
+                                }}
+                            >
+                                Done
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
