@@ -112,6 +112,37 @@ export default function AssignmentsAdmin() {
         setIsObjectiveListPromptOpen(true);
     }
 
+    const handleSubmitWithoutObjectives = async (e: any) => {
+        e.preventDefault();
+
+        try {
+            const assignmentResponse = await fetch('http://localhost:3002/assignments', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    assignmentName: assignmentName,
+                    location: location,
+                    startsAt: startDate,
+                    endsAt: endDate,
+                    description: description,
+                })
+            });
+
+            if (!assignmentResponse.ok) {
+                throw new Error("Failed to create assignment");
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
+        setIsObjectivePromptOpen(false);
+        setIsDialogOpen(false);
+        window.location.reload();
+    }
+
 
     // handler function to submit assignment form data to server
     const handleAssignmentSubmit = async (e) => {
@@ -153,6 +184,26 @@ export default function AssignmentsAdmin() {
                         employeeIds: selectedEmployees.map(emp => emp.userId),
                     })
                 });
+            }
+
+            if (assignmentObjectives.length > 0) {
+                // const token = localStorage.getItem("token");
+
+                for (const text of assignmentObjectives) {
+                    const trimmedText = text.trim();
+                    if (trimmedText !== "") {
+                        await fetch(`http://localhost:3002/objectives`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                assignmentId: assignmentId,
+                                objectiveText: trimmedText,
+                            }),
+                        });
+                    }
+                }
             }
 
             setIsDialogOpen(false);
@@ -386,6 +437,7 @@ export default function AssignmentsAdmin() {
                             </button>
                             <button
                                 className="px-6 py-2 bg-gray-300 text-black rounded hover:bg-gray-200"
+                                onClick={handleSubmitWithoutObjectives}
                             >
                                 No
                             </button>

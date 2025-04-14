@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import {FiEdit, FiTrash2} from "react-icons/fi";
+import {FiEdit, FiMenu, FiTrash2} from "react-icons/fi";
 import { FiEye } from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -22,6 +22,9 @@ export default function AssignmentsTable() {
     const [status, setStatus] = useState("");
     const [startsAt, setStartsAt] = useState(new Date());
     const [endsAt, setEndsAt] = useState(new Date());
+
+    const [objectives, setObjectives] = useState([]);
+    const [showObjectivesDialog, setShowObjectivesDialog] = useState(false);
 
     useEffect(() => {
         fetch("http://localhost:3002/assignments", {
@@ -49,6 +52,24 @@ export default function AssignmentsTable() {
     const openUpdateDialog = (assignment: any) => {
         setShowUpdateDialog(true);
         setSelectedAssignment(assignment);
+    }
+
+    const openObjectivesDialog = async (assignment: any) => {
+        setSelectedAssignment(assignment);
+        try {
+            const objectivesResponse = await fetch('http://localhost:3002/objectives', {
+                method: "GET",
+            });
+            if (!objectivesResponse.ok) {
+                console.log('could not fetch objectives');
+                return;
+            }
+            const data = await objectivesResponse.json();
+            setObjectives(data);
+            setShowObjectivesDialog(true);
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     // Handle update request
@@ -159,12 +180,19 @@ export default function AssignmentsTable() {
             selector: (row: any) => (
                 <div className="flex">
                     <button
+                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                        onClick={() => openObjectivesDialog(row)}
+                    >
+                        <FiMenu className="w-5 h-5" />
+                    </button>
+                    <div className="w-1"/>
+                    <button
                         className="text-green-600 hover:text-green-800 transition-colors duration-200"
                         onClick={() => {openUpdateDialog(row)}}
                     >
                         <FiEdit className="size-6"/>
                     </button>
-                    <div className="w-2"/>
+                    <div className="w-1"/>
                     <button
                         className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
                         title="View Details"
@@ -174,7 +202,7 @@ export default function AssignmentsTable() {
                     >
                         <FiEye className="w-5 h-5"/>
                     </button>
-                    <div className="w-2"/>
+                    <div className="w-1"/>
                     <button
                         className="text-red-600 hover:text-red-800 transition-colors duration-200"
                         title="Delete User"
@@ -441,6 +469,41 @@ export default function AssignmentsTable() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {showObjectivesDialog && ReactDOM.createPortal(
+                <div className="fixed inset-0 flex items-center justify-center  bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                        <h3 className="text-lg font-semibold mb-4 text-center ">Assignment Objectives</h3>
+                        <div className="mb-4 max-h-80 overflow-y-auto">
+                            {objectives.length === 0 ? (
+                                <p className="text-center text-gray-500">No objectives for this assignment.</p>
+                            ) : (
+                                <ul className="space-y-2">
+                                    {objectives
+                                        .filter(obj => obj.assignmentId === selectedAssignment?.assignmentId)
+                                        .map((obj, index) => (
+                                            <li key={index} className="flex items-center justify-between border-b pb-1">
+                                                <span className="text-gray-700">{obj.objectiveText}</span>
+                                                <span className="text-xl">
+                                        {obj.isCompleted ? "✅" : "❌"}
+                                    </span>
+                                            </li>
+                                        ))}
+                                </ul>
+                            )}
+                        </div>
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                onClick={() => setShowObjectivesDialog(false)}
+                            >
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>,
                 document.body
