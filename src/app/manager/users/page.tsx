@@ -41,13 +41,22 @@ export default function UsersManager() {
         setIsDialogOpen(false);
     };
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
-
     const openSalariesDialog = () => {
         setIsSalariesDialogOpen(true);
     }
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
 
     useEffect(() => {
         const fetchSalaries = async () => {

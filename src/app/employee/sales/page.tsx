@@ -56,10 +56,6 @@ export default function EmployeeSales() {
         setSearchTerm(e.target.value);
     };
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
-
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -112,6 +108,19 @@ export default function EmployeeSales() {
         const total = selectedItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
         setAmount(total);
     }, [selectedItems]);
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
 
     const handleSelectInventory = async (inventoryId: string) => {
         try {

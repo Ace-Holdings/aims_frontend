@@ -57,7 +57,7 @@ export default function AssignmentsTable() {
     const openObjectivesDialog = async (assignment: any) => {
         setSelectedAssignment(assignment);
         try {
-            const objectivesResponse = await fetch('http://localhost:3002/objectives', {
+            const objectivesResponse = await fetch(`http://localhost:3002/objectives/`, {
                 method: "GET",
             });
             if (!objectivesResponse.ok) {
@@ -66,10 +66,17 @@ export default function AssignmentsTable() {
             }
             const data = await objectivesResponse.json();
             setObjectives(data);
+            console.log(objectives.length);
             setShowObjectivesDialog(true);
         } catch (e) {
             console.error(e);
         }
+    }
+
+    const closeObjectivesDialog = () => {
+        setObjectives([]);
+        console.log(objectives)
+        setShowObjectivesDialog(false);
     }
 
     // Handle update request
@@ -480,26 +487,27 @@ export default function AssignmentsTable() {
                         <h3 className="text-lg font-semibold mb-4 text-center ">Assignment Objectives</h3>
                         <div className="mb-4 max-h-80 overflow-y-auto">
                             {objectives.length === 0 ? (
-                                <p className="text-center text-gray-500">No objectives for this assignment.</p>
+                                <p className="text-center text-black">No objectives for this assignment.</p>
+
                             ) : (
                                 <ul className="space-y-2">
-                                    {objectives
-                                        .filter(obj => obj.assignmentId === selectedAssignment?.assignmentId)
-                                        .map((obj, index) => (
-                                            <li key={index} className="flex items-center justify-between border-b pb-1">
-                                                <span className="text-gray-700">{obj.objectiveText}</span>
-                                                <span className="text-xl">
+                            {objectives
+                                .filter(obj => obj.assignmentId === selectedAssignment?.assignmentId)
+                                .map((obj, index) => (
+                                <li key={index} className="flex items-center justify-between border-b pb-1">
+                            <span className="text-gray-700">{obj.objectiveText}</span>
+                            <span className="text-xl">
                                         {obj.isCompleted ? "✅" : "❌"}
                                     </span>
-                                            </li>
-                                        ))}
-                                </ul>
+                        </li>
+                        ))}
+                    </ul>
                             )}
                         </div>
                         <div className="mt-6 flex justify-end">
                             <button
                                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowObjectivesDialog(false)}
+                                onClick={closeObjectivesDialog}
                             >
                                 Close
                             </button>

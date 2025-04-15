@@ -61,10 +61,6 @@ export default function AdminSales() {
         setSearchTerm(e.target.value);
     };
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
-
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -243,7 +239,18 @@ export default function AdminSales() {
         setIsSerialModalOpen(false);
     };
 
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
 
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
 
     // handler function to submit sales transaction
     const handleSalesSubmit = async (e: any) => {

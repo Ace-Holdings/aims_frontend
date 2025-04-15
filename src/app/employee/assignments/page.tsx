@@ -27,16 +27,49 @@ export default function EmployeeAssignments() {
     const [selectedEmployees, setSelectedEmployees] = useState<any[]>([]);
     const router = useRouter();
 
+    const [hasActiveAssignment, setHasActiveAssignment] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const decodedToken = jwtDecode(token);
+        const user = decodedToken.user;
+
+        const fetchAssignments = async () => {
+            try {
+                const response = await fetch('http://localhost:3002/assignments', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) throw new Error("Failed to fetch assignments");
+
+                const data = await response.json();
+
+                const activeAssignment = data.find((assignment) =>
+                    assignment.status === true &&
+                    assignment.users?.some(u => u.username === user)
+                );
+
+                setHasActiveAssignment(activeAssignment);
+            } catch (error) {
+                console.error("Error fetching assignments:", error);
+            }
+        };
+
+        fetchAssignments();
+        const interval = setInterval(fetchAssignments, 10000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     const openDialog = () => {
         setIsDialogOpen(true);
     };
 
     const closeDialog = () => {
         setIsDialogOpen(false);
-    };
-
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
     };
 
     // Add employee to selected list
@@ -53,6 +86,19 @@ export default function EmployeeAssignments() {
     // Remove selected employee
     const handleRemoveEmployee = (employeeId: string) => {
         setSelectedEmployees(selectedEmployees.filter(e => e.userId !== employeeId));
+    };
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
     };
 
     useEffect(() => {
@@ -193,6 +239,16 @@ export default function EmployeeAssignments() {
                         </div>
                     </div>
                     <div className="h-7" />
+                    <div>{hasActiveAssignment && (
+                        <button className="flex items-center text-left justify-between bg-green-500 text-white p-4 rounded-lg shadow-md w-fit mt-4 ml-6 hover:bg-green-600 transition">
+                            <div>
+                                You have an active assignment:<br />
+                                <strong>{hasActiveAssignment.assignmentName}</strong> at <strong>{hasActiveAssignment.location}</strong>
+                            </div>
+                            <div className="w-6"/>
+                            <span className="ml-4 text-xl font-bold">{'>'}</span>
+                        </button>
+                    )}</div>
                     <AssignmentsTableEmployee/>
                 </div>
 

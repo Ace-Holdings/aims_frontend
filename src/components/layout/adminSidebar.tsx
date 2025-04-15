@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { FiHome, FiBriefcase, FiUsers, FiSettings, FiChevronLeft, FiChevronRight, FiUser, FiLogOut } from "react-icons/fi";
 import { MdOutlineInventory2, MdOutlinePointOfSale } from "react-icons/md";
 import { LuReceipt } from "react-icons/lu";
@@ -9,8 +9,10 @@ import { LuLogs } from "react-icons/lu";
 import Link from "next/link"
 import { useRouter } from "next/navigation";
 
-const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
+const SidebarAdmin = ({ isCollapsed, toggleSidebar }) => {
     const router = useRouter();
+    const currentPath = router.pathname;
+
 
     const menuItems = [
         { icon: <FiHome />, label: "Home", path: "/admin" },
@@ -24,7 +26,12 @@ const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
     ];
 
     return (
-        <div className={`sticky bg-gradient-to-b from-gray-900 to-blue-500 text-white transition-all duration-300 ease-in-out h-screen ${isCollapsed ? "w-16" : "w-64"}`}>
+        <div className={`sticky bg-gradient-to-b from-gray-900 to-blue-500 text-white transition-all duration-300 ease-in-out h-screen ${
+            isCollapsed ? "w-16" : "w-64"
+        }`}
+             style={{
+                 ["--sidebar-width" as any]: isCollapsed ? "4rem" : "16rem"
+             }}>
             <div className="flex justify-end p-4">
                 <button
                     onClick={toggleSidebar}
@@ -39,8 +46,10 @@ const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
                     {menuItems.map((item, index) => (
                         <li key={index}>
                             <button
-                                onClick={() => {router.push(item.path)}}
-                                className={`flex items-center px-4 py-2 w-full font-medium rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
+                                onClick={() => router.push(item.path)}
+                                className={`flex items-center px-4 py-2 w-full font-medium rounded-lg 
+      ${currentPath === item.path ? "bg-gray-700" : "hover:bg-gray-400"}
+      focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
                                     isCollapsed ? "justify-center" : "space-x-3"
                                 }`}
                             >

@@ -35,9 +35,6 @@ export default function AdminInventory() {
         setIsDialogOpen(false);
     }
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
 
     const handleInitialSubmit = (e: any) => {
         e.preventDefault();
@@ -71,6 +68,19 @@ export default function AdminInventory() {
             router.push("/");
         }
     }, [router]);
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
 
     // handler function to submit inventory item creation form
     const handleFinalSubmit = async () => {

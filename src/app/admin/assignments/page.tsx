@@ -13,7 +13,6 @@ import {jwtDecode} from "jwt-decode";
 
 export default function AssignmentsAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const router = useRouter();
 
     // form attributes
@@ -32,6 +31,22 @@ export default function AssignmentsAdmin() {
 
     const [isObjectiveListPromptOpen, setIsObjectiveListPromptOpen] = useState(false);
 
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
+
+
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -40,29 +55,29 @@ export default function AssignmentsAdmin() {
         setIsDialogOpen(false);
     };
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
-
+    // const toggleSidebar = () => {
+    //     setIsSidebarCollapsed(!isSidebarCollapsed);
+    // };
     useEffect(() => {
         const token = localStorage.getItem("token");
-        
-        if(!token) {
+
+        if (!token) {
             router.push("/");
+            return;
         }
-        
+
         try {
             const decodedToken = jwtDecode(token);
             const roles: string[] = decodedToken.roles || [];
 
-            if(!roles.includes("ROLE_ADMIN")) {
+            if (!roles.includes("ROLE_ADMIN")) {
                 router.push("/");
             }
         } catch (e) {
             console.log(e);
             router.push("/");
         }
-    }, [router])
+    }, [router]);
 
     const handleSearch = async (query: string) => {
         setSearchTerm(query);
@@ -223,7 +238,10 @@ export default function AssignmentsAdmin() {
         <>
             <div className={`flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
                 <div className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
-                    <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} />
+                    <SidebarAdmin
+                        isCollapsed={isSidebarCollapsed}
+                        toggleSidebar={toggleSidebar}
+                    />
                 </div>
                 <div className={`flex-1 flex flex-col ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} transition-all duration-300`}>
                     <div className="bg-white p-4 sticky top-0 z-10">

@@ -16,19 +16,11 @@ import {jwtDecode} from "jwt-decode";
 export default function AdminBids() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
     const [description, setDescription] = useState("");
     const [deadline, setDeadline] = useState<Date | null>(null);
     const [bidFile, setBidFile] = useState("");
     const [editFile, setEditFile] = useState("");
-    const [bidFileUrl, setBidFileUrl] = useState<string | null>(null);
-    const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
     const router = useRouter();
-
-
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
 
     const user = jwtDecode(localStorage.getItem("token")).user
 
@@ -47,6 +39,20 @@ export default function AdminBids() {
     const handleEditFileChange = (event: any) => {
         setEditFile(event.target.files[0]);
     }
+
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -110,7 +116,10 @@ export default function AdminBids() {
                 <div className={` flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""} `}>
                     <div
                         className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
-                        <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
+                        <SidebarAdmin
+                            isCollapsed={isSidebarCollapsed}
+                            toggleSidebar={toggleSidebar}
+                        />
                     </div>
                     <div
                         className={`flex-1 flex flex-col ${isSidebarCollapsed ? 'ml-16' : 'ml-64'} transition-all duration-300`}>

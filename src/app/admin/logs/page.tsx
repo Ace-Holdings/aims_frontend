@@ -11,8 +11,17 @@ export default function AdminLogs() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const router = useRouter();
 
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
     const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
     };
 
     useEffect(() => {

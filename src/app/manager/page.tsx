@@ -14,11 +14,20 @@ import {useRouter} from "next/navigation";
 export default function ManagerHome() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
-
     const router = useRouter();
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("token");

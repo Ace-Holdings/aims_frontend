@@ -39,13 +39,26 @@ export default function UsersAdmin() {
 
 
 
-        const handleAmountChange = (e) => {
-            let value = e.target.value.replace(/,/g, '');
-            if (!isNaN(value) && value !== "") {
-                value = Number(value).toLocaleString();
-            }
-            setAmount(value);
-        };
+    const handleAmountChange = (e) => {
+        let value = e.target.value.replace(/,/g, '');
+        if (!isNaN(value) && value !== "") {
+            value = Number(value).toLocaleString();
+        }
+        setAmount(value);
+    };
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
 
     useEffect(() => {
         const fetchSalaries = async () => {
@@ -79,9 +92,6 @@ export default function UsersAdmin() {
         setIsDialogOpen(false);
     };
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
 
     const openSalariesDialog = () => {
         setIsSalariesDialogOpen(true);

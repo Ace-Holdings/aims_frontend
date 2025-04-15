@@ -36,9 +36,6 @@ export default function EmployeeInventory() {
         setIsDialogOpen(false);
     };
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
 
     const handleInitialSubmit = (e: any) => {
         e.preventDefault();
@@ -50,6 +47,19 @@ export default function EmployeeInventory() {
             setIsDialogOpen(false);
             setIsSerialDialogOpen(true);
         }
+    };
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
     };
 
     const handleFinalSubmit = async () => {

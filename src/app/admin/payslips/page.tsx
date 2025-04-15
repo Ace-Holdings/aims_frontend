@@ -36,9 +36,6 @@ export default function Payslips() {
     const [searchTerm, setSearchTerm] = useState("");
     const router = useRouter();
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
 
     const handleAddItem = () => {
         if (!itemDescription.trim()) return;
@@ -49,6 +46,19 @@ export default function Payslips() {
         if (!deductionItemDescription.trim()) return;
         setIsDeductionValueDialogOpen(true);
     }
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("token");

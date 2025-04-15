@@ -24,9 +24,6 @@ export default function EmployeeBids() {
     const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
     const router = useRouter();
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
 
     const user = jwtDecode(localStorage.getItem("token")).user;
 
@@ -45,6 +42,19 @@ export default function EmployeeBids() {
     const handleEditFileChange = (event: any) => {
         setEditFile(event.target.files[0]);
     }
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("token");
