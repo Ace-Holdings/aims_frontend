@@ -3,31 +3,21 @@
 import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {jwtDecode} from "jwt-decode";
-import ManagerSidebar from "@/components/layout/managerSidebar";
 import Navbar from "@/components/layout/navbar";
 import TotalAssignments from "@/components/tiles/totalAssignments";
 import ActiveAssignments from "@/components/tiles/activeAssignments";
-import AssignmentsTable from "@/components/tables/assignmentsTable";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
 import AssignmentsTableEmployee from "@/components/tables/assignmentsTableEmployee";
 
 export default function EmployeeAssignments() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
-    // form attributes
-    const [assignmentName, setAssignmentName] = useState("");
-    const [location, setLocation] = useState("");
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
-    const [employeeAssigned, setEmployeeAssigned] = useState("");
-    const [description, setDescription] = useState("");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [employeeResults, setEmployeeResults] = useState<any[]>([]);
-    const [selectedEmployees, setSelectedEmployees] = useState<any[]>([]);
     const router = useRouter();
 
     const [hasActiveAssignment, setHasActiveAssignment] = useState(false);
+
+    const [objectives, setObjectives] = useState([]);
+    const [completedObjectives, setCompletedObjectives] = useState<string[]>([]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -64,28 +54,9 @@ export default function EmployeeAssignments() {
         return () => clearInterval(interval);
     }, []);
 
-    const openDialog = () => {
-        setIsDialogOpen(true);
-    };
 
     const closeDialog = () => {
         setIsDialogOpen(false);
-    };
-
-    // Add employee to selected list
-    const handleSelectEmployee = (employee: any) => {
-        if (!selectedEmployees.find(e => e.userId === employee.userId)) {
-            setSelectedEmployees(prevSelectedEmployees => {
-                return [...prevSelectedEmployees, employee];
-            });
-        }
-        setSearchTerm(""); // Clear search box
-        setEmployeeResults([]); // Clear search results
-    };
-
-    // Remove selected employee
-    const handleRemoveEmployee = (employeeId: string) => {
-        setSelectedEmployees(selectedEmployees.filter(e => e.userId !== employeeId));
     };
 
     useEffect(() => {
@@ -122,85 +93,49 @@ export default function EmployeeAssignments() {
 
     }, [router]);
 
-    // Fetch employees based on search term
-    const handleSearch = async (query: string) => {
-        setSearchTerm(query);
-        if (query.length < 2) {
-            setEmployeeResults([]);
-            return;
-        }
+    const handleSaveObjectives = async () => {
 
         try {
-            const response = await fetch(`http://localhost:3002/users/search?username=${query}`, {
-                headers: {
-                    "authorization": 'Bearer ' + localStorage.getItem('token')
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setEmployeeResults(data);
-            }
-        } catch (error) {
-            console.error("Error fetching employees:", error);
-        }
-    };
+            for (const obj of objectives) {
+                const isCompleted = completedObjectives.includes(obj.objectiveId);
+                const body = {
+                    isComplete: isCompleted,
+                }
 
-    // handler function to submit assignment form data to server
-    const handleAssignmentSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            // Step 1: Create the assignment first
-            const assignmentResponse = await fetch('http://localhost:3002/assignments', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({
-                    assignmentName: assignmentName,
-                    location: location,
-                    startsAt: startDate,
-                    endsAt: endDate,
-                    description: description, // Employees are NOT included here
-                })
-            });
-
-            if (!assignmentResponse.ok) {
-                throw new Error("Failed to create assignment");
-            }
-
-            const assignmentData = await assignmentResponse.json();
-            const assignmentId = assignmentData.assignmentId; // Assuming API returns assignment ID
-
-            // Step 2: Assign employees to the created assignment
-            if (selectedEmployees.length > 0) {
-                await fetch(`http://localhost:3002/assignments/${assignmentId}/assign-employees`, {
-                    method: "POST",
+                await fetch(`http://localhost:3002/objectives/${obj.objectiveId}`, {
+                    method: 'PUT',
                     headers: {
                         "Content-Type": "application/json",
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
                     },
-                    body: JSON.stringify({
-                        employeeIds: selectedEmployees.map(emp => emp.userId),
-                    })
+                    body: JSON.stringify(body),
                 });
             }
 
-            // Close the dialog and reset form after success
             setIsDialogOpen(false);
-            window.location.reload();
-            setAssignmentName("");
-            setLocation("");
-            setStartDate(null);
-            setEndDate(null);
-            setDescription("");
-            setSelectedEmployees([]);
-        } catch (e) {
-            console.log("Error submitting assignment:", e);
+        } catch (error) {
+            console.error("Error updating objectives:", error);
         }
     };
 
+    const openDialog = async () => {
+        try {
+            const response = await fetch(`http://localhost:3002/objectives/assignment/${hasActiveAssignment.assignmentId}`);
+
+            console.log(hasActiveAssignment.assignmentId);
+
+            if (!response.ok) throw new Error("Failed to fetch objectives");
+
+            const data = await response.json();
+            const completed = data
+                .filter((obj: any) => obj.isComplete === true)
+                .map((obj: any) => obj.objectiveId);
+            setObjectives(data);
+            setCompletedObjectives(completed);
+            setIsDialogOpen(true);
+        } catch (error) {
+            console.error("Error fetching objectives:", error);
+        }
+    };
 
     return (
         <>
@@ -240,7 +175,7 @@ export default function EmployeeAssignments() {
                     </div>
                     <div className="h-7" />
                     <div>{hasActiveAssignment && (
-                        <button className="flex items-center text-left justify-between bg-green-500 text-white p-4 rounded-lg shadow-md w-fit mt-4 ml-6 hover:bg-green-600 transition">
+                        <button onClick={openDialog} className="flex items-center text-left justify-between bg-green-500 text-white p-4 rounded-lg shadow-md w-fit mt-4 ml-6 hover:bg-green-600 transition">
                             <div>
                                 You have an active assignment:<br />
                                 <strong>{hasActiveAssignment.assignmentName}</strong> at <strong>{hasActiveAssignment.location}</strong>
@@ -255,143 +190,66 @@ export default function EmployeeAssignments() {
             </div>
 
             {isDialogOpen && (
-                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-lg font-medium mb-4 text-center text-bold">Add Assignment</h2>
-                        <div className="h-2"/>
-                        <form onSubmit={handleAssignmentSubmit}>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Assignment name
-                                </label>
-                                <input
-                                    value={assignmentName}
-                                    onChange={(e) => setAssignmentName(e.target.value)}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment name"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Location
-                                </label>
-                                <input
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter location name"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Starts at
-                                </label>
-                                <div
-                                    className="relative w-[350px]">
-                                    <DatePicker
-                                        selected={startDate}
-                                        onChange={(date) => setStartDate(date)}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className=" p-2 bg-white border border-gray-300 rounded-md w-[220px]"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom-start"
-                                    />
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Ends at
-                                </label>
-                                <div className="relative overflow-visible">
-                                    <DatePicker
-                                        selected={endDate}
-                                        onChange={(data) => setEndDate(data)}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white border border-gray-300  w-[220px]"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom"
-                                    />
-                                </div>
-                            </div>
-                            <div className="relative">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Employee to be assigned
-                                </label>
-                                <input
-                                    value={searchTerm}
-                                    onChange={(e) => handleSearch(e.target.value)}
-                                    placeholder="Search employee by username"
-                                    className="w-full p-2 border mb-2 rounded"
-                                />
-                                {/* Search Results Dropdown */}
-                                {employeeResults.length > 0 && (
-                                    <ul className="absolute w-full bg-white border rounded shadow-lg z-10">
-                                        {employeeResults.map((emp) => (
-                                            <li
-                                                key={emp.userId}
-                                                onClick={() => handleSelectEmployee(emp)}
-                                                className="p-2 hover:bg-gray-200 cursor-pointer"
-                                            >
-                                                {emp.username} ({emp.firstName})
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
+                <div className="fixed inset-0 z-50 flex items-center justify-center  text-black bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
+                        <h2 className="text-xl font-semibold mb-4 text-center">Active Assignment Details</h2>
 
-                            {/* Selected Employees */}
-                            <div className="mb-4">
-                                {selectedEmployees.map(emp => (
-                                    <span key={emp.userId} className="bg-gray-200 p-1 rounded m-1 inline-block">
-                                        {emp.username}
-                                        <button onClick={() => handleRemoveEmployee(emp.userId)}
-                                                className="ml-2 text-red-500" type="button">
-                                            &times;
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
+                        <div className="mb-6">
+                            <p><strong>Name:</strong> {hasActiveAssignment.assignmentName}</p>
+                            <p><strong>Location:</strong> {hasActiveAssignment.location}</p>
+                            <p><strong>Description:</strong> {hasActiveAssignment.description}</p>
+                            <p><strong>Start:</strong> {new Date(hasActiveAssignment.startsAt).toLocaleString()}</p>
+                            <p><strong>End:</strong> {new Date(hasActiveAssignment.endsAt).toLocaleString()}</p>
+                        </div>
 
-                            <div className="mb-4">
-                                <label htmlFor="description" className="block text-gray-700 font-medium mb-2">
-                                    Description
-                                </label>
-                                <textarea
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    id="description"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment description"
-                                />
-                            </div>
-                            <div className="flex justify-end gap-4">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
-                                    onClick={closeDialog}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </form>
+                        <h3 className="text-lg font-medium mb-2">Objectives</h3>
+                        <ul className="space-y-2">
+                            {objectives.map((objective) => {
+                                const isChecked = completedObjectives.includes(objective.objectiveId);
+
+                                return (
+                                    <li
+                                        key={objective.objectiveId}
+                                        className="flex items-center justify-between bg-gray-100 p-3 rounded-md"
+                                    >
+                                        <span className="text-gray-800">{objective.objectiveText}</span>
+
+                                        <label className="inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                className="peer hidden"
+                                                checked={isChecked}
+                                                onChange={() => {
+                                                    const updated = isChecked
+                                                        ? completedObjectives.filter(id => id !== objective.objectiveId)
+                                                        : [...completedObjectives, objective.objectiveId];
+                                                    setCompletedObjectives(updated);
+                                                }}
+                                            />
+                                            <div className="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center peer-checked:border-green-500 peer-checked:bg-green-500 transition-colors duration-200">
+                                                {isChecked && (
+                                                    <svg
+                                                        className="w-4 h-4 text-white"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="3"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                        </label>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+
+                        <div className="mt-6 flex justify-end">
+                            <button onClick={closeDialog} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Close</button>
+                            <div className="w-5"/>
+                            <button onClick={handleSaveObjectives}  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save</button>
+                        </div>
                     </div>
                 </div>
             )}

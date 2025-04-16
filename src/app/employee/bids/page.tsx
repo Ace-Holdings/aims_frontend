@@ -3,10 +3,7 @@
 import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import {jwtDecode} from "jwt-decode";
-import ManagerSidebar from "@/components/layout/managerSidebar";
 import Navbar from "@/components/layout/navbar";
-import ActiveBids from "@/components/tiles/activeBids";
-import PreviousBids from "@/components/tiles/previousBids";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
@@ -20,8 +17,6 @@ export default function EmployeeBids() {
     const [deadline, setDeadline] = useState<Date | null>(null);
     const [bidFile, setBidFile] = useState("");
     const [editFile, setEditFile] = useState("");
-    const [bidFileUrl, setBidFileUrl] = useState<string | null>(null);
-    const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
     const router = useRouter();
 
 

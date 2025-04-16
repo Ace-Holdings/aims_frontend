@@ -497,7 +497,7 @@ export default function AssignmentsTable() {
                                 <li key={index} className="flex items-center justify-between border-b pb-1">
                             <span className="text-gray-700">{obj.objectiveText}</span>
                             <span className="text-xl">
-                                        {obj.isCompleted ? "✅" : "❌"}
+                                        {obj.isComplete ? "✅" : "❌"}
                                     </span>
                         </li>
                         ))}

@@ -3,11 +3,9 @@
 import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import {jwtDecode} from "jwt-decode";
-import ManagerSidebar from "@/components/layout/managerSidebar";
 import Navbar from "@/components/layout/navbar";
 import InventoryShop from "@/components/tiles/inventoryShop";
 import InventoryWarehouse from "@/components/tiles/inventoryWarehouse";
-import InventoryTable from "@/components/tables/inventoryTable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
