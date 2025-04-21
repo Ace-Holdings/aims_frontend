@@ -112,6 +112,7 @@ export default function EmployeeAssignments() {
             }
 
             setIsDialogOpen(false);
+            window.location.reload();
         } catch (error) {
             console.error("Error updating objectives:", error);
         }

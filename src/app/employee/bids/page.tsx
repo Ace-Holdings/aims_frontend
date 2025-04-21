@@ -168,13 +168,11 @@ export default function EmployeeBids() {
 
                         {/* Active Bids Section */}
                         <div className="w-full mt-10 text-black">
-                            <h2 className="text-lg font-semibold mb-4">Active Bids</h2>
                             <ActiveBidsEmployee/>
                         </div>
 
                         {/* Previous Bids Section */}
                         <div className="w-full mt-10 text-black">
-                            <h2 className="text-lg font-semibold mb-4">Previous Bids</h2>
                             <PreviousBidsEmployee/>
                         </div>
                     </div>

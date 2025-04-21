@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
 import {LiaFileDownloadSolid} from "react-icons/lia";
 import ReactDOM from "react-dom";
@@ -243,24 +243,27 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
             ${bid.status === true ? "bg-green-500 text-white" : "bg-gray-200 text-black"}`}>
                 <div className="absolute top-3 right-3 flex flex-col space-y-2 z-10">
                     <button
-                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                        className={`text-blue-600 hover:text-blue-800  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
+                            rounded-full p-2 hover:bg-blue-100`}
                         title="View Details"
                         onClick={() => openDetailsDialog(bid)}
                     >
-                        <FiEye className="w-5 h-5"/>
+                        <FiEye className="w-5 h-5" />
                     </button>
-                    <div className="h-1"/>
+                    <div className="h-1/2"/>
                     <button
-                        className="text-green-600 hover:text-green-800 transition-colors duration-200"
-                        title="Edit"
+                        className={`text-yellow-300 hover:text-yellow-500  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
+                            rounded-full p-2 hover:bg-blue-100`}
+                        title="View Details"
                         onClick={() => openUpdateDialog(bid)}
                     >
-                        <FiEdit className="w-5 h-5"/>
+                        <FiEdit className="w-5 h-1/2"/>
                     </button>
-                    <div className="h-1"/>
+                    <div className="h-1/2"/>
                     <button
-                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
-                        title="Delete"
+                        className={`text-purple-600 hover:text-purple-800  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
+                            rounded-full p-2 hover:bg-blue-100`}
+                        title="View Details"
                         onClick={() => openDownloadDialog(bid)}
                     >
                         <LiaFileDownloadSolid className="w-6 h-6"/>

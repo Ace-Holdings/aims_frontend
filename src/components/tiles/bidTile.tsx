@@ -1,4 +1,4 @@
-import { FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
+import {FiEye, FiEdit, FiTrash2, FiMenu} from "react-icons/fi";
 import { LiaFileDownloadSolid } from "react-icons/lia"
 import ReactDOM from "react-dom";
 import React, {useEffect, useState} from "react";
@@ -12,6 +12,8 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [selectedBid, setSelectedBid] = useState(null);
     const [downloadDialog, setDownloadDialog] = useState(false);
+    const [showChecklistDialog, setShowChecklistDialog] = useState(false);
+    const [checklist, setChecklist] = useState([]);
 
     // update states
     const [description, setDescription] = useState("");
@@ -31,7 +33,30 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
     const openUpdateDialog= (bid: any) => {
         setSelectedBid(bid);
+        console.log(selectedBid);
         setShowUpdateDialog(true);
+    }
+
+    const openChecklistDialog = (bid: any) => {
+        setSelectedBid(bid);
+        fetchForBidChecklist(bid.bidId);
+        setShowChecklistDialog(true);
+    }
+
+    const fetchForBidChecklist = async (bidId) => {
+        try {
+            const response = await fetch(`http://localhost:3002/checklist/${bidId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+
+            const data = await response.json();
+            setChecklist(data.checklist);
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     const openDeleteDialog = (bid: any) => {
@@ -222,36 +247,49 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
     return (
         <>
-            <div className={`p-4 relative rounded-lg shadow-md border border-gray-200 font-custom h-48
+            <div className={`p-4 relative rounded-lg shadow-md border border-gray-200 font-custom h-72 
             ${bid.status === true ? "bg-green-500 text-white" : "bg-gray-200 text-black"}`}>
                 <div className="absolute top-3 right-3 flex flex-col space-y-2 z-10">
                     <button
-                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                        className={`text-blue-600 hover:text-blue-800  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
+                            rounded-full p-2 hover:bg-blue-100`}
                         title="View Details"
                         onClick={() => openDetailsDialog(bid)}
                     >
-                        <FiEye className="w-5 h-5"/>
+                        <FiEye className="w-5 h-5" />
                     </button>
-                    <div className="h-1"/>
+                    <div className="h-1/2"/>
                     <button
-                        className="text-green-600 hover:text-green-800 transition-colors duration-200"
-                        title="Edit"
+                        className={`text-yellow-300 hover:text-yellow-500  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
+                            rounded-full p-2 hover:bg-blue-100`}
+                        title="View Details"
                         onClick={() => openUpdateDialog(bid)}
                     >
-                        <FiEdit className="w-5 h-5"/>
+                        <FiEdit className="w-5 h-1/2"/>
                     </button>
                     <div className="h-1"/>
                     <button
-                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
-                        title="Delete"
+                        className={`text-purple-600 hover:text-purple-800  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
+                            rounded-full p-2 hover:bg-blue-100`}
+                        title="View Details"
                         onClick={() => openDownloadDialog(bid)}
                     >
                         <LiaFileDownloadSolid className="w-6 h-6"/>
                     </button>
-                    <div className="h-1"/>
+                    <div className="h-1/2"/>
                     <button
-                        className="text-red-600 hover:text-red-800 transition-colors duration-200"
-                        title="Delete"
+                        className={`text-black hover:text-gray-800  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
+                            rounded-full p-2 hover:bg-blue-100`}
+                        title="View Details"
+                        onClick={() => openChecklistDialog(bid)}
+                    >
+                        <FiMenu className="w-5 h-5" />
+                    </button>
+                    <div className="h-1/2"/>
+                    <button
+                        className={`text-red-600 hover:text-red-800  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
+                            rounded-full p-2 hover:bg-blue-100`}
+                        title="View Details"
                         onClick={() => openDeleteDialog(bid)}
                     >
                         <FiTrash2 className="w-5 h-5"/>
@@ -412,9 +450,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     <div className="bg-white p-6 rounded-lg shadow-lg w-2/3">
                         <h2 className="text-lg font-medium mb-4 text-center font-bold">Preview Bid Files</h2>
 
-                        {/* Two iframes side by side */}
                         <div className="flex justify-between space-x-4 mb-4">
-                            {/* PDF Preview */}
                             <div className="flex flex-col items-center w-1/2">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-2">Bid File (PDF)</h3>
                                 {pdfPreviewUrl ? (
@@ -427,7 +463,6 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                                 )}
                             </div>
 
-                            {/* Editable File Preview */}
                             <div className="flex flex-col items-center w-1/2">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-2">Editable File (DOCX)</h3>
                                 {editablePreviewUrl ? (
@@ -441,7 +476,6 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                             </div>
                         </div>
 
-                        {/* Buttons Below Previews */}
                         <div className="flex justify-between">
                             <button
                                 className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
@@ -457,7 +491,6 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                             </button>
                         </div>
 
-                        {/* Close Button */}
                         <div className="mt-4 text-center">
                             <button
                                 className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
@@ -469,6 +502,34 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     </div>
                 </div>
             )}
+
+            {showChecklistDialog &&
+                ReactDOM.createPortal(
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-50 font-custom">
+                        <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] mx-auto z-10">
+                            <h3 className="text-xl font-semibold mb-4 text-gray-700 text-center">Checklist</h3>
+                            <div className="mb-6 space-y-2 text-gray-800 text-sm max-h-[300px] overflow-y-auto pr-2">
+                                {checklist.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="bg-gray-100 px-4 py-2 rounded-md shadow-sm"
+                                    >
+                                        {item}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-4 flex justify-end">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                    onClick={() => setShowChecklistDialog(false)}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>,
+                    document.body
+                )}
 
         </>
     );
