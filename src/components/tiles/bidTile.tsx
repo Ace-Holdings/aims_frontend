@@ -512,9 +512,21 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                                 {checklist.map((item, index) => (
                                     <div
                                         key={index}
-                                        className="bg-gray-100 px-4 py-2 rounded-md shadow-sm"
+                                        className="bg-gray-100 px-4 py-2 rounded-md shadow-sm flex justify-between items-start"
                                     >
-                                        {item}
+                                        <span className="w-[95%]">{item.requirement}</span>
+                                        <span className="text-lg">{item.fulfilled ? '✅' : <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-5 w-5 text-red-600"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>}</span>
                                     </div>
                                 ))}
                             </div>
