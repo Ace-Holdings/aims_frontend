@@ -261,7 +261,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     <div className="h-1/2"/>
                     <button
                         className={`text-yellow-300 hover:text-yellow-500  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
-                            rounded-full p-2 hover:bg-blue-100`}
+                            rounded-full p-2 hover:bg-yellow-100`}
                         title="View Details"
                         onClick={() => openUpdateDialog(bid)}
                     >
@@ -270,7 +270,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     <div className="h-1"/>
                     <button
                         className={`text-purple-600 hover:text-purple-800  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
-                            rounded-full p-2 hover:bg-blue-100`}
+                            rounded-full p-2 hover:bg-purple-100`}
                         title="View Details"
                         onClick={() => openDownloadDialog(bid)}
                     >
@@ -279,7 +279,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     <div className="h-1/2"/>
                     <button
                         className={`text-black hover:text-gray-800  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
-                            rounded-full p-2 hover:bg-blue-100`}
+                            rounded-full p-2 hover:bg-gray-100`}
                         title="View Details"
                         onClick={() => openChecklistDialog(bid)}
                     >
@@ -288,7 +288,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                     <div className="h-1/2"/>
                     <button
                         className={`text-red-600 hover:text-red-800  ${bid.status === false ? "bg-gray-100" : "bg-green-600"}  transition-colors duration-200
-                            rounded-full p-2 hover:bg-blue-100`}
+                            rounded-full p-2 hover:bg-red-100`}
                         title="View Details"
                         onClick={() => openDeleteDialog(bid)}
                     >

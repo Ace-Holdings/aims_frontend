@@ -86,7 +86,7 @@ export default function AssignmentsTableEmployee() {
             selector: (row: any) => (
                 <div className="flex">
                     <button
-                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                        className="text-blue-600 p-2 hover:text-blue-800 hover:bg-blue-100 transition-colors duration-200 bg-gray-200 rounded-md"
                         title="View Details"
                         onClick={() => {
                             openDetailsDialog(row)
@@ -99,6 +99,7 @@ export default function AssignmentsTableEmployee() {
             ignoreRowClick: true,
             allowOverflow: true,
             button: true,
+            minWidth: "250px"
         },
     ];
 

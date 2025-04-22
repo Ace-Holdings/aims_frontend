@@ -145,11 +145,13 @@ export default function AssignmentsTable() {
             name: "Assignment name",
             selector: (row: any) => row.assignmentName,
             sortable: true,
+            maxWidth: "200px"
         },
         {
             name: "Location",
             selector: (row: any) => row.location,
             sortable: true,
+            maxWidth: "150px",
         },
         {
             name: "Starts At",
@@ -181,27 +183,30 @@ export default function AssignmentsTable() {
             name: "Status",
             selector: (row: any) => row.status === true ? "Active" : "Inactive",
             sortable: true,
+            maxWidth: "100px",
         },
         {
             name: "Actions",
             selector: (row: any) => (
                 <div className="flex">
                     <button
-                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200
+               rounded-md p-2 hover:bg-purple-100 bg-gray-200"
                         onClick={() => openObjectivesDialog(row)}
                     >
                         <FiMenu className="w-5 h-5" />
                     </button>
-                    <div className="w-1"/>
+                    <div className="w-2"/>
                     <button
-                        className="text-green-600 hover:text-green-800 transition-colors duration-200"
-                        onClick={() => {openUpdateDialog(row)}}
+                        className="text-green-600 hover:text-green-800 transition-colors duration-200
+               p-2 hover:bg-green-100 bg-gray-200 rounded-md"
+                        onClick={() => openUpdateDialog(row)}
                     >
-                        <FiEdit className="size-6"/>
+                        <FiEdit className="w-5 h-5" />
                     </button>
-                    <div className="w-1"/>
+                    <div className="w-2"/>
                     <button
-                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                        className="text-blue-600 p-2 hover:text-blue-800 hover:bg-blue-100 transition-colors duration-200 bg-gray-200 rounded-md"
                         title="View Details"
                         onClick={() => {
                             openDetailsDialog(row)
@@ -209,9 +214,9 @@ export default function AssignmentsTable() {
                     >
                         <FiEye className="w-5 h-5"/>
                     </button>
-                    <div className="w-1"/>
+                    <div className="w-2"/>
                     <button
-                        className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                        className="text-red-600 p-2 hover:text-red-800 hover:bg-red-100 transition-colors duration-200 bg-gray-200 rounded-md"
                         title="Delete User"
                         onClick={() => openDeleteDialog(row)}
                     >
@@ -222,6 +227,7 @@ export default function AssignmentsTable() {
             ignoreRowClick: true,
             allowOverflow: true,
             button: true,
+            minWidth: "250px"
         },
     ];
 

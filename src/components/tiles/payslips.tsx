@@ -102,7 +102,8 @@ const PaySlipsTile = ({ id, employee, earnings, deductions, date }) => {
                 <div className="absolute top-3 right-3 flex flex-col space-y-2">
                     <div/>
                     <button
-                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                        className="text-blue-600 hover:text-blue-800 bg-gray-200  transition-colors duration-200
+               rounded-full p-2 hover:bg-blue-100"
                         title="View Details"
                         onClick={() => openDetailsDialog({id, employee, earnings, deductions, date})}
                     >
@@ -111,7 +112,8 @@ const PaySlipsTile = ({ id, employee, earnings, deductions, date }) => {
                     </button>
                     <div className="h-1"/>
                     <button
-                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                        className="text-purple-600 hover:text-purple-800 bg-gray-200 transition-colors duration-200
+               rounded-full p-2 hover:bg-purple-100"
                         title="Download"
                         onClick={() => downloadPaySlipFile({id, employee, earnings, deductions, date})}
                     >
@@ -119,7 +121,8 @@ const PaySlipsTile = ({ id, employee, earnings, deductions, date }) => {
                     </button>
                     <div className="h-1"/>
                     <button
-                        className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                        className="text-red-600 hover:text-red-800 transition-colors duration-200
+               rounded-full p-2 hover:bg-red-100 bg-gray-200"
                         title="Delete"
                         onClick={() => openDeleteDialog({id, employee, earnings, deductions, date})}
                     >

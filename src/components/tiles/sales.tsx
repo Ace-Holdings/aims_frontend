@@ -173,39 +173,70 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
     return (
         <>
             <div
-                className="relative bg-white shadow-md p-6 rounded-lg mt-4 w-[500px] font-custom text-center flex flex-col ">
+                className="relative bg-white shadow-md p-6 rounded-lg mt-4 w-[500px] h-72 font-custom text-center flex flex-col ">
                 <div className="absolute top-3 right-3 flex flex-col space-y-2">
                     <button
-                        className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                        className="text-blue-600 hover:text-blue-800 bg-gray-200  transition-colors duration-200
+               rounded-full p-2 hover:bg-blue-100"
                         title="View Details"
-                        onClick={() => openDetailDialog({id, title, date, amount, quantity, customer, issuer, description, inventory: inventory ? inventory : {name: ""}, user: user ? user : {username: ""}, pricePerUnit})}
+                        onClick={() =>
+                            openDetailDialog({
+                                id, title, date, amount, quantity, customer, issuer, description,
+                                inventory: inventory ? inventory : { name: "" },
+                                user: user ? user : { username: "" },
+                                pricePerUnit
+                            })
+                        }
                     >
-
-                        <FiEye className="w-5 h-5"/>
+                        <FiEye className="w-5 h-5" />
                     </button>
-                    <div className="h-1"/>
+                    <div className="h-1/2"/>
                     <button
-                        className="text-green-600 hover:text-green-800 transition-colors duration-200"
+                        className="text-green-600 bg-gray-200  hover:text-green-800 transition-colors duration-200
+               rounded-full p-2 hover:bg-green-100"
                         title="Edit"
-                        onClick={() => openUpdateDialog({id, title, date, amount, quantity, customer, issuer, description, inventory: inventory ? inventory : {name: ""}, user: user ? user : {username: ""}, pricePerUnit})}
+                        onClick={() =>
+                            openUpdateDialog({
+                                id, title, date, amount, quantity, customer, issuer, description,
+                                inventory: inventory ? inventory : { name: "" },
+                                user: user ? user : { username: "" },
+                                pricePerUnit
+                            })
+                        }
                     >
-                        <FiEdit className="w-5 h-5"/>
+                        <FiEdit className="w-5 h-5" />
                     </button>
-                    <div className="h-1"/>
+                    <div className="h-1/2"/>
                     <button
-                        className="text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                        className="text-purple-600 hover:text-purple-800 bg-gray-200 transition-colors duration-200
+               rounded-full p-2 hover:bg-purple-100"
                         title="Download"
-                        onClick={() => directFileDownload({id, title, date, amount, quantity, customer, issuer, description, inventory: inventory ? inventory : {name: ""}, user: user ? user : {username: ""}, pricePerUnit})}
+                        onClick={() =>
+                            directFileDownload({
+                                id, title, date, amount, quantity, customer, issuer, description,
+                                inventory: inventory ? inventory : { name: "" },
+                                user: user ? user : { username: "" },
+                                pricePerUnit
+                            })
+                        }
                     >
-                        <LiaFileDownloadSolid className="w-6 h-6"/>
+                        <LiaFileDownloadSolid className="w-6 h-6" />
                     </button>
-                    <div className="h-1"/>
+                    <div className="h-1/2"/>
                     <button
-                        className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                        className="text-red-600 hover:text-red-800 transition-colors duration-200
+               rounded-full p-2 hover:bg-red-100 bg-gray-200"
                         title="Delete"
-                        onClick={() => openDeleteDialog({id, title, date, amount, quantity, customer, issuer, description, inventory: inventory ? inventory : {name: ""}, user: user ? user : {username: ""}, pricePerUnit})}
+                        onClick={() =>
+                            openDeleteDialog({
+                                id, title, date, amount, quantity, customer, issuer, description,
+                                inventory: inventory ? inventory : { name: "" },
+                                user: user ? user : { username: "" },
+                                pricePerUnit
+                            })
+                        }
                     >
-                        <FiTrash2 className="w-5 h-5"/>
+                        <FiTrash2 className="w-5 h-5" />
                     </button>
                 </div>
 
@@ -221,6 +252,7 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                 <h2 className="text-lg text-gray-500 text-left">Issuer: <span
                     className="font-semibold text-black">{issuer}</span></h2>
                 <p className="text-gray-500 text-left">Date: <span className="text-black font-semibold">{formattedDate}</span></p>
+                <div className={"h-8"}/>
                 <hr className="border-dotted border-gray-400 w-full my-3"/>
                 <p className="text-green-600 font-bold text-lg text-left">
                     {new Intl.NumberFormat('en-US', {style: 'currency', currency: 'MWK'}).format(amount)}
