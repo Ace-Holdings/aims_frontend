@@ -8,6 +8,7 @@ import {useRouter} from "next/navigation";
 
 export default function EmployeeSidebar({isCollapsed, toggleSidebar}: any) {
     const router = useRouter();
+    const currentPath = router.pathname;
 
     const menuItems = [
         { icon: <FiHome />, label: "Home", path: "/employee" },
@@ -35,7 +36,9 @@ export default function EmployeeSidebar({isCollapsed, toggleSidebar}: any) {
                             <li key={index}>
                                 <button
                                     onClick={() => router.push(item.path)}
-                                    className={`flex items-center px-4 py-2 w-full font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
+                                    className={`flex items-center px-4 py-2 w-full font-medium rounded-lg 
+      ${currentPath === item.path ? "bg-gray-700" : "hover:bg-gray-400"}
+      focus:outline-none focus:ring-2 focus:ring-neon-blue transition-colors duration-200 text-md ${
                                         isCollapsed ? "justify-center" : "space-x-3"
                                     }`}
                                 >

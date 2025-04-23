@@ -48,6 +48,11 @@ export default function AdminSales() {
     const [availableSerials, setAvailableSerials] = useState<any[]>([]);
     const [selectedSerials, setSelectedSerials] = useState<string[]>([]);
 
+    const [selectedYear, setSelectedYear] = useState("");
+    const [selectedMonth, setSelectedMonth] = useState("");
+    const [selectedDay, setSelectedDay] = useState("");
+
+
 
     // filtered sales by search
     useEffect(() => {
@@ -68,6 +73,26 @@ export default function AdminSales() {
     const closeDialog = () => {
         setIsDialogOpen(false);
     }
+
+    useEffect(() => {
+        const filtered = sales.filter((sale) => {
+            const date = new Date(sale.createdAt);
+
+            const matchesYear = selectedYear ? date.getFullYear() === Number(selectedYear) : true;
+            const matchesMonth = selectedMonth ? (date.getMonth() + 1) === Number(selectedMonth) : true;
+            const matchesDay = selectedDay ? date.getDate() === Number(selectedDay) : true;
+
+            const matchesSearch = searchTerm
+                ? sale.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                sale.user?.username?.toLowerCase().includes(searchTerm.toLowerCase())
+                : true;
+
+            return matchesYear && matchesMonth && matchesDay && matchesSearch;
+        });
+
+        setFilteredSales(filtered);
+    }, [sales, searchTerm, selectedYear, selectedMonth, selectedDay]);
+
 
     const handleSelectInventory = async (inventoryId: string) => {
         try {
@@ -533,39 +558,55 @@ export default function AdminSales() {
                     <div className="flex flex-col items-center">
                         {/* Search, Date, and Time Filters */}
                         <div className="flex gap-4 mb-4">
-                            {/* Customer Search Input */}
-                            <input
-                                type="text"
-                                placeholder="Search by customer..."
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                                className="p-2 border border-gray-300 rounded-lg shadow-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                            />
+                            {/* Search, Date, and Time Filters */}
+                                <input
+                                    type="text"
+                                    placeholder="Search by customer..."
+                                    value={searchTerm}
+                                    onChange={handleSearchChange}
+                                    className="p-2 border border-gray-300 rounded-lg shadow-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                                />
+                                {/* Year Filter */}
+                                <select
+                                    className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                                    value={selectedYear}
+                                    onChange={(e) => setSelectedYear(e.target.value)}
+                                >
+                                    <option value="">All Years</option>
+                                    {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                                        <option key={year} value={year}>{year}</option>
+                                    ))}
+                                </select>
 
-                            {/* Date Filter */}
-                            <select
-                                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                            >
-                                <option value="">All Months</option>
-                                {[
-                                    "January", "February", "March", "April", "May", "June",
-                                    "July", "August", "September", "October", "November", "December"
-                                ].map((month, index) => (
-                                    <option key={index} value={index + 1}>
-                                        {month}
-                                    </option>
-                                ))}
-                            </select>
+                                {/* Month Filter */}
+                                <select
+                                    className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                                    value={selectedMonth}
+                                    onChange={(e) => setSelectedMonth(e.target.value)}
+                                >
+                                    <option value="">All Months</option>
+                                    {[
+                                        "January", "February", "March", "April", "May", "June",
+                                        "July", "August", "September", "October", "November", "December"
+                                    ].map((month, index) => (
+                                        <option key={index} value={index + 1}>
+                                            {month}
+                                        </option>
+                                    ))}
+                                </select>
 
-                            {/* Time Filter */}
-                            <select
-                                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                            >
-                                <option value="">All Days</option>
-                                {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
-                                    <option key={day} value={day}>{day}</option>
-                                ))}
-                            </select>
+                                {/* Day Filter */}
+                                <select
+                                    className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                                    value={selectedDay}
+                                    onChange={(e) => setSelectedDay(e.target.value)}
+                                >
+                                    <option value="">All Days</option>
+                                    {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                                        <option key={day} value={day}>{day}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
                         {/* Sales Tiles */}
@@ -593,7 +634,7 @@ export default function AdminSales() {
                         </div>
                     </div>
                 </div>
-            </div>
+
 
             {isDialogOpen && (
                 <div

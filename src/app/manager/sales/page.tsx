@@ -44,6 +44,10 @@ export default function ManagerSales() {
     const [availableSerials, setAvailableSerials] = useState<any[]>([]);
     const [selectedSerials, setSelectedSerials] = useState<string[]>([]);
 
+    const [selectedYear, setSelectedYear] = useState("");
+    const [selectedMonth, setSelectedMonth] = useState("");
+    const [selectedDay, setSelectedDay] = useState("");
+
     useEffect(() => {
         const filtered = sales.filter((sale) =>
             sale.customer.toLowerCase().includes(searchTerm.toLowerCase())
@@ -140,6 +144,25 @@ export default function ManagerSales() {
             console.error("Error fetching inventory details:", error);
         }
     };
+
+    useEffect(() => {
+        const filtered = sales.filter((sale) => {
+            const date = new Date(sale.createdAt);
+
+            const matchesYear = selectedYear ? date.getFullYear() === Number(selectedYear) : true;
+            const matchesMonth = selectedMonth ? (date.getMonth() + 1) === Number(selectedMonth) : true;
+            const matchesDay = selectedDay ? date.getDate() === Number(selectedDay) : true;
+
+            const matchesSearch = searchTerm
+                ? sale.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                sale.user?.username?.toLowerCase().includes(searchTerm.toLowerCase())
+                : true;
+
+            return matchesYear && matchesMonth && matchesDay && matchesSearch;
+        });
+
+        setFilteredSales(filtered);
+    }, [sales, searchTerm, selectedYear, selectedMonth, selectedDay]);
 
     const handleAddItem = async () => {
         if (!selectedItemDetails || inputQuantity < 1) return;
@@ -355,6 +378,8 @@ export default function ManagerSales() {
                 )
             );
 
+            console.log("function reached here");
+
             setSelectedSerials([]);
             setAvailableSerials([]);
             setInputQuantity(1);
@@ -561,10 +586,23 @@ export default function ManagerSales() {
                                 onChange={handleSearchChange}
                                 className="p-2 border border-gray-300 rounded-lg shadow-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                             />
-
-                            {/* Date Filter */}
+                            {/* Year Filter */}
                             <select
                                 className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(e.target.value)}
+                            >
+                                <option value="">All Years</option>
+                                {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                                    <option key={year} value={year}>{year}</option>
+                                ))}
+                            </select>
+
+                            {/* Month Filter */}
+                            <select
+                                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                                value={selectedMonth}
+                                onChange={(e) => setSelectedMonth(e.target.value)}
                             >
                                 <option value="">All Months</option>
                                 {[
@@ -577,9 +615,11 @@ export default function ManagerSales() {
                                 ))}
                             </select>
 
-                            {/* Time Filter */}
+                            {/* Day Filter */}
                             <select
                                 className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                                value={selectedDay}
+                                onChange={(e) => setSelectedDay(e.target.value)}
                             >
                                 <option value="">All Days</option>
                                 {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
@@ -716,28 +756,6 @@ export default function ManagerSales() {
                                     placeholder="Name of item"
                                 />
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Date and Time of sale
-                                </label>
-                                <div className="relative overflow-visible">
-                                    <DatePicker
-                                        selected={timestamp}
-                                        onChange={(e: Date | null) => {
-                                            setTimestamp(e)
-                                        }}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom"
-                                    />
-                                </div>
-                            </div>
-
                             <div className="flex justify-end gap-4">
                                 <button
                                     type="button"
