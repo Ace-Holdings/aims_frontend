@@ -82,14 +82,19 @@ export default function InventoryTableEmployee() {
         const user = jwtDecode(localStorage.getItem("token")).user;
 
         try {
-            // 1. DELETE all existing inventory units for the inventoryId
-            const deleteResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem.inventoryId}`, {
-                method: "DELETE",
-            });
+            const inventoryCheckResponse = await fetch(`http://localhost:3002/unit/serials/${selectedItem.inventoryId}`);
 
-            if (!deleteResponse.ok) {
-                console.error("Failed to delete existing inventory units");
-                return;
+            const inventoryCheckData = await inventoryCheckResponse.json();
+
+            if (Array.isArray(inventoryCheckData) && inventoryCheckData.length > 0) {
+                const deleteResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem.inventoryId}`, {
+                    method: "DELETE",
+                });
+
+                if (!deleteResponse.ok) {
+                    console.error("Failed to delete existing inventory units");
+                    return;
+                }
             }
 
             // 2. Prepare updated inventory payload
