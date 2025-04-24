@@ -39,6 +39,7 @@ export default function ManagerSales() {
     const [isQuantityModalOpen, setIsQuantityModalOpen] = useState(false);
     const [inputQuantity, setInputQuantity] = useState(1);
     const [pdfFile, setPdfFile] = useState<Blob>(new Blob());
+    const [maxSelectable, setMaxSelectable] = useState(1);
 
     const [isSerialModalOpen, setIsSerialModalOpen] = useState(false);
     const [availableSerials, setAvailableSerials] = useState<any[]>([]);
@@ -174,6 +175,7 @@ export default function ManagerSales() {
                 const data = await response.json();
                 setAvailableSerials(data);
                 console.log(data);
+                setMaxSelectable(inputQuantity);
                 setIsQuantityModalOpen(false);
                 setIsSerialModalOpen(true);
             } else {
@@ -801,8 +803,11 @@ export default function ManagerSales() {
 
             {isSerialModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]  text-black flex flex-col">
-                        <h3 className="text-lg font-semibold mb-4 text-center">Select Serials</h3>
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] text-black flex flex-col">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold text-center flex-grow">Select Serials</h3>
+                            <span className="text-sm text-gray-600">{selectedSerials.length} of {maxSelectable}</span>
+                        </div>
 
                         <form
                             onSubmit={(e) => {
@@ -812,31 +817,37 @@ export default function ManagerSales() {
                             className="flex flex-col flex-grow"
                         >
                             {/* Scrollable section */}
-                            <div className="overflow-y-auto mb-4 pr-2" style={{ maxHeight: '200px' }}>
-                                {availableSerials.map((serial: any) => (
-                                    <label
-                                        key={serial.id}
-                                        className="flex justify-between items-center mb-3 px-2 cursor-pointer"
-                                    >
-                                        <span className="text-sm">{serial.serialNumber}</span>
-                                        <input
-                                            type="checkbox"
-                                            value={serial.unitId}
-                                            checked={selectedSerials.includes(serial.unitId)}
-                                            className="w-5 h-5 accent-blue-600"
-                                            onChange={(e) => {
-                                                const id = serial.unitId;
-                                                setSelectedSerials((prev) =>
-                                                    e.target.checked
-                                                        ? [...prev, id]
-                                                        : prev.filter((s) => s !== id)
-                                                );
+                            <div className="overflow-y-auto mb-4 pr-2 space-y-2" style={{ maxHeight: '200px' }}>
+                                {availableSerials.map((serial: any) => {
+                                    const isChecked = selectedSerials.includes(serial.unitId);
+                                    const isDisabled = !isChecked && selectedSerials.length >= maxSelectable;
 
-                                                setTimeout(() => console.log(selectedSerials), 300);
-                                            }}
-                                        />
-                                    </label>
-                                ))}
+                                    return (
+                                        <div
+                                            key={serial.id}
+                                            className={`bg-gray-100 rounded-md px-3 py-2 flex justify-between items-center ${
+                                                isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                                            }`}
+                                        >
+                                            <span className="text-sm">{serial.serialNumber}</span>
+                                            <input
+                                                type="checkbox"
+                                                value={serial.unitId}
+                                                checked={isChecked}
+                                                disabled={isDisabled}
+                                                className="w-5 h-5 accent-green-600"
+                                                onChange={(e) => {
+                                                    const id = serial.unitId;
+                                                    setSelectedSerials((prev) =>
+                                                        e.target.checked
+                                                            ? [...prev, id]
+                                                            : prev.filter((s) => s !== id)
+                                                    );
+                                                }}
+                                            />
+                                        </div>
+                                    );
+                                })}
                             </div>
 
                             {/* Buttons */}
@@ -844,7 +855,7 @@ export default function ManagerSales() {
                                 <button
                                     type="button"
                                     onClick={() => setIsSerialModalOpen(false)}
-                                    className="text-gray-500"
+                                    className="text-gray-500 bg-gray-200 px-4 py-2 rounded"
                                 >
                                     Cancel
                                 </button>
