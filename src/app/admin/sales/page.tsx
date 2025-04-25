@@ -520,14 +520,14 @@ export default function AdminSales() {
         // Title
         doc.setFont("helvetica", "bold");
         doc.setFontSize(20);
-        doc.text("Monthly Sales Report", 14, 75);
+        doc.text("Sales Report", 14, 75);
 
         doc.setFontSize(12);
         doc.setFont("helvetica", "normal");
         doc.text(`Report Period: ${formattedStartDate} to ${formattedEndDate}`, 14, 85);
 
         console.log("DEBUG Report:", report);
-        doc.text(`Total Sales Amount: MWK ${report.totalAmount}`, 14, 93);
+        doc.text(`Total Sales Amount: ${new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(report.totalAmount)}`, 14, 93);
         doc.text(`Total Items Sold: ${report.totalQuantity}`, 14, 101);
 
         // Table Data
@@ -535,7 +535,7 @@ export default function AdminSales() {
             new Date(sale.timestamp).toLocaleDateString(),
             sale.inventories.map((inv: any) => inv.name).join(", "), // Join inventory item names
             sale.quantity.reduce((sum: number, q: number) => sum + q, 0), // Sum quantities
-            `MWK ${sale.amount.toLocaleString()}` // Format the total amount
+            `${new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(sale.amount)}` // Format the total amount
         ]);
 
         autoTable(doc, {
@@ -900,28 +900,6 @@ export default function AdminSales() {
                                     placeholder="Name of item"
                                 />
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Date and Time of sale
-                                </label>
-                                <div className="relative overflow-visible">
-                                    <DatePicker
-                                        selected={timestamp}
-                                        onChange={(e: Date | null) => {
-                                            setTimestamp(e)
-                                        }}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom"
-                                    />
-                                </div>
-                            </div>
-
                             <div className="flex justify-end gap-4">
                                 <button
                                     type="button"
@@ -1047,7 +1025,7 @@ export default function AdminSales() {
                                 <DatePicker
                                     selected={startDate}
                                     onChange={(date: Date | null) => setStartDate(date)}
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    className="w-[300px] p-2 border border-gray-300 rounded-lg"
                                     dateFormat="yyyy-MM-dd"
                                     placeholderText="Select a date"
                                 />
@@ -1058,7 +1036,7 @@ export default function AdminSales() {
                                 <DatePicker
                                     selected={endDate}
                                     onChange={(date: Date | null) => setEndDate(date)}
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    className="w-[300px] p-2 border border-gray-300 rounded-lg"
                                     dateFormat="yyyy-MM-dd"
                                     placeholderText="Select a date"
                                 />
