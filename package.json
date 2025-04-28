@@ -11,10 +11,12 @@
   "dependencies": {
     "apexcharts": "^4.4.0",
     "chart.js": "^4.4.9",
+    "framer-motion": "^12.9.1",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^5.0.2",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.503.0",
     "next": "15.1.5",
     "node-fetch": "^3.3.2",
     "pspdfkit": "^2024.8.2",

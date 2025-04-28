@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import {MdOutlineInventory2, MdOutlinePointOfSale} from "react-icons/md";
 import {GrDocumentPerformance} from "react-icons/gr";
+import { HandCoins } from "lucide-react";
 import {LuReceipt} from "react-icons/lu";
 import {useRouter} from "next/navigation";
 
@@ -16,6 +17,7 @@ export default function EmployeeSidebar({isCollapsed, toggleSidebar}: any) {
         { icon: <MdOutlineInventory2 />, label: "Inventory", path: "/employee/inventory" },
         { icon: <MdOutlinePointOfSale />, label: "Sales", path: "/employee/sales" },
         { icon: <GrDocumentPerformance />, label: "Bid documents", path: "/employee/bids" },
+        { icon: <HandCoins/>, label: "Loans", path: "/employee/loans" }
     ];
 
     return (

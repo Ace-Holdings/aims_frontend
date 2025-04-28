@@ -10,6 +10,7 @@ import ManagerSidebar from "@/components/layout/managerSidebar";
 import {useState, useEffect} from "react";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/navigation";
+import ActiveAssignmentsProportion from "@/components/charts/assignmentProportion";
 
 export default function ManagerHome() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -90,7 +91,7 @@ export default function ManagerHome() {
 
                 {/* Page Content */}
                 <div className="p-6 text-black flex-2 flex flex-row mt-5 ">
-                    <ActiveAssignments/>
+                    <ActiveAssignmentsProportion/>
                     <div className="w-20"/>
                     <SalesBarChart/>
                 </div>

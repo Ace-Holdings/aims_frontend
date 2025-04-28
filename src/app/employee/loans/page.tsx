@@ -1,0 +1,167 @@
+"use client"
+
+import EmployeeSidebar from "@/components/layout/employeeSidebar";
+import Navbar from "@/components/layout/navbar";
+import InventoryShop from "@/components/tiles/inventoryShop";
+import InventoryWarehouse from "@/components/tiles/inventoryWarehouse";
+import InventoryTableEmployee from "@/components/tables/inventoryTableEmployee";
+import {useEffect, useState} from "react";
+import LoanTile from "@/components/tiles/loan";
+import LoanTable from "@/components/tables/loanTable";
+
+export default function Loans() {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    const toggleSidebar = () => {
+        const newState = !isSidebarCollapsed;
+        setIsSidebarCollapsed(newState);
+        localStorage.setItem("adminSidebarCollapsed", String(newState));
+    };
+
+    useEffect(() => {
+        const storedState = localStorage.getItem("adminSidebarCollapsed");
+        if (storedState !== null) {
+            setIsSidebarCollapsed(storedState === "true");
+        }
+    }, []);
+
+    const openDialog = () => {
+        setIsDialogOpen(true);
+    }
+
+    return (
+        <>
+            <div className={`h-screen flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
+                <div
+                    className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
+                    <EmployeeSidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
+                </div>
+
+                <div
+                    className={`flex-1 flex flex-col ${isSidebarCollapsed ? "ml-16" : "ml-64"} transition-all duration-300`}>
+
+                    <div className="bg-white  p-4 sticky top-0 z-10">
+                        <header className="flex gap-2 items-center text-gray-600">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="w-5 h-5"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 3.75a3 3 0 110 6 3 3 0 010-6zm-6.364 9.114a1.5 1.5 0 012.121 0l1.06 1.06a1.5 1.5 0 002.121 0l1.06-1.06a1.5 1.5 0 012.121 0l1.06 1.06a1.5 1.5 0 002.121 0l1.06-1.06a1.5 1.5 0 112.121 2.121l-1.06 1.06a3 3 0 01-4.243 0l-.707-.707-.707.707a3 3 0 01-4.243 0l-1.06-1.06a1.5 1.5 0 010-2.121z"
+                                />
+                            </svg>
+                            <span>Loans</span>
+                            <div className="ml-auto">
+                                <Navbar/>
+                            </div>
+
+                        </header>
+                    </div>
+
+                    <div className="ml-6 mt-10 font-custom">
+                        <div className="flex-row gap-4 flex">
+                            <LoanTile/>
+                        </div>
+                        <div className="h-7"/>
+                        <button
+                            className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
+                            onClick={openDialog}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="w-5 h-5"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 4.5v15m7.5-7.5h-15"
+                                />
+                            </svg>
+                            Request for loan
+                        </button>
+                    </div>
+                    <div className="h-7"/>
+                    <LoanTable/>
+                </div>
+
+            </div>
+
+            {isDialogOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 font-custom">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+                        {/* Loan Conditions Notice */}
+                        <div className="bg-blue-100 text-blue-800 p-4 rounded-md mb-6 border border-blue-300">
+                            <h2 className="text-lg font-semibold mb-2">Loan Application Conditions</h2>
+                            <p className="text-sm">
+                                - You must have been employed for at least 6 months.<br/>
+                                - Maximum loan amount is determined by your salary bracket.<br/>
+                                - Loan repayment is deducted monthly from your salary.<br/>
+                                - Late payments will incur a 5% penalty.<br/>
+                                - Loans will be granted upon managerial review and you will be notified
+                            </p>
+                        </div>
+
+                        {/* Loan Application Form */}
+                        <form className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Loan Amount (MWK)</label>
+                                <input
+                                    type="number"
+                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Loan Purpose</label>
+                                <textarea
+                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                    rows={3}
+                                    required
+                                ></textarea>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Repayment Period (Months)</label>
+                                <input
+                                    type="number"
+                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required
+                                />
+                            </div>
+
+                            {/* Buttons: Submit + Close */}
+                            <div className="flex justify-end gap-4 mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsDialogOpen(false)}
+                                    className="bg-gray-300 hover:bg-gray-400 text-gray-800  py-2 px-6 rounded-md"
+                                >
+                                    Close
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-blue-500 hover:bg-blue-600 text-white  py-2 px-6 rounded-md"
+                                >
+                                    Submit Application
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+        </>
+    )
+}

@@ -10,6 +10,7 @@ import {useEffect, useState} from "react";
 import SalesBarChart from "@/components/charts/salesBarChart";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import ActiveAssignmentsProportion from "@/components/charts/assignmentProportion";
 
 export default function AdminHome() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -91,7 +92,7 @@ export default function AdminHome() {
 
                 {/* Page Content */}
                 <div className="p-6 text-black flex-2 flex flex-row mt-5 ">
-                    <ActiveAssignments/>
+                    <ActiveAssignmentsProportion/>
                     <div className="w-20"/>
                     <SalesBarChart/>
                 </div>

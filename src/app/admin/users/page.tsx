@@ -247,7 +247,6 @@ export default function UsersAdmin() {
                                 </svg>
                                 Add user
                             </button>
-
                             <div className='w-2'/>
                             <button
                                 className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
@@ -268,6 +267,26 @@ export default function UsersAdmin() {
                                     />
                                 </svg>
                                 Salaries
+                            </button>
+                            <div className='w-2'/>
+                            <button
+                                className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M12 4l8 16H4l8-16z"
+                                    />
+                                </svg>
+                                Loans
                             </button>
                         </div>
 
