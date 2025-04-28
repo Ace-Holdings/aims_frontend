@@ -646,7 +646,7 @@ export default function ManagerSales() {
 
     return(
         <>
-            <div className={` flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""} font-custom `}>
+            <div className={` flex bg-gray-100 ${(isDialogOpen || isGenerateReportModalOpen)? "blur-sm" : ""} font-custom `}>
                 <div
                     className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
                     <ManagerSidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>

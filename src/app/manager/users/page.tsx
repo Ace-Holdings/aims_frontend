@@ -15,6 +15,7 @@ export default function UsersManager() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isSalariesDialogOpen, setIsSalariesDialogOpen] = useState(false);
+    const [isLoansDialogOpen, setIsLoansDialogOpen] = useState(false);
 
     // states for forms
     const [firstname, setFirstname] = useState("");
@@ -31,6 +32,14 @@ export default function UsersManager() {
     const [salaryClass, setSalaryClass] = useState("A");
     const [amount, setAmount] = useState(0);
     const [salaries, setSalaries] = useState([]);
+    const [activeTab, setActiveTab] = useState("manage");
+
+    const dummyLoanRequests = [
+        { name: "John Banda", amount: 150000 },
+        { name: "Grace Phiri", amount: 200000 },
+        { name: "Peter Mwale", amount: 120000 },
+    ];
+
 
 
     const openDialog = () => {
@@ -43,6 +52,10 @@ export default function UsersManager() {
 
     const openSalariesDialog = () => {
         setIsSalariesDialogOpen(true);
+    }
+
+    const openLoansDialog = () => {
+        setIsLoansDialogOpen(true);
     }
 
     useEffect(() => {
@@ -167,7 +180,7 @@ export default function UsersManager() {
 
     return (
         <>
-            <div className={`h-screen flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""} `}>
+            <div className={`h-screen flex bg-gray-100 ${(isDialogOpen || isSalariesDialogOpen || isLoansDialogOpen) ? "blur-sm" : ""} `}>
                 <div
                     className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
                     <ManagerSidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
@@ -228,6 +241,7 @@ export default function UsersManager() {
                             <div className='w-2'/>
                             <button
                                 className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
+                                onClick={openLoansDialog}
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -458,6 +472,97 @@ export default function UsersManager() {
                             >
                                 Save
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isLoansDialogOpen && (
+                <div className="fixed inset-0 bg-black font-custom bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl p-6">
+
+                        <button
+                            onClick={() => setIsLoansDialogOpen(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                        <div className="h-4"/>
+                        <div className="flex border-b-2 mb-6">
+                            <button
+                                className={`flex-1 text-center pb-2 text-lg  ${
+                                    activeTab === "manage" ? "border-b-4 border-blue-500 text-blue-600" : "text-gray-500"
+                                }`}
+                                onClick={() => setActiveTab("manage")}
+                            >
+                                Manage Loans
+                            </button>
+                            <button
+                                className={`flex-1 text-center pb-2 text-lg  ${
+                                    activeTab === "requests" ? "border-b-4 border-blue-500 text-blue-600" : "text-gray-500"
+                                }`}
+                                onClick={() => setActiveTab("requests")}
+                            >
+                                Loan Requests
+                            </button>
+                        </div>
+
+                        <div className="relative min-h-[300px]">
+                            <div
+                                key={activeTab}
+                                className="absolute inset-0 animate-fade-slide flex flex-col"
+                            >
+                                {activeTab === "manage" && (
+                                    <div className="flex flex-col items-center space-y-6">
+                                        <button
+                                            className="w-2/3 bg-blue-500 hover:bg-blue-600 text-white text-xl  py-6 rounded-lg shadow-md transition-all"
+                                            disabled
+                                        >
+                                            Grant a Loan
+                                        </button>
+                                        <button
+                                            className="w-2/3 bg-green-500 hover:bg-green-600 text-white text-xl  py-6 rounded-lg shadow-md transition-all"
+                                            disabled
+                                        >
+                                            Generate Loans PDF
+                                        </button>
+                                    </div>
+                                )}
+
+                                {activeTab === "requests" && (
+                                    <div className="space-y-4">
+                                        {dummyLoanRequests.map((request, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex justify-between items-center p-4 bg-gray-100 text-black rounded-md shadow-sm hover:bg-gray-200 transition-all"
+                                            >
+                                                <div>
+                                                    <h3 className="text-lg font-semibold">{request.name}</h3>
+                                                    <p className="text-sm text-gray-600">
+                                                        Amount: MWK {request.amount.toLocaleString()}
+                                                    </p>
+                                                </div>
+                                                <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
+                                                    Grant
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
