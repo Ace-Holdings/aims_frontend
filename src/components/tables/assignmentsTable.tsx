@@ -26,6 +26,7 @@ export default function AssignmentsTable() {
     const [objectives, setObjectives] = useState([]);
     const [showObjectivesDialog, setShowObjectivesDialog] = useState(false);
 
+
     useEffect(() => {
         fetch("http://localhost:3002/assignments", {
             method: "GET",

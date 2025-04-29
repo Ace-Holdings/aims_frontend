@@ -8,10 +8,14 @@ import InventoryTableEmployee from "@/components/tables/inventoryTableEmployee";
 import {useEffect, useState} from "react";
 import LoanTile from "@/components/tiles/loan";
 import LoanTable from "@/components/tables/loanTable";
+import {jwtDecode} from "jwt-decode";
 
 export default function Loans() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [loanAmount, setLoanAmount] = useState(0);
+    const [loanPurpose, setLoanPurpose] = useState("");
+    const [isSuccessVisible, setIsSuccessVisible] = useState(false);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
@@ -29,6 +33,37 @@ export default function Loans() {
     const openDialog = () => {
         setIsDialogOpen(true);
     }
+
+    const applicantId = jwtDecode(localStorage.getItem('token')).id
+
+    // handler to submit a loan request
+    const handleSubmitLoanRequest = async (e: any) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:3002/loanRequests', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    applicantId: applicantId,
+                    amountRequested: loanAmount,
+                    purpose: loanPurpose,
+                })
+            });
+            if (!response.ok) {
+                console.log('Error submitting request');
+                return;
+            }
+            setIsDialogOpen(false);
+            setLoanAmount(0);
+            setLoanPurpose("");
+
+            // Show success dialog
+            setIsSuccessVisible(true);
+            setTimeout(() => setIsSuccessVisible(false), 3000);
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
     return (
         <>
@@ -98,7 +133,7 @@ export default function Loans() {
             </div>
 
             {isDialogOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 font-custom">
+                <div className="fixed inset-0 bg-black text-black bg-opacity-50 flex justify-center items-center z-50 font-custom">
                     <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
                         {/* Loan Conditions Notice */}
                         <div className="bg-blue-100 text-blue-800 p-4 rounded-md mb-6 border border-blue-300">
@@ -112,14 +147,21 @@ export default function Loans() {
                             </p>
                         </div>
 
-                        {/* Loan Application Form */}
                         <form className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Loan Amount (MWK)</label>
                                 <input
-                                    type="number"
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                                    required
+                                    type="text"
+                                    value={loanAmount.toLocaleString("en-US")}
+                                    onChange={(e) => {
+                                        const raw = e.target.value.replace(/,/g, "");
+                                        if (!isNaN(Number(raw))) {
+                                            setLoanAmount(Number(raw));
+                                        }
+                                    }}
+                                    className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Enter amount"
+                                    inputMode="numeric"
                                 />
                             </div>
 
@@ -129,16 +171,9 @@ export default function Loans() {
                                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
                                     rows={3}
                                     required
+                                    value={loanPurpose}
+                                    onChange={(e) => setLoanPurpose(e.target.value)}
                                 ></textarea>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Repayment Period (Months)</label>
-                                <input
-                                    type="number"
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                                    required
-                                />
                             </div>
 
                             {/* Buttons: Submit + Close */}
@@ -153,11 +188,30 @@ export default function Loans() {
                                 <button
                                     type="submit"
                                     className="bg-blue-500 hover:bg-blue-600 text-white  py-2 px-6 rounded-md"
+                                    onClick={handleSubmitLoanRequest}
                                 >
                                     Submit Application
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {isSuccessVisible && (
+                <div className="fixed inset-0 flex items-center justify-center font-custom bg-black bg-opacity-50 z-50">
+                    <div className="bg-white p-6 rounded-xl shadow-2xl text-center max-w-md w-full animate-scale-in">
+                        <div className="flex justify-center">
+                            <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mb-4 animate-bounce">
+                                <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" strokeWidth="2"
+                                     viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                          d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-800">Loan Request Sent!</h2>
+                        <p className="text-sm text-gray-600 mt-2">Your application has been submitted successfully.</p>
                     </div>
                 </div>
             )}

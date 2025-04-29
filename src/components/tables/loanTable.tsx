@@ -1,36 +1,45 @@
 import {FiEdit, FiEye, FiMenu, FiTrash2} from "react-icons/fi";
 import React, {useEffect, useState} from "react";
 import DataTable from "react-data-table-component";
+import {jwtDecode} from "jwt-decode";
 
 export default function LoanTable() {
     const [filteredData, setFilteredData] = useState([]);
+    const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+    const [selectedLoan, setSelectedLoan] = useState(null);
 
     useEffect(() => {
         const fetchLoans = async () => {
             try {
+                const token = localStorage.getItem("token");
+                if (!token) return;
+
+                const username  = jwtDecode(token).user;
+
                 const response = await fetch('http://localhost:3002/loans');
                 if (response.ok) {
                     const data = await response.json();
-                    setFilteredData(data);
+
+                    const filtered = data.filter(
+                        (loan) => loan.applicant?.username === username
+                    );
+
+                    setFilteredData(filtered);
+                    console.log(filtered);
                 }
             } catch (e) {
                 console.error(e);
             }
-        }
+        };
+
         fetchLoans();
-    }, [])
+    }, []);
 
     const columns = [
         {
             name: "ID",
             selector: (row: any) => row.loanId,
             sortable: true,
-        },
-        {
-            name: "Debtor",
-            selector: (row: any) => row.applicant.username,
-            sortable: true,
-            maxWidth: "200px"
         },
         {
             name: "Amount",
@@ -77,8 +86,12 @@ export default function LoanTable() {
                     <button
                         className="text-blue-600 p-2 hover:text-blue-800 hover:bg-blue-100 transition-colors duration-200 bg-gray-200 rounded-md"
                         title="View Details"
+                        onClick={() => {
+                            setSelectedLoan(row);
+                            setShowDetailsDialog(true);
+                        }}
                     >
-                        <FiEye className="w-5 h-5"/>
+                        <FiEye className="w-5 h-5" />
                     </button>
                 </div>
             ),
@@ -114,12 +127,6 @@ export default function LoanTable() {
                         <option value="Inactive">Inactive</option>
                     </select>
 
-                    {/* Search Bar */}
-                    <input
-                        type="text"
-                        placeholder="Search by name..."
-                        className="border border-gray-300 rounded-md px-2 py-1"
-                    />
                 </div>
 
                 {/* DataTable Component */}
@@ -132,6 +139,32 @@ export default function LoanTable() {
                     striped
                 />
             </div>
+
+            {showDetailsDialog && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
+                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Loan Details</h3>
+                        <div className="flex flex-wrap gap-4">
+                            <div><strong>Loan ID:</strong> {selectedLoan.loanId}</div>
+                            <div><strong>Amount:</strong> {selectedLoan.amount.toLocaleString('en-MW', { style: 'currency', currency: 'MWK' })}</div>
+                            <div><strong>Purpose:</strong> {selectedLoan.purpose}</div>
+                            <div><strong>Status:</strong> {selectedLoan.status}</div>
+                            <div><strong>Date Applied:</strong> {new Date(selectedLoan.dateApplied).toLocaleString()}</div>
+                            <div><strong>Granted By:</strong> {selectedLoan.grantedBy || "N/A"}</div>
+                            <div><strong>Date Granted:</strong> {selectedLoan.dateGranted ? new Date(selectedLoan.dateGranted).toLocaleString() : "N/A"}</div>
+                            <div><strong>Applicant:</strong> {selectedLoan.applicant?.username}</div>
+                        </div>
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                onClick={() => setShowDetailsDialog(false)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     )
 }

@@ -16,6 +16,7 @@ export default function UsersManager() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isSalariesDialogOpen, setIsSalariesDialogOpen] = useState(false);
     const [isLoansDialogOpen, setIsLoansDialogOpen] = useState(false);
+    const [isDirectGrantDialogOpen, setIsDirectGrantDialogOpen] = useState(false);
 
     // states for forms
     const [firstname, setFirstname] = useState("");
@@ -34,11 +35,31 @@ export default function UsersManager() {
     const [salaries, setSalaries] = useState([]);
     const [activeTab, setActiveTab] = useState("manage");
 
-    const dummyLoanRequests = [
-        { name: "John Banda", amount: 150000 },
-        { name: "Grace Phiri", amount: 200000 },
-        { name: "Peter Mwale", amount: 120000 },
-    ];
+    const [loanRequests, setLoansRequests] = useState([]);
+
+    const [grantedRequests, setGrantedRequests] = useState<Set<number>>(new Set());
+
+
+    useEffect(() => {
+        const fetchLoanRequests = async () => {
+            try {
+                const response = await fetch('http://localhost:3002/loanRequests');
+                if (response.ok) {
+                    const data = await response.json();
+                    setLoansRequests(data);
+
+                    const approvedIds = data
+                        .filter((request) => request.status === "approved")
+                        .map((request) => request.requestId);
+
+                    setGrantedRequests(new Set(approvedIds));
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        fetchLoanRequests();
+    }, []);
 
 
 
@@ -147,6 +168,43 @@ export default function UsersManager() {
         }
     }
 
+    const handleGrantLoanApplication = async (request: any) => {
+        const { requestId, applicantId, amountRequested, purpose } = request;
+
+        try{
+            const approveResponse = await fetch(`http://localhost:3002/loanRequests/${requestId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "approved" })
+            });
+
+            if (!approveResponse.ok) {
+                console.log("Failed to approve loan request.");
+                return;
+            }
+
+            const loanResponse = await fetch('http://localhost:3002/loans', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: applicantId,
+                    amount: amountRequested,
+                    purpose: purpose,
+                    status: "approved"
+                })
+            });
+
+            if (!loanResponse.ok) {
+                console.log("Failed to create loan.");
+                return;
+            }
+
+            setGrantedRequests(prev => new Set(prev).add(requestId));
+        } catch (error) {
+            console.error("Error processing loan:", error);
+        }
+    };
+
     const handleUserRegistration = async (e: any) => {
         e.preventDefault();
 
@@ -176,6 +234,18 @@ export default function UsersManager() {
         } catch(e) {
             console.log(e);
         }
+    }
+
+    // handler for opening a dialog to create a loan to a user directly
+    const handleOpenDirectGrandDialog = () => {
+        setIsLoansDialogOpen(false);
+        setIsDirectGrantDialogOpen(true);
+    }
+
+    // handler for cancelling the direct loan grant
+    const handleCloseDirectGrandDialog = () => {
+        setIsDirectGrantDialogOpen(false);
+        setIsLoansDialogOpen(true);
     }
 
     return (
@@ -529,7 +599,7 @@ export default function UsersManager() {
                                     <div className="flex flex-col items-center space-y-6">
                                         <button
                                             className="w-2/3 bg-blue-500 hover:bg-blue-600 text-white text-xl  py-6 rounded-lg shadow-md transition-all"
-                                            disabled
+                                            onClick={handleOpenDirectGrandDialog}
                                         >
                                             Grant a Loan
                                         </button>
@@ -543,27 +613,105 @@ export default function UsersManager() {
                                 )}
 
                                 {activeTab === "requests" && (
-                                    <div className="space-y-4">
-                                        {dummyLoanRequests.map((request, index) => (
+                                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                                        {[...loanRequests].reverse().map((request, index) => (
                                             <div
-                                                key={index}
-                                                className="flex justify-between items-center p-4 bg-gray-100 text-black rounded-md shadow-sm hover:bg-gray-200 transition-all"
+                                                key={request.requestId}
+                                                className="flex justify-between items-center p-4 h-32 bg-gray-100 text-black rounded-md shadow-sm hover:bg-gray-200 transition-all"
                                             >
                                                 <div>
-                                                    <h3 className="text-lg font-semibold">{request.name}</h3>
+                                                    <h3 className="text-lg font-semibold">{request.applicant.username}</h3>
+                                                    <div className="h-1"/>
                                                     <p className="text-sm text-gray-600">
-                                                        Amount: MWK {request.amount.toLocaleString()}
+                                                        Amount: MWK {request.amountRequested.toLocaleString()}
                                                     </p>
+                                                    <div className="h-1"/>
+                                                    <p className="text-sm text-gray-600">Purpose: {request.purpose}</p>
                                                 </div>
-                                                <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md">
-                                                    Grant
-                                                </button>
+
+                                                {grantedRequests.has(request.requestId) ? (
+                                                    <div className="text-green-500 transition-transform animate-bounce-in">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="h-8 w-8"
+                                                            viewBox="0 0 20 20"
+                                                            fill="currentColor"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                        </svg>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 transform hover:scale-105"
+                                                        onClick={() => handleGrantLoanApplication(request)}
+                                                    >
+                                                        Grant
+                                                    </button>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
                                 )}
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {isDirectGrantDialogOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black text-black bg-opacity-30 backdrop-blur-sm z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+                        <h2 className="text-xl font-semibold mb-4 text-center ">Grant New Loan</h2>
+                        <form  className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium ">Applicant</label>
+                                <input
+                                    type="text"
+                                    // value={newLoan.userId}
+                                    // onChange={(e) => setNewLoan({ ...newLoan, userId: e.target.value })}
+                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium ">Amount</label>
+                                <input
+                                    type="number"
+                                    // value={newLoan.amount}
+                                    // onChange={(e) => setNewLoan({ ...newLoan, amount: e.target.value })}
+                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium ">Purpose</label>
+                                <textarea
+                                    // value={newLoan.purpose}
+                                    // onChange={(e) => setNewLoan({ ...newLoan, purpose: e.target.value })}
+                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                    required
+                                />
+                            </div>
+                            <div className="flex justify-end space-x-2">
+                                <button
+                                    type="button"
+                                    className="bg-gray-300  px-4 py-2 rounded"
+                                    onClick={handleCloseDirectGrandDialog}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                >
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
