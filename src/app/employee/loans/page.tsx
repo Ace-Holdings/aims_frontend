@@ -57,7 +57,6 @@ export default function Loans() {
             setLoanAmount(0);
             setLoanPurpose("");
 
-            // Show success dialog
             setIsSuccessVisible(true);
             setTimeout(() => setIsSuccessVisible(false), 3000);
         } catch (e) {

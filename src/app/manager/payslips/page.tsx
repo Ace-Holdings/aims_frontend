@@ -199,7 +199,7 @@ export default function ManagerPayslips() {
                         })
                         : "",
                 payslip.deductions[i]
-                    ? `${payslip.deductions[i].description}: ` +
+                    ? `${payslip.deductions[i].description || "loan"}: ` +
                     (payslip.deductions[i].value * payslip.period).toLocaleString("en-US", {
                         style: "currency",
                         currency: "MWK",
@@ -220,8 +220,31 @@ export default function ManagerPayslips() {
             }
         });
 
-        // Net Pay & Signature Section
-        const netPayStartY = doc.lastAutoTable.finalY + 12;
+        const loanSectionY = doc.lastAutoTable.finalY + 4;
+
+        doc.setFont("helvetica", "bold");
+        doc.text("LOAN REPAYMENT DETAILS", 14, loanSectionY);
+
+        doc.setFont("helvetica", "normal");
+        doc.text(
+            `Total Loan Approved: ${payslip.totalLoan.toLocaleString("en-US", {
+                style: "currency",
+                currency: "MWK",
+            })}`,
+            14,
+            loanSectionY + 6
+        );
+
+        doc.text(
+            `Monthly Deduction: ${payslip.monthlyLoanDeduction.toLocaleString("en-US", {
+                style: "currency",
+                currency: "MWK",
+            })}`,
+            14,
+            loanSectionY + 12
+        );
+
+        const netPayStartY = loanSectionY + 24;
         doc.setFont("helvetica", "bold");
         doc.text(`NETT PAY: ${payslip.netPay.toLocaleString("en-US", { style: "currency", currency: "MWK" })}`, 14, netPayStartY);
 
@@ -242,12 +265,29 @@ export default function ManagerPayslips() {
             return;
         }
 
-        const totalEarnings = (additionalEarnings.reduce((sum, item) => sum + parseFloat(item.value), 0) + selectedEmployee.salary.amount) * period;
-        const totalDeductions = deductions.reduce((sum, item) => sum + parseFloat(item.value), 0) * period;
+
+        const totalLoanAccumulated = selectedEmployee.applicant
+            .filter(loan => loan.status === "approved")
+            .reduce((sum: number, loan: any) => sum + loan.amount, 0);
+
+        const monthlyLoanDeduction = totalLoanAccumulated / period;
+
+        const updatedDeductions = [
+            ...deductions,
+            { label: "Loan Repayment", value: monthlyLoanDeduction.toFixed(2) }
+        ];
+
+        const totalEarnings = (
+            additionalEarnings.reduce((sum, item) => sum + parseFloat(item.value), 0)
+            + selectedEmployee.salary.amount
+        ) * period;
+
+        const totalDeductions = updatedDeductions.reduce((sum, item) => sum + parseFloat(item.value), 0) * period;
+
         const netPay = totalEarnings - totalDeductions;
 
         const payslipData = {
-            payDate: selectedDate.toISOString().split("T")[0], // Format date
+            payDate: selectedDate.toISOString().split("T")[0],
             employeeName: selectedEmployee.username,
             empCode: selectedEmployee.userId,
             jobTitle: selectedEmployee.jobTitle || "N/A",
@@ -258,13 +298,13 @@ export default function ManagerPayslips() {
             earnings: additionalEarnings,
             salary: selectedEmployee.salary.amount || "N/A",
             period: period,
-            deductions: deductions,
+            deductions: updatedDeductions,
             netPay: netPay,
+            totalLoan: totalLoanAccumulated,
+            monthlyLoanDeduction: monthlyLoanDeduction,
         };
 
-
         const slipPdf = generatePaySlipPdf(payslipData);
-
 
         const payslip = new FormData();
         payslip.append("userId", selectedEmployee.userId);
