@@ -324,8 +324,7 @@ export default function UsersManager() {
 
                 setTimeout(() => {
                     setIsSuccessVisible(false);
-                }, 30005);
-                window.location.reload();
+                }, 3000);
             }
         } catch (e) {
             console.log(e);
