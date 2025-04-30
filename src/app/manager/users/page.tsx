@@ -39,6 +39,23 @@ export default function UsersManager() {
 
     const [grantedRequests, setGrantedRequests] = useState<Set<number>>(new Set());
 
+    const [searchTerm, setSearchTerm] = useState('');
+    const [applicantResults, setApplicantResults] = useState([]);
+    const [selectedApplicant, setSelectedApplicant] = useState(null);
+
+    // for direct grant
+    const [loanAmount, setLoanAmount] = useState(0);
+    const [purpose, setPurpose] = useState("");
+
+    const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+
+    const [newLoan, setNewLoan] = useState({
+        userId: '',
+        amount: '',
+        interestRate: '',
+        termMonths: '',
+    });
+
 
     useEffect(() => {
         const fetchLoanRequests = async () => {
@@ -246,6 +263,73 @@ export default function UsersManager() {
     const handleCloseDirectGrandDialog = () => {
         setIsDirectGrantDialogOpen(false);
         setIsLoansDialogOpen(true);
+    }
+
+    const handleApplicantSearch = async (term: string) => {
+        setSearchTerm(term);
+
+        if (term.length < 2) {
+            setApplicantResults([]);
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:3002/users/search?username=${term}`, {
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                }
+            });
+            if (response.ok) {
+                const results = await response.json();
+                setApplicantResults(results);
+            } else {
+                setApplicantResults([]);
+            }
+        } catch (error) {
+            console.error('Search error:', error);
+            setApplicantResults([]);
+        }
+    };
+
+    const handleSelectApplicant = (user: User) => {
+        setSelectedApplicant(user);
+        setNewLoan((prev) => ({ ...prev, userId: user.userId }));
+        setApplicantResults([]);
+        setSearchTerm('');
+    };
+
+    const directApplicationGrant = async () => {
+        const userId = selectedApplicant?.userId;
+
+        try {
+            const response = await fetch('http://localhost:3002/loans', {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    amount: loanAmount,
+                    purpose: purpose,
+                    status: "approved"
+                }),
+            });
+
+            if (response.ok) {
+                setIsSuccessVisible(true);
+                setIsDirectGrantDialogOpen(false);
+
+                setLoanAmount(0);
+                setPurpose("");
+
+                setTimeout(() => {
+                    setIsSuccessVisible(false);
+                }, 3000);
+                window.location.reload();
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     return (
@@ -663,35 +747,74 @@ export default function UsersManager() {
             )}
 
             {isDirectGrantDialogOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black text-black bg-opacity-30 backdrop-blur-sm z-50">
+                <div className="fixed inset-0 flex items-center justify-center font-custom bg-black text-black bg-opacity-30 backdrop-blur-sm z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
                         <h2 className="text-xl font-semibold mb-4 text-center ">Grant New Loan</h2>
-                        <form  className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium ">Applicant</label>
+                        <form  className="space-y-4"   onSubmit={(e) => {
+                            e.preventDefault();
+                            directApplicationGrant();
+                        }}>
+                            <div className="relative mb-4">
+                                <label className="block text-sm font-medium">Applicant</label>
                                 <input
                                     type="text"
-                                    // value={newLoan.userId}
-                                    // onChange={(e) => setNewLoan({ ...newLoan, userId: e.target.value })}
+                                    value={searchTerm}
+                                    onChange={(e) => handleApplicantSearch(e.target.value)}
+                                    placeholder="Search applicant by username"
                                     className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                    required
                                 />
+                                {applicantResults.length > 0 && (
+                                    <ul className="absolute w-full bg-white border rounded shadow-lg z-10 max-h-48 overflow-auto">
+                                        {applicantResults.map((user) => (
+                                            <li
+                                                key={user.userId}
+                                                onClick={() => handleSelectApplicant(user)}
+                                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                            >
+                                                {user.username} ({user.firstName})
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                                {selectedApplicant && (
+                                    <div className="mt-2">
+            <span className="bg-gray-200 p-1 rounded inline-block">
+                {selectedApplicant.username}
+                <button
+                    type="button"
+                    onClick={() => {
+                        setSelectedApplicant(null);
+                        setNewLoan((prev) => ({ ...prev, userId: '' }));
+                    }}
+                    className="ml-2 text-red-500"
+                >
+                    &times;
+                </button>
+            </span>
+                                    </div>
+                                )}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium ">Amount</label>
+                                <label className="block text-sm font-medium text-gray-700">Loan Amount (MWK)</label>
                                 <input
-                                    type="number"
-                                    // value={newLoan.amount}
-                                    // onChange={(e) => setNewLoan({ ...newLoan, amount: e.target.value })}
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                    required
+                                    type="text"
+                                    value={loanAmount.toLocaleString("en-US")}
+                                    onChange={(e) => {
+                                        const raw = e.target.value.replace(/,/g, "");
+                                        if (!isNaN(Number(raw))) {
+                                            setLoanAmount(Number(raw));
+                                        }
+                                    }}
+                                    className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Enter amount"
+                                    inputMode="numeric"
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium ">Purpose</label>
                                 <textarea
-                                    // value={newLoan.purpose}
-                                    // onChange={(e) => setNewLoan({ ...newLoan, purpose: e.target.value })}
+                                    value={purpose}
+                                    onChange={(e) => {setPurpose(e.target.value)}}
                                     className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                                     required
                                 />
@@ -712,6 +835,24 @@ export default function UsersManager() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {isSuccessVisible && (
+                <div className="fixed inset-0 flex items-center justify-center font-custom bg-black bg-opacity-50 z-50">
+                    <div className="bg-white p-6 rounded-xl shadow-2xl text-center max-w-md w-full animate-scale-in">
+                        <div className="flex justify-center">
+                            <div className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mb-4 animate-bounce">
+                                <svg className="w-12 h-12 text-red-600" fill="none" stroke="currentColor" strokeWidth="2"
+                                     viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round"
+                                          d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-800">Loan granted!</h2>
+                        <p className="text-sm text-gray-600 mt-2">Loan has been granted to {selectedApplicant?.username}</p>
                     </div>
                 </div>
             )}
