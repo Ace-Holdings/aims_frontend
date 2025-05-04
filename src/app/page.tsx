@@ -77,9 +77,10 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-300 to-green-400 shadow-2xl transform -skew-y-6 sm:skew-y-0 sm:-rotate-5 sm:rounded-3xl"></div>
               <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
                 <div className="flex justify-center items-center -mt-10">
-                  <Image src={Logo} alt="logo" className="h-32 w-40" />
+                  <Image src={Logo} alt="logo" className="h-[70px] w-24" />
                 </div>
                 <div className="max-w-md mx-auto">
+                  <div className="h-4"/>
                   <div>
                     <h1 className="text-xl font-semibold text-black font-custom">
                       Ace Integrated Management System
