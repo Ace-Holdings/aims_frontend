@@ -191,27 +191,32 @@ export default function EmployeeAssignments() {
             </div>
 
             {isDialogOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center  text-black bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/2 max-h-[80vh] overflow-y-auto">
-                        <h2 className="text-xl font-semibold mb-4 text-center">Active Assignment Details</h2>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-black">
+                    <div className="bg-white w-full max-w-2xl mx-4 p-8 rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
+                        {/* Header */}
+                        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Active Assignment</h2>
 
-                        <div className="mb-6">
-                            <p><strong>Name:</strong> {hasActiveAssignment.assignmentName}</p>
-                            <p><strong>Location:</strong> {hasActiveAssignment.location}</p>
-                            <p><strong>Description:</strong> {hasActiveAssignment.description}</p>
-                            <p><strong>Start:</strong> {new Date(hasActiveAssignment.startsAt).toLocaleString()}</p>
-                            <p><strong>End:</strong> {new Date(hasActiveAssignment.endsAt).toLocaleString()}</p>
+                        {/* Assignment Info */}
+                        <div className="space-y-2 text-sm sm:text-base text-gray-700 mb-8">
+                            <p><span className="font-medium text-gray-900">Name:</span> {hasActiveAssignment.assignmentName}</p>
+                            <p><span className="font-medium text-gray-900">Location:</span> {hasActiveAssignment.location}</p>
+                            <p><span className="font-medium text-gray-900">Description:</span> {hasActiveAssignment.description}</p>
+                            <p><span className="font-medium text-gray-900">Start:</span> {new Date(hasActiveAssignment.startsAt).toLocaleString()}</p>
+                            <p><span className="font-medium text-gray-900">End:</span> {new Date(hasActiveAssignment.endsAt).toLocaleString()}</p>
                         </div>
 
-                        <h3 className="text-lg font-medium mb-2">Objectives</h3>
-                        <ul className="space-y-2">
+                        <hr className="mb-6 border-gray-300" />
+
+                        {/* Objectives */}
+                        <h3 className="text-xl font-semibold mb-4 text-gray-800">Objectives</h3>
+                        <ul className="space-y-3">
                             {objectives.map((objective) => {
                                 const isChecked = completedObjectives.includes(objective.objectiveId);
 
                                 return (
                                     <li
                                         key={objective.objectiveId}
-                                        className="flex items-center justify-between bg-gray-100 p-3 rounded-md"
+                                        className="flex items-center justify-between bg-gray-50 border border-gray-200 p-4 rounded-lg hover:shadow-sm transition-shadow"
                                     >
                                         <span className="text-gray-800">{objective.objectiveText}</span>
 
@@ -227,7 +232,7 @@ export default function EmployeeAssignments() {
                                                     setCompletedObjectives(updated);
                                                 }}
                                             />
-                                            <div className="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center peer-checked:border-green-500 peer-checked:bg-green-500 transition-colors duration-200">
+                                            <div className="w-6 h-6 border-2 border-gray-400 rounded-md flex items-center justify-center peer-checked:border-green-600 peer-checked:bg-green-600 transition-colors duration-200">
                                                 {isChecked && (
                                                     <svg
                                                         className="w-4 h-4 text-white"
@@ -246,15 +251,24 @@ export default function EmployeeAssignments() {
                             })}
                         </ul>
 
-                        <div className="mt-6 flex justify-end">
-                            <button onClick={closeDialog} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Close</button>
-                            <div className="w-5"/>
-                            <button onClick={handleSaveObjectives}  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save</button>
+                        {/* Action Buttons */}
+                        <div className="mt-8 flex justify-end space-x-3">
+                            <button
+                                onClick={closeDialog}
+                                className="bg-gray-400 text-white px-5 py-2 rounded-md hover:bg-gray-500 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSaveObjectives}
+                                className="bg-green-600 text-white px-5 py-2 rounded-md hover:bg-green-700 transition"
+                            >
+                                Save
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
-
         </>
     )
 }

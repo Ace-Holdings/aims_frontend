@@ -164,9 +164,6 @@ export default function InventoryTable() {
         }
     };
 
-    // handler function to update stock item
-
-
     // Columns Definition
     const columns = [
         { name: "ID", selector: (row: any) => row.inventoryId, sortable: true },

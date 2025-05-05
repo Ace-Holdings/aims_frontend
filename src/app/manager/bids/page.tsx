@@ -223,30 +223,29 @@ export default function ManagerBids() {
                                 </div>
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Bid document file
+                                <label htmlFor="bidFile" className="block text-gray-700 font-medium mb-2">
+                                    Bid document file (PDF)
                                 </label>
                                 <input
                                     type="file"
-                                    id="title"
+                                    id="bidFile"
+                                    accept="application/pdf"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Name of item"
                                     onChange={handleBidFileChange}
                                 />
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Editable for for bid
+                                <label htmlFor="editFile" className="block text-gray-700 font-medium mb-2">
+                                    Editable form for bid (DOCX)
                                 </label>
                                 <input
                                     type="file"
-                                    id="title"
+                                    id="editFile"
+                                    accept=".docx"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Name of item"
                                     onChange={handleEditFileChange}
                                 />
                             </div>
-
                             <div className="flex justify-end gap-4">
                                 <button
                                     type="button"
