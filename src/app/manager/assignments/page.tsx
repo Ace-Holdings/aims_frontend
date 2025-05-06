@@ -297,220 +297,242 @@ export default function AssignmentsManager() {
 
             </div>
 
-            {isDialogOpen && (
-                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-lg font-medium mb-4 text-center text-bold">Add Assignment</h2>
-                        <div className="h-2"/>
-                        <form onSubmit={handleOpenObjectivesDialog}>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Assignment name
-                                </label>
-                                <input
-                                    value={assignmentName}
-                                    onChange={(e) => setAssignmentName(e.target.value)}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment name"
+            <div
+                className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
+                    isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/3 transform transition-all duration-300 ${
+                        isDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-medium mb-4 text-center text-bold">Add Assignment</h2>
+                    <div className="h-2"/>
+                    <form onSubmit={handleOpenObjectivesDialog}>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Assignment name
+                            </label>
+                            <input
+                                value={assignmentName}
+                                onChange={(e) => setAssignmentName(e.target.value)}
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Enter assignment name"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Location
+                            </label>
+                            <input
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Enter location name"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Starts at
+                            </label>
+                            <div
+                                className="relative w-[350px]">
+                                <DatePicker
+                                    selected={startDate}
+                                    onChange={(date) => setStartDate(date)}
+                                    dateFormat="yyyy-MM-dd h:mm aa"
+                                    showTimeSelect
+                                    timeFormat="h:mm aa"
+                                    timeIntervals={15}
+                                    className=" p-2 bg-white border border-gray-300 rounded-md w-[220px]"
+                                    placeholderText="Select start date and time"
+                                    popperClassName="z-50"
+                                    popperPlacement="bottom-start"
                                 />
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Location
-                                </label>
-                                <input
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter location name"
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Ends at
+                            </label>
+                            <div className="relative overflow-visible">
+                                <DatePicker
+                                    selected={endDate}
+                                    onChange={(data) => setEndDate(data)}
+                                    dateFormat="yyyy-MM-dd h:mm aa"
+                                    showTimeSelect
+                                    timeFormat="h:mm aa"
+                                    timeIntervals={15}
+                                    className="grow p-2 bg-white border border-gray-300  w-[220px]"
+                                    placeholderText="Select start date and time"
+                                    popperClassName="z-50"
+                                    popperPlacement="bottom"
                                 />
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Starts at
-                                </label>
-                                <div
-                                    className="relative w-[350px]">
-                                    <DatePicker
-                                        selected={startDate}
-                                        onChange={(date) => setStartDate(date)}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className=" p-2 bg-white border border-gray-300 rounded-md w-[220px]"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom-start"
-                                    />
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Ends at
-                                </label>
-                                <div className="relative overflow-visible">
-                                    <DatePicker
-                                        selected={endDate}
-                                        onChange={(data) => setEndDate(data)}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white border border-gray-300  w-[220px]"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom"
-                                    />
-                                </div>
-                            </div>
-                            <div className="relative">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Employee to be assigned
-                                </label>
-                                <input
-                                    value={searchTerm}
-                                    onChange={(e) => handleSearch(e.target.value)}
-                                    placeholder="Search employee by username"
-                                    className="w-full p-2 border mb-2 rounded"
-                                />
-                                {/* Search Results Dropdown */}
-                                {employeeResults.length > 0 && (
-                                    <ul className="absolute w-full bg-white border rounded shadow-lg z-10">
-                                        {employeeResults.map((emp) => (
-                                            <li
-                                                key={emp.userId}
-                                                onClick={() => handleSelectEmployee(emp)}
-                                                className="p-2 hover:bg-gray-200 cursor-pointer"
-                                            >
-                                                {emp.username} ({emp.firstName})
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
+                        </div>
+                        <div className="relative">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Employee to be assigned
+                            </label>
+                            <input
+                                value={searchTerm}
+                                onChange={(e) => handleSearch(e.target.value)}
+                                placeholder="Search employee by username"
+                                className="w-full p-2 border mb-2 rounded"
+                            />
+                            {/* Search Results Dropdown */}
+                            {employeeResults.length > 0 && (
+                                <ul className="absolute w-full bg-white border rounded shadow-lg z-10">
+                                    {employeeResults.map((emp) => (
+                                        <li
+                                            key={emp.userId}
+                                            onClick={() => handleSelectEmployee(emp)}
+                                            className="p-2 hover:bg-gray-200 cursor-pointer"
+                                        >
+                                            {emp.username} ({emp.firstName})
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
 
-                            {/* Selected Employees */}
-                            <div className="mb-4">
-                                {selectedEmployees.map(emp => (
-                                    <span key={emp.userId} className="bg-gray-200 p-1 rounded m-1 inline-block">
+                        {/* Selected Employees */}
+                        <div className="mb-4">
+                            {selectedEmployees.map(emp => (
+                                <span key={emp.userId} className="bg-gray-200 p-1 rounded m-1 inline-block">
                                         {emp.username}
-                                        <button onClick={() => handleRemoveEmployee(emp.userId)}
-                                                className="ml-2 text-red-500" type="button">
+                                    <button onClick={() => handleRemoveEmployee(emp.userId)}
+                                            className="ml-2 text-red-500" type="button">
                                             &times;
                                         </button>
                                     </span>
-                                ))}
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="description" className="block text-gray-700 font-medium mb-2">
-                                    Description
-                                </label>
-                                <textarea
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    id="description"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter assignment description"
-                                />
-                            </div>
-                            <div className="flex justify-end gap-4">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
-                                    onClick={closeDialog}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {isObjectivePromptOpen && (
-                <div className="fixed inset-0 z-30 flex items-center justify-center bg-black text-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 text-center">
-                        <h2 className="text-lg font-semibold mb-4">Would you like to add assignment objectives?</h2>
-                        <div className="flex justify-center gap-4">
-                            <button
-                                onClick={handleObjectivesListOpen}
-                                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-                            >
-                                Yes
-                            </button>
-                            <button
-                                className="px-6 py-2 bg-gray-300 text-black rounded hover:bg-gray-200"
-                                onClick={handleSubmitWithoutObjectives}
-                            >
-                                No
-                            </button>
+                            ))}
                         </div>
-                    </div>
-                </div>
-            )}
 
-            {isObjectiveListPromptOpen && (
-                <div className="fixed inset-0 z-30 flex items-center justify-center text-black bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
-                        <h3 className="text-lg font-semibold mb-4 text-center">Add Assignment Objectives</h3>
-
-                        {assignmentObjectives.map((objective, index) => (
-                            <div key={index} className="mb-2 flex items-center gap-2">
-                                <input
-                                    type="text"
-                                    className="flex-1 p-2 border border-gray-300 rounded"
-                                    placeholder={`Objective ${index + 1}`}
-                                    value={objective}
-                                    onChange={(e) => {
-                                        const newObjectives = [...assignmentObjectives];
-                                        newObjectives[index] = e.target.value;
-                                        setAssignmentObjectives(newObjectives);
-                                    }}
-                                />
-                                {index === assignmentObjectives.length - 1 && (
-                                    <button
-                                        type="button"
-                                        className="text-green-500 hover:text-green-700"
-                                        onClick={() => setAssignmentObjectives([...assignmentObjectives, ""])}
-                                    >
-                                        +
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-
-                        <div className="flex justify-end gap-2 mt-6">
+                        <div className="mb-4">
+                            <label htmlFor="description" className="block text-gray-700 font-medium mb-2">
+                                Description
+                            </label>
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                id="description"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Enter assignment description"
+                            />
+                        </div>
+                        <div className="flex justify-end gap-4">
                             <button
-                                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-                                onClick={() => setIsObjectivePromptOpen(false)}
+                                type="button"
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                                onClick={closeDialog}
                             >
                                 Cancel
                             </button>
                             <button
-                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                                onClick={(e) => {
-                                    setIsObjectivePromptOpen(false);
-                                    handleAssignmentSubmit(e);
-                                }}
+                                type="submit"
+                                className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
                             >
-                                Done
+                                Save
                             </button>
                         </div>
+                    </form>
+                </div>
+            </div>
+
+            <div
+                className={`fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 ${
+                    isObjectivePromptOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/3 text-center transform transition-all duration-300 ${
+                        isObjectivePromptOpen
+                            ? 'scale-100 translate-y-0 opacity-100'
+                            : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-semibold mb-4">Would you like to add assignment objectives?</h2>
+                    <div className="flex justify-center gap-4">
+                        <button
+                            onClick={handleObjectivesListOpen}
+                            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+                        >
+                            Yes
+                        </button>
+                        <button
+                            className="px-6 py-2 bg-gray-300 text-black rounded hover:bg-gray-200"
+                            onClick={handleSubmitWithoutObjectives}
+                        >
+                            No
+                        </button>
                     </div>
                 </div>
-            )}
+            </div>
+
+            <div
+                className={`fixed inset-0 z-30 flex items-center justify-center text-black bg-black bg-opacity-50 transition-opacity duration-300 ${
+                    isObjectiveListPromptOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-[400px] transition-all transform duration-300 ${
+                        isObjectiveListPromptOpen
+                            ? 'opacity-100 scale-100 translate-y-0'
+                            : 'opacity-0 scale-95 -translate-y-4'
+                    }`}
+                >
+                    <h3 className="text-lg font-semibold mb-4 text-center">Add Assignment Objectives</h3>
+
+                    {assignmentObjectives.map((objective, index) => (
+                        <div key={index} className="mb-2 flex items-center gap-2">
+                            <input
+                                type="text"
+                                className="flex-1 p-2 border border-gray-300 rounded"
+                                placeholder={`Objective ${index + 1}`}
+                                value={objective}
+                                onChange={(e) => {
+                                    const newObjectives = [...assignmentObjectives];
+                                    newObjectives[index] = e.target.value;
+                                    setAssignmentObjectives(newObjectives);
+                                }}
+                            />
+                            {index === assignmentObjectives.length - 1 && (
+                                <button
+                                    type="button"
+                                    className="text-green-500 hover:text-green-700"
+                                    onClick={() => setAssignmentObjectives([...assignmentObjectives, ""])}
+                                >
+                                    +
+                                </button>
+                            )}
+                        </div>
+                    ))}
+
+                    <div className="flex justify-end gap-2 mt-6">
+                        <button
+                            className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                            onClick={() => setIsObjectivePromptOpen(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            onClick={(e) => {
+                                setIsObjectivePromptOpen(false);
+                                handleAssignmentSubmit(e);
+                            }}
+                        >
+                            Done
+                        </button>
+                    </div>
+                </div>
+            </div>
 
         </>
     )

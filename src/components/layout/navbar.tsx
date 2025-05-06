@@ -10,6 +10,7 @@ const Navbar = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [username, setUsername] = useState("");
     const router = useRouter();
+
     const toggleDialog = () => {
         setIsDialogOpen(!isDialogOpen);
     };
@@ -51,22 +52,26 @@ const Navbar = () => {
                     <FiUser className="text-gray-600" size={20} />
                 </button>
 
-            {/* Dropdown menu */}
-            {isDialogOpen && (
-                <div className="absolute top-full right-0 mt-4 w-48  rounded-md shadow-lg z-50">
-                    <ul className="py-1">
-                        <li>
-                            <button
-                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                onClick={() => handleLogout()}
-                            >
-                                <FiLogOut className="mr-2" />
-                                Logout
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            )}
+
+            <div
+                className={`absolute top-full right-0 mt-4 w-48 rounded-md shadow-lg z-50 transition-all duration-300 transform ${
+                    isDialogOpen
+                        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                        : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                }`}
+            >
+                <ul className="py-1 bg-white rounded-md">
+                    <li>
+                        <button
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={() => handleLogout()}
+                        >
+                            <FiLogOut className="mr-2" />
+                            Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     );
 };

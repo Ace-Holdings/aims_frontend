@@ -1,6 +1,5 @@
 import BidTile from "./bidTile"
-import {useEffect, useState} from "react";
-
+import { useEffect, useState } from "react";
 
 export default function ActiveBids() {
     const [activeBids, setActiveBids] = useState([]);
@@ -8,7 +7,7 @@ export default function ActiveBids() {
 
     useEffect(() => {
         const fetchBids = async () => {
-            setLoading(true);  // Set loading to true before fetching
+            setLoading(true);
             try {
                 const response = await fetch('http://localhost:3002/bids', {
                     method: 'GET',
@@ -26,23 +25,26 @@ export default function ActiveBids() {
             } finally {
                 setLoading(false);
             }
-        }
+        };
         fetchBids();
     }, []);
 
-    console.log(activeBids);
-
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 font-custom">
+        <div className="w-full font-custom">
             {loading ? (
                 <div className="w-full h-48 flex justify-center items-center">
-                    {/* Tailwind CSS Spinner with longer blue line and transparent outline */}
                     <div className="w-20 h-20 border-8 border-t-8 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
                 </div>
+            ) : activeBids.length === 0 ? (
+                <div className="text-center text-gray-500 text-lg mt-10">
+                    No active bids found.
+                </div>
             ) : (
-                activeBids.map((bid) => (
-                    <BidTile key={bid.bidId} bid={bid} />
-                ))
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {activeBids.map((bid) => (
+                        <BidTile key={bid.bidId} bid={bid} />
+                    ))}
+                </div>
             )}
         </div>
     );

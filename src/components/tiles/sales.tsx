@@ -13,6 +13,8 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
     const [searchQuery, setSearchQuery] = useState("");
     const [inventories, setInventories] = useState([]);
 
+    const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
+
     // update states
     const [quantityState, setQuantity] = useState(0);
     const [itemState, setItem] = useState("");
@@ -20,6 +22,15 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
     const [amountState, setAmount] = useState(0);
     const [customerState, setCustomer] = useState("");
     const [issuerState, setIssuer] = useState("");
+
+    useEffect(() => {
+        if (showDetailsDialog) {
+            setShouldRenderDialog(true);
+        } else {
+            const timeout = setTimeout(() => setShouldRenderDialog(false), 400);
+            return () => clearTimeout(timeout);
+        }
+    }, [showDetailsDialog]);
 
     const openDetailDialog = (sale: any) => {
         setSelectedSale(sale);
@@ -259,50 +270,70 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                 </p>
             </div>
 
-            {showDetailsDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black font-custom backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Sale Details</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <div>
-                                <strong>Item:</strong> {selectedSale.title}
+            {/* modal for showing details dialog */}
+            {shouldRenderDialog &&
+                ReactDOM.createPortal(
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                        }`}
+                    >
+                        <div
+                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                            }`}
+                        >
+                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Sale Details</h3>
+                            <div className="flex flex-wrap gap-4">
+                                <div>
+                                    <strong>Item:</strong> {selectedSale.title}
+                                </div>
+                                <div>
+                                    <strong>Customer:</strong> {selectedSale.customer}
+                                </div>
+                                <div>
+                                    <strong>Quantity:</strong> {selectedSale.quantity}
+                                </div>
+                                <div>
+                                    <strong>Description:</strong> {selectedSale.description}
+                                </div>
+                                <div>
+                                    <strong>Issuer:</strong> {selectedSale.issuer}
+                                </div>
+                                <div>
+                                    <strong>Amount:</strong> {new Intl.NumberFormat("en-US", {
+                                    style: "currency",
+                                    currency: "MWK",
+                                }).format(selectedSale.amount)}
+                                </div>
                             </div>
-                            <div>
-                                <strong>Customer:</strong> {selectedSale.customer}
-                            </div>
-                            <div>
-                                <strong>Quantity:</strong> {selectedSale.quantity}
-                            </div>
-                            <div>
-                                <strong>Description:</strong> {selectedSale.description}
-                            </div>
-                            <div>
-                                <strong>Issuer:</strong> {selectedSale.issuer}
-                            </div>
-                            <div>
-                                <strong>Amount:</strong> {new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: "MWK",
-                            }).format(selectedSale.amount)}
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                    onClick={() => setShowDetailsDialog(false)}
+                                >
+                                    Close
+                                </button>
                             </div>
                         </div>
-                        <div className="mt-6 flex justify-end">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowDetailsDialog(false)}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
+                    </div>,
+                    document.body
+                )
+            }
 
-            {showUpdateDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black  text-black  font-custom bg-opacity-30 backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update sale</h3>
+            {/* modal for showing update dialog */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 text-black z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm font-custom transition-opacity duration-300 ${
+                        showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300 ${
+                            showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
+                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Sale</h3>
                         <form>
                             <div className="mb-4 relative">
                                 <label htmlFor="item" className="block text-gray-700 font-medium mb-2">
@@ -343,48 +374,49 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                                     </ul>
                                 )}
                             </div>
+
                             <div className="mb-4">
                                 <label>Quantity</label>
                                 <input
                                     type="number"
-                                    name="contact"
                                     className="border p-2 w-full bg-white"
                                     value={quantityState}
-                                    onChange={(e: any) => setQuantity(e.target.value)}
+                                    onChange={(e) => setQuantity(e.target.value)}
                                 />
                             </div>
+
                             <div className="mb-4">
                                 <label>Description</label>
                                 <input
                                     type="text"
-                                    name="contact"
                                     className="border p-2 w-full bg-white"
                                     value={descriptionState}
-                                    onChange={(e: any) => setDescription(e.target.value)}
+                                    onChange={(e) => setDescription(e.target.value)}
                                 />
                             </div>
+
                             <div className="mb-4">
                                 <label>Customer</label>
                                 <input
                                     type="text"
-                                    name="contact"
                                     className="border p-2 w-full bg-white"
                                     value={customerState}
-                                    onChange={(e: any) => setCustomer(e.target.value)}
+                                    onChange={(e) => setCustomer(e.target.value)}
                                 />
                             </div>
+
                             <div className="mb-4">
                                 <label>Issuer</label>
                                 <input
                                     type="text"
-                                    name="contact"
                                     className="border p-2 w-full bg-white"
-                                    onChange={(e: any) => setIssuer(e.target.value)}
+                                    onChange={(e) => setIssuer(e.target.value)}
                                 />
                             </div>
 
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button
+                                    type="button"
                                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
                                     onClick={() => setShowUpdateDialog(false)}
                                 >
@@ -404,27 +436,41 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                 document.body
             )}
 
-            {showDeleteDialog &&
-                ReactDOM.createPortal(
-                    <div className="fixed inset-0 flex items-center justify-center bg-black  text-black  font-custom bg-opacity-30 backdrop-blur-sm z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
-                            <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
-                            <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this sale?</p>
-                            <div className="mt-4 flex justify-end space-x-3">
-                                <button className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md" onClick={() => setShowDeleteDialog(false)}>
-                                    Cancel
-                                </button>
-                                <button className="bg-red-600 text-white px-4 py-2 rounded-md" onClick={handleDeleteSale}>
-                                    Delete
-                                </button>
-                            </div>
+            {/* modal for showing delete dialog */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm font-custom transition-opacity duration-300 ${
+                        showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300 ${
+                            showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
+                        <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                        <p className="text-sm text-gray-700 mb-6">
+                            Are you sure you want to delete this sale?
+                        </p>
+                        <div className="mt-4 flex justify-end space-x-3">
+                            <button
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                onClick={() => setShowDeleteDialog(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-red-600 text-white px-4 py-2 rounded-md"
+                                onClick={handleDeleteSale}
+                            >
+                                Delete
+                            </button>
                         </div>
-                    </div>,
-                    document.body
-                )}
-
+                    </div>
+                </div>,
+                document.body
+            )}
         </>
-
     );
 };
 

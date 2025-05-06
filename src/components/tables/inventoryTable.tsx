@@ -17,6 +17,8 @@ export default function InventoryTable() {
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
 
+    const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
+
     // states for updating inventory
     const [quantity, setQuantity] = useState(0);
     const [pricePerUnit, setPricePerUnit] = useState(0);
@@ -50,6 +52,15 @@ export default function InventoryTable() {
                 setFilteredData(data);
             });
     }, []);
+
+    useEffect(() => {
+        if (showDetailsDialog) {
+            setShouldRenderDialog(true);
+        } else {
+            const timeout = setTimeout(() => setShouldRenderDialog(false), 400);
+            return () => clearTimeout(timeout);
+        }
+    }, [showDetailsDialog]);
 
     const openDeleteDialog = (item: any) => {
         setSelectedItem(item);
@@ -244,11 +255,13 @@ export default function InventoryTable() {
         const filtered =
             value === "All"
                 ? stock
-                : stock.filter((item: any) => item.status === value);
+                : stock.filter((item: any) => item.location.toLowerCase() === value.toLowerCase());
 
-        setFilteredData(filtered.filter((item: any) =>
-            item.name.toLowerCase().includes(search.toLowerCase())
-        ));
+        setFilteredData(
+            filtered.filter((item: any) =>
+                item.name.toLowerCase().includes(search.toLowerCase())
+            )
+        );
     };
 
     // Handle Search Change
@@ -348,15 +361,14 @@ export default function InventoryTable() {
         <>
             <div className="p-4">
                 <div className="flex justify-between items-center mb-4 text-black">
-                    {/* Filter Dropdown */}
                     <select
                         value={filter}
                         onChange={handleFilterChange}
                         className="border border-gray-300 rounded-md px-2 py-1"
                     >
                         <option value="All">All</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                        <option value="shop">Shop</option>
+                        <option value="warehouse">Warehouse</option>
                     </select>
 
                     {/* Search Bar */}
@@ -380,9 +392,18 @@ export default function InventoryTable() {
                 />
             </div>
 
-            {showDeleteDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
+            {/* modal for deleting an inventory item */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                        showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10 transform transition-all duration-300 ${
+                            showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
                         <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">
                             Are you sure you want to delete this stock item?
@@ -406,57 +427,77 @@ export default function InventoryTable() {
                 document.body
             )}
 
-            {showDetailsDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Stock Item Details</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <div>
-                                <strong>Item name:</strong> {selectedItem.name}
+            {/* modal for displaying inventory item details */}
+            {shouldRenderDialog &&
+                ReactDOM.createPortal(
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                        }`}
+                    >
+                        <div
+                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                            }`}
+                        >
+                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Stock Item Details</h3>
+                            <div className="flex flex-wrap gap-4">
+                                <div>
+                                    <strong>Item name:</strong> {selectedItem.name}
+                                </div>
+                                <div>
+                                    <strong>Description:</strong> {selectedItem.description}
+                                </div>
+                                <div>
+                                    <strong>Quantity:</strong> {selectedItem.quantity}
+                                </div>
+                                <div>
+                                    <strong>Unit price:</strong> {new Intl.NumberFormat("en-US", {
+                                    style: "currency",
+                                    currency: "MWK",
+                                }).format(selectedItem.pricePerUnit)}
+                                </div>
+                                <div>
+                                    <strong>Date added:</strong> {new Date(selectedItem.dateAdded).toLocaleString("en-US", {
+                                    weekday: "short",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                })}
+                                </div>
+                                <div>
+                                    <strong>Location:</strong> {selectedItem.location}
+                                </div>
                             </div>
-                            <div>
-                                <strong>Description:</strong> {selectedItem.description}
-                            </div>
-                            <div>
-                                <strong>Quantity:</strong> {selectedItem.quantity}
-                            </div>
-                            <div>
-                                <strong>Unit price:</strong> {new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: "MWK",
-                            }).format(selectedItem.pricePerUnit)}
-                            </div>
-                            <div>
-                                <strong>Date added:</strong> {new Date(selectedItem.dateAdded).toLocaleString("en-US", {
-                                weekday: "short",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                            })}
-                            </div>
-                            <div>
-                                <strong>Location:</strong> {selectedItem.location}
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                    onClick={() => setShowDetailsDialog(false)}
+                                >
+                                    Close
+                                </button>
                             </div>
                         </div>
-                        <div className="mt-6 flex justify-end">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowDetailsDialog(false)}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
+                    </div>,
+                    document.body
+                )
+            }
 
-            {showUpdateDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+            {/* modal for opening update details */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
+                        showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300 ${
+                            showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
                         <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Stock Item</h3>
                         <form>
                             <div className="mb-4">
@@ -552,18 +593,29 @@ export default function InventoryTable() {
                 document.body
             )}
 
-            {showSerialDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-[80vh] overflow-y-auto">
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-600">Serial numbers of items in stock for {selectedItem?.name} {selectedItem?.description}</h3>
+            {/* modal for showing serial numbers of the selected inventory item */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
+                        showSerialDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-[80vh] overflow-y-auto transform transition-all duration-300 ${
+                            showSerialDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
+                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-600">
+                            Serial numbers of items in stock for {selectedItem?.name} {selectedItem?.description}
+                        </h3>
                         <div className="border border-gray-300 rounded-md max-h-60 overflow-y-auto p-2 max-h-[9.5rem]">
-                            { (
-                                serialNumbers.map((serial: any, idx: number) => (
-                                    <div key={idx} className="border-b py-2 px-1">
-                                        <span className="font-medium text-sm text-gray-700">{serial.serialNumber || "N/A"}</span>
-                                    </div>
-                                ))
-                            )}
+                            {serialNumbers.map((serial: any, idx: number) => (
+                                <div key={idx} className="border-b py-2 px-1">
+                        <span className="font-medium text-sm text-gray-700">
+                            {serial.serialNumber || 'N/A'}
+                        </span>
+                                </div>
+                            ))}
                         </div>
                         <div className="mt-4 flex justify-end">
                             <button
@@ -578,9 +630,18 @@ export default function InventoryTable() {
                 document.body
             )}
 
+            {/* modal for entering serial numbers upon modifying quantity of inventory item */}
             {isSerialDialogOpen && (
-                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
+                <div
+                    className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
+                        isSerialDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg w-1/4 transform transition-all duration-300 ${
+                            isSerialDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
                         <h2 className="text-lg font-medium mb-4 text-center">Enter Serial Numbers</h2>
                         <div className="space-y-3 max-h-[300px] overflow-y-auto">
                             {Array.from({ length: quantity }).map((_, idx) => (
@@ -618,10 +679,6 @@ export default function InventoryTable() {
                     </div>
                 </div>
             )}
-
-
         </>
-
-
     );
 }

@@ -15,6 +15,8 @@ export default function AssignmentsTable() {
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
 
+    const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
+
     // Form states for update
     const [assignmentName, setAssignmentName] = useState("");
     const [location, setLocation] = useState("");
@@ -39,6 +41,15 @@ export default function AssignmentsTable() {
                 setFilteredData(data)
             })
     }, []);
+
+    useEffect(() => {
+        if (showDetailsDialog) {
+            setShouldRenderDialog(true);
+        } else {
+            const timeout = setTimeout(() => setShouldRenderDialog(false), 400);
+            return () => clearTimeout(timeout);
+        }
+    }, [showDetailsDialog]);
 
     const openDeleteDialog = (assignment: any) => {
         setShowDeleteDialog(true);
@@ -249,16 +260,21 @@ export default function AssignmentsTable() {
     const [filteredData, setFilteredData] = useState();
 
     // Handle Filter Change
-    const handleFilterChange = (e: any) => {
+    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         setFilter(value);
+        console.log(value);
 
-        // Filter data based on status or show all
-        if (value === "All") {
-            setFilteredData(data);
-        } else {
-            setFilteredData(data.filter((item) => item.status === value));
-        }
+        const filtered =
+            value === "All"
+                ? assignments
+                : assignments.filter((item: any) => {
+                    const status = item.status;
+                    const isActive = value === "true";
+                    return isActive ? status === true : status === false || status === null;
+                });
+
+        setFilteredData(filtered);
     };
 
     // Handle Search
@@ -267,8 +283,8 @@ export default function AssignmentsTable() {
         setSearch(value);
 
         setFilteredData(
-            data.filter((item) =>
-                item.name.toLowerCase().includes(value.toLowerCase())
+            assignments.filter((item) =>
+                item.assignmentName.toLowerCase().includes(value.toLowerCase())
             )
         );
     };
@@ -276,16 +292,16 @@ export default function AssignmentsTable() {
     return (
         <>
             <div className="p-4">
+                {/* main content */}
                 <div className="flex justify-between items-center mb-4 text-black">
-                    {/* Filter Dropdown */}
                     <select
                         value={filter}
                         onChange={handleFilterChange}
                         className="border border-gray-300 rounded-md px-2 py-1"
                     >
                         <option value="All">All</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
                     </select>
 
                     {/* Search Bar */}
@@ -309,83 +325,36 @@ export default function AssignmentsTable() {
                 />
             </div>
 
-            {
-                showDeleteDialog && ReactDOM.createPortal(
+            {/* modal for deleting an assignment */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                        showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
                     <div
-                        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
-                            <h3 className="text-lg font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
-                            <p className="text-sm text-gray-700 mb-6">
-                                Are you sure you want to delete this assignment?
-                            </p>
-                            <div className="mt-4 flex justify-end space-x-3">
-                                <button
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition-colors duration-200 hover:bg-gray-400"
-                                    onClick={() => setShowDeleteDialog(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    className="bg-red-500 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-600"
-                                    onClick={handleDeleteAssignment}
-                                >
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>,
-                    document.body
-                )}
-
-            {showDetailsDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Assignment Details</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <div>
-                                <strong>Assignment:</strong> {selectedAssignment.assignmentName}
-                            </div>
-                            <div>
-                                <strong>Location:</strong> {selectedAssignment.location}
-                            </div>
-                            <div>
-                                <strong>Description:</strong> {selectedAssignment.description}
-                            </div>
-                            <div>
-                                <strong>Employees to attend:</strong> {selectedAssignment.users.map(user => user.username).join(", ")}
-                            </div>
-                            <div>
-                                <strong>Status:</strong> {selectedAssignment.status}
-                            </div>
-                            <div>
-                                <strong>Start At:</strong> {new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
-                                weekday: "short",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                            })}
-                            </div>
-                            <div>
-                                <strong>Ends At:</strong> {new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
-                                weekday: "short",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                            })}
-                            </div>
-                        </div>
-                        <div className="mt-6 flex justify-end">
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10 transition-all transform duration-300 ${
+                            showDeleteDialog
+                                ? 'opacity-100 scale-100 translate-y-0'
+                                : 'opacity-0 scale-95 -translate-y-4'
+                        }`}
+                    >
+                        <h3 className="text-lg font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                        <p className="text-sm text-gray-700 mb-6">
+                            Are you sure you want to delete this assignment?
+                        </p>
+                        <div className="mt-4 flex justify-end space-x-3">
                             <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowDetailsDialog(false)}
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition-colors duration-200 hover:bg-gray-400"
+                                onClick={() => setShowDeleteDialog(false)}
                             >
-                                Close
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-red-500 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-600"
+                                onClick={handleDeleteAssignment}
+                            >
+                                Delete
                             </button>
                         </div>
                     </div>
@@ -393,12 +362,82 @@ export default function AssignmentsTable() {
                 document.body
             )}
 
-            {showUpdateDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+            {/* modal for assignment details */}
+            {shouldRenderDialog &&
+                ReactDOM.createPortal(
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                        }`}
+                    >
+                        <div
+                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                            }`}
+                        >
+                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Assignment Details</h3>
+                            <div className="flex flex-wrap gap-4">
+                                <div><strong>Assignment:</strong> {selectedAssignment.assignmentName}</div>
+                                <div><strong>Location:</strong> {selectedAssignment.location}</div>
+                                <div><strong>Description:</strong> {selectedAssignment.description}</div>
+                                <div>
+                                    <strong>Employees to attend:</strong> {selectedAssignment.users?.map(user => user.username).join(", ")}
+                                </div>
+                                <div><strong>Status:</strong> {selectedAssignment.status}</div>
+                                <div>
+                                    <strong>Start At:</strong> {new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
+                                    weekday: "short",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                })}
+                                </div>
+                                <div>
+                                    <strong>Ends At:</strong> {new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
+                                    weekday: "short",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                })}
+                                </div>
+                            </div>
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                    onClick={() => setShowDetailsDialog(false)}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>,
+                    document.body
+                )
+            }
+
+            {/* modal for updating an assignment */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                        showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transition-all transform duration-300 ${
+                            showUpdateDialog
+                                ? 'opacity-100 scale-100 translate-y-0'
+                                : 'opacity-0 scale-95 -translate-y-4'
+                        }`}
+                    >
                         <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Assignment</h3>
                         <form>
-                            <div className="mb-4 ">
+                            <div className="mb-4">
                                 <label>Assignment</label>
                                 <input
                                     type="text"
@@ -407,7 +446,7 @@ export default function AssignmentsTable() {
                                     onChange={(e) => setAssignmentName(e.target.value)}
                                 />
                             </div>
-                            <div className="mb-4 ">
+                            <div className="mb-4">
                                 <label>Location</label>
                                 <input
                                     type="text"
@@ -469,14 +508,14 @@ export default function AssignmentsTable() {
                             </div>
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
                                     onClick={() => setShowUpdateDialog(false)}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="button"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
                                     onClick={handleUpdateAssignment}
                                 >
                                     Update
@@ -488,32 +527,40 @@ export default function AssignmentsTable() {
                 document.body
             )}
 
-            {showObjectivesDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center  bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
-                        <h3 className="text-lg font-semibold mb-4 text-center ">Assignment Objectives</h3>
+            {/* modal for assignment objectives checklist */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                        showObjectivesDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transition-all transform duration-300 ${
+                            showObjectivesDialog
+                                ? 'opacity-100 scale-100 translate-y-0'
+                                : 'opacity-0 scale-95 -translate-y-4'
+                        }`}
+                    >
+                        <h3 className="text-lg font-semibold mb-4 text-center">Assignment Objectives</h3>
                         <div className="mb-4 max-h-80 overflow-y-auto">
                             {objectives.length === 0 ? (
                                 <p className="text-center text-black">No objectives for this assignment.</p>
-
                             ) : (
                                 <ul className="space-y-2">
-                            {objectives
-                                .filter(obj => obj.assignmentId === selectedAssignment?.assignmentId)
-                                .map((obj, index) => (
-                                <li key={index} className="flex items-center justify-between border-b pb-1">
-                            <span className="text-gray-700">{obj.objectiveText}</span>
-                            <span className="text-xl">
-                                        {obj.isComplete ? "✅" : "❌"}
-                                    </span>
-                        </li>
-                        ))}
-                    </ul>
+                                    {objectives
+                                        .filter(obj => obj.assignmentId === selectedAssignment?.assignmentId)
+                                        .map((obj, index) => (
+                                            <li key={index} className="flex items-center justify-between border-b pb-1">
+                                                <span className="text-gray-700">{obj.objectiveText}</span>
+                                                <span className="text-xl">{obj.isComplete ? '✅' : '❌'}</span>
+                                            </li>
+                                        ))}
+                                </ul>
                             )}
                         </div>
                         <div className="mt-6 flex justify-end">
                             <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
                                 onClick={closeObjectivesDialog}
                             >
                                 Close

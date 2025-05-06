@@ -13,6 +13,8 @@ export default function UsersTable() {
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
+    const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
+
     // states for updating
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -37,6 +39,15 @@ export default function UsersTable() {
                 setFilteredData(sortedUsers);
             });
     }, []);
+
+    useEffect(() => {
+        if (showDetailsDialog) {
+            setShouldRenderDialog(true);
+        } else {
+            const timeout = setTimeout(() => setShouldRenderDialog(false), 400);
+            return () => clearTimeout(timeout);
+        }
+    }, [showDetailsDialog]);
 
     const openDeleteDialog = (user: any) => {
         setSelectedUser(user);
@@ -207,7 +218,13 @@ export default function UsersTable() {
         const filtered =
             value === "All"
                 ? users
-                : users.filter((item: any) => item.status === value);
+                : users.filter((item: any) => {
+                    const status = item.assignment?.status;
+                    return value === "true"
+                        ? status === true
+                        : status === false || status === null || item.assignment === null;
+                });
+
         setFilteredData(
             filtered.filter((item: any) =>
                 item.username.toLowerCase().includes(search.toLowerCase())
@@ -241,8 +258,8 @@ export default function UsersTable() {
                         className="border border-gray-300 rounded-md px-2 py-1"
                     >
                         <option value="All">All</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
                     </select>
 
                     {/* Search Bar */}
@@ -266,58 +283,31 @@ export default function UsersTable() {
                 />
             </div>
 
-            {showDeleteDialog &&
-                ReactDOM.createPortal(
-                    <div className="fixed inset-0 flex items-center justify-center bg-black  text-black  font-custom bg-opacity-30 backdrop-blur-sm z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
-                            <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
-                            <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this user?</p>
-                            <div className="mt-4 flex justify-end space-x-3">
-                                <button className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md" onClick={() => setShowDeleteDialog(false)}>
-                                    Cancel
-                                </button>
-                                <button className="bg-red-600 text-white px-4 py-2 rounded-md" onClick={handleDeleteUser}>
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>,
-                    document.body
-                )}
-
-            {showDetailsDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black  text-black font-custom bg-opacity-30 backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">User Details</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <div>
-                                <strong>First name:</strong> {selectedUser.firstName}
-                            </div>
-                            <div>
-                                <strong>Last name:</strong> {selectedUser.surname}
-                            </div>
-                            <div>
-                                <strong>username:</strong> {selectedUser.username}
-                            </div>
-                            <div>
-                                <strong>email:</strong> {selectedUser.email}
-                            </div>
-                            <div>
-                                <strong>ID number:</strong> {selectedUser.idNumber}
-                            </div>
-                            <div>
-                                <strong>Assignment ID:</strong> {selectedUser.assignmentId}
-                            </div>
-                            <div>
-                                <strong>Roles:</strong> {selectedUser.roles.map(role => role.name).join(", ")}
-                            </div>
-                        </div>
-                        <div className="mt-6 flex justify-end">
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black text-black font-custom bg-opacity-30 backdrop-blur-sm z-50 transition-opacity duration-300 ${
+                        showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10 transform transition-all duration-300 ${
+                            showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
+                        <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                        <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this user?</p>
+                        <div className="mt-4 flex justify-end space-x-3">
                             <button
                                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowDetailsDialog(false)}
+                                onClick={() => setShowDeleteDialog(false)}
                             >
-                                Close
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-red-600 text-white px-4 py-2 rounded-md"
+                                onClick={handleDeleteUser}
+                            >
+                                Delete
                             </button>
                         </div>
                     </div>
@@ -325,45 +315,100 @@ export default function UsersTable() {
                 document.body
             )}
 
-            {showUpdateDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black  text-black  font-custom bg-opacity-30 backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+            {shouldRenderDialog &&
+                ReactDOM.createPortal(
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                        }`}
+                    >
+                        <div
+                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                            }`}
+                        >
+                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">User Details</h3>
+                            <div className="flex flex-wrap gap-4">
+                                <div>
+                                    <strong>First name:</strong> {selectedUser.firstName}
+                                </div>
+                                <div>
+                                    <strong>Last name:</strong> {selectedUser.surname}
+                                </div>
+                                <div>
+                                    <strong>username:</strong> {selectedUser.username}
+                                </div>
+                                <div>
+                                    <strong>email:</strong> {selectedUser.email}
+                                </div>
+                                <div>
+                                    <strong>ID number:</strong> {selectedUser.idNumber}
+                                </div>
+                                <div>
+                                    <strong>Assignment ID:</strong> {selectedUser.assignmentId}
+                                </div>
+                                <div>
+                                    <strong>Roles:</strong> {selectedUser.roles.map(role => role.name).join(", ")}
+                                </div>
+                            </div>
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                    onClick={() => setShowDetailsDialog(false)}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>,
+                    document.body
+                )
+            }
+
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black text-black font-custom bg-opacity-30 backdrop-blur-sm z-50 transition-opacity duration-300 ${
+                        showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300 ${
+                            showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
                         <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update user</h3>
                         <form>
-                            <div className="mb-4 ">
+                            <div className="mb-4">
                                 <label>First name</label>
                                 <input
                                     type="text"
                                     className="border p-2 w-full bg-white"
                                     value={firstName}
-                                    onChange={(e: any) => setFirstName(e.target.value)}
+                                    onChange={(e) => setFirstName(e.target.value)}
                                 />
                             </div>
-                            <div className="mb-4 ">
+                            <div className="mb-4">
                                 <label>Last name</label>
                                 <input
                                     type="text"
-                                    name="locationName"
                                     className="border p-2 w-full bg-white"
                                     value={lastName}
-                                    onChange={(e: any) => setLastName(e.target.value)}
+                                    onChange={(e) => setLastName(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
                                 <label>Username</label>
                                 <input
                                     type="text"
-                                    name="contact"
                                     className="border p-2 w-full bg-white"
                                     value={username}
-                                    onChange={(e: any) => setUsername(e.target.value)}
+                                    onChange={(e) => setUsername(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
                                 <label>Password</label>
                                 <input
                                     type="text"
-                                    name="contact"
                                     className="border p-2 w-full bg-white"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -373,20 +418,18 @@ export default function UsersTable() {
                                 <label>Email</label>
                                 <input
                                     type="text"
-                                    name="contact"
                                     className="border p-2 w-full bg-white"
                                     value={email}
-                                    onChange={(e: any) => setEmail(e.target.value)}
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
                                 <label>Id number</label>
                                 <input
                                     type="text"
-                                    name="contact"
                                     className="border p-2 w-full bg-white"
                                     value={idNumber}
-                                    onChange={(e: any) => setIdNumber(e.target.value)}
+                                    onChange={(e) => setIdNumber(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
@@ -396,7 +439,6 @@ export default function UsersTable() {
                                 <select
                                     id="role"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    defaultValue=""
                                     onChange={(e) => setRole(e.target.value)}
                                     value={role}
                                 >
@@ -409,6 +451,7 @@ export default function UsersTable() {
                             </div>
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button
+                                    type="button"
                                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
                                     onClick={() => setShowUpdateDialog(false)}
                                 >
