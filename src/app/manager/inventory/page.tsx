@@ -332,6 +332,7 @@ export default function ManagerInventory() {
                 </div>
             </div>
 
+            {/* modal for inserting serial numbers of inventory items */}
             <div
                 className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
                     isSerialDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'

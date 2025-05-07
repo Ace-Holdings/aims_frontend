@@ -814,269 +814,302 @@ export default function EmployeeSales() {
                 </div>
             </div>
 
-            {isDialogOpen && (
+            {/* generate sale modal */}
+            <div
+                className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
+                    isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
                 <div
-                    className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-lg font-medium mb-4 text-center text-bold">Add sales transaction</h2>
-                        <div className="h-2"/>
-                        <form onSubmit={handleSalesSubmit}>
-                            <div className="mb-4 relative">
-                                <label htmlFor="item" className="block text-gray-700 font-medium mb-2">
-                                    Search Inventories
-                                </label>
-                                <input
-                                    value={searchQuery}
-                                    onChange={(e) => {
-                                        setSearchQuery(e.target.value);
-                                    }}
-                                    type="text"
-                                    id="item"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Type to search for items"
-                                />
-                                {searchQuery && (
-                                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
-                                        {inventories
-                                            .filter((inventory) => inventory.location.toLowerCase() === "shop" &&
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/3 transform transition-all duration-300 ${
+                        isDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-medium mb-4 text-center font-bold">Add sales transaction</h2>
+                    <div className="h-2" />
+                    <form onSubmit={handleSalesSubmit}>
+                        <div className="mb-4 relative">
+                            <label htmlFor="item" className="block text-gray-700 font-medium mb-2">
+                                Search Inventories
+                            </label>
+                            <input
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                }}
+                                type="text"
+                                id="item"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Type to search for items"
+                            />
+                            {searchQuery && (
+                                <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
+                                    {inventories
+                                        .filter(
+                                            (inventory) =>
+                                                inventory.location.toLowerCase() === 'shop' &&
                                                 inventory.name.toLowerCase().includes(searchQuery.toLowerCase())
-                                            )
-                                            .map((inventory) => (
-                                                <li
-                                                    key={inventory.inventoryId}
-                                                    onClick={() => {
-                                                        handleSelectInventory(inventory.inventoryId);
-                                                        setSearchQuery("");
-                                                    }}
-                                                    className="p-2 hover:bg-gray-100 cursor-pointer"
-                                                >
-                                                    {inventory.name}
-                                                    <p className="text-green-600 font-bold">
-                                                        {new Intl.NumberFormat('en-US', {
-                                                            style: 'currency',
-                                                            currency: 'MWK'
-                                                        }).format(inventory.pricePerUnit)}
-                                                    </p>
-                                                </li>
-                                            ))}
-                                    </ul>
-                                )}
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 font-medium mb-2">Selected Items</label>
-                                <ul>
-                                    {selectedItems.map((item, index) => (
-                                        <li key={index} className="flex justify-between items-center p-2 border-b">
-                                            <span>{item.name} (x{item.quantity})</span>
-                                            <span>{new Intl.NumberFormat('en-US', {
-                                                style: 'currency',
-                                                currency: 'MWK'
-                                            }).format(item.unitPrice * item.quantity)}</span>
-                                            <button
-                                                type="button"
-                                                className="text-red-500 ml-2"
-                                                onClick={() =>
-                                                    setSelectedItems(selectedItems.filter((_, i) => i !== index))
-                                                }
-                                            >
-                                                ❌
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Description
-                                </label>
-                                <input
-                                    value={description}
-                                    onChange={(e: any) => {
-                                        setDescription(e.target.value)
-                                    }}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Item description"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Customer
-                                </label>
-                                <input
-                                    value={customer}
-                                    onChange={(e: any) => {
-                                        setCustomer(e.target.value)
-                                    }}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Name of item"
-                                />
-                            </div>
-
-                            <div className="flex justify-end gap-4">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
-                                    onClick={closeDialog}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {isQuantityModalOpen && (
-                <div className="fixed inset-0  items-center justify-center z-50 flex   bg-opacity-50 bg-black ">
-                    <div className="bg-white p-6 rounded-lg shadow-lg text-black">
-                        <h2 className="text-lg font-semibold mb-4">Enter Quantity</h2>
-                        <input
-                            type="number"
-                            min="1"
-                            value={inputQuantity}
-                            onChange={(e) => setInputQuantity(parseInt(e.target.value) || 1)}
-                            className="w-full p-2 border border-gray-300 rounded-lg"
-                        />
-                        <div className="flex justify-end mt-4">
-                            <button onClick={() => setIsQuantityModalOpen(false)} className="px-4 py-2 mr-2 bg-gray-300 rounded">
-                                Cancel
-                            </button>
-                            <button onClick={handleAddItem} className="px-4 py-2 bg-blue-500 text-white rounded">
-                                Add Item
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {isSerialModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] text-black flex flex-col">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold text-center flex-grow">Select Serials</h3>
-                            <span className="text-sm text-gray-600">{selectedSerials.length} of {maxSelectable}</span>
-                        </div>
-
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handleSerialConfirm();
-                            }}
-                            className="flex flex-col flex-grow"
-                        >
-                            {/* Scrollable section */}
-                            <div className="overflow-y-auto mb-4 pr-2 space-y-2" style={{ maxHeight: '200px' }}>
-                                {availableSerials.map((serial: any) => {
-                                    const isChecked = selectedSerials.includes(serial.unitId);
-                                    const isDisabled = !isChecked && selectedSerials.length >= maxSelectable;
-
-                                    return (
-                                        <div
-                                            key={serial.id}
-                                            className={`bg-gray-100 rounded-md px-3 py-2 flex justify-between items-center ${
-                                                isDisabled ? 'opacity-50 cursor-not-allowed' : ''
-                                            }`}
-                                        >
-                                            <span className="text-sm">{serial.serialNumber}</span>
-                                            <input
-                                                type="checkbox"
-                                                value={serial.unitId}
-                                                checked={isChecked}
-                                                disabled={isDisabled}
-                                                className="w-5 h-5 accent-green-600"
-                                                onChange={(e) => {
-                                                    const id = serial.unitId;
-                                                    setSelectedSerials((prev) =>
-                                                        e.target.checked
-                                                            ? [...prev, id]
-                                                            : prev.filter((s) => s !== id)
-                                                    );
+                                        )
+                                        .map((inventory) => (
+                                            <li
+                                                key={inventory.inventoryId}
+                                                onClick={() => {
+                                                    handleSelectInventory(inventory.inventoryId);
+                                                    setSearchQuery('');
                                                 }}
-                                            />
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            {/* Buttons */}
-                            <div className="flex justify-end gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsSerialModalOpen(false)}
-                                    className="text-gray-500 bg-gray-200 px-4 py-2 rounded"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                                >
-                                    Confirm
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {isGenerateReportModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg text-black w-full max-w-md">
-                        <h2 className="text-lg  mb-4 text-center">Generate Sales Report</h2>
-
-                        <div className="space-y-4">
-                            {/* Date Range */}
-                            <div>
-                                <label className="block text-sm font-medium mb-1">From:</label>
-                                <DatePicker
-                                    selected={startDate}
-                                    onChange={(date: Date | null) => setStartDate(date)}
-                                    className="w-[300px] p-2 border border-gray-300 rounded-lg"
-                                    dateFormat="yyyy-MM-dd"
-                                    placeholderText="Select a date"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-1">To:</label>
-                                <DatePicker
-                                    selected={endDate}
-                                    onChange={(date: Date | null) => setEndDate(date)}
-                                    className="w-[300px] p-2 border border-gray-300 rounded-lg"
-                                    dateFormat="yyyy-MM-dd"
-                                    placeholderText="Select a date"
-                                />
-                            </div>
-
+                                                className="p-2 hover:bg-gray-100 cursor-pointer"
+                                            >
+                                                {inventory.name}
+                                                <p className="text-green-600 font-bold">
+                                                    {new Intl.NumberFormat('en-US', {
+                                                        style: 'currency',
+                                                        currency: 'MWK',
+                                                    }).format(inventory.pricePerUnit)}
+                                                </p>
+                                            </li>
+                                        ))}
+                                </ul>
+                            )}
                         </div>
-
-                        <div className="flex justify-end mt-6">
+                        <div className="mb-4">
+                            <label className="block text-gray-700 font-medium mb-2">Selected Items</label>
+                            <ul>
+                                {selectedItems.map((item, index) => (
+                                    <li key={index} className="flex justify-between items-center p-2 border-b">
+                                        <span>{item.name} (x{item.quantity})</span>
+                                        <span>
+                                {new Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'MWK',
+                                }).format(item.unitPrice * item.quantity)}
+                            </span>
+                                        <button
+                                            type="button"
+                                            className="text-red-500 ml-2"
+                                            onClick={() =>
+                                                setSelectedItems(selectedItems.filter((_, i) => i !== index))
+                                            }
+                                        >
+                                            ❌
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Description
+                            </label>
+                            <input
+                                value={description}
+                                onChange={(e: any) => {
+                                    setDescription(e.target.value);
+                                }}
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Item description"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Customer
+                            </label>
+                            <input
+                                value={customer}
+                                onChange={(e: any) => {
+                                    setCustomer(e.target.value);
+                                }}
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Name of item"
+                            />
+                        </div>
+                        <div className="flex justify-end gap-4">
                             <button
-                                className="px-4 py-2 mr-2 bg-gray-300 rounded"
-                                onClick={() => setIsGenerateReportModalOpen(false)}
+                                type="button"
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                                onClick={closeDialog}
                             >
                                 Cancel
                             </button>
                             <button
-                                className="px-4 py-2 bg-blue-500 text-white rounded"
-                                onClick={triggerReportGeneration}
+                                type="submit"
+                                className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
                             >
-                                Generate
+                                Save
                             </button>
                         </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* Enter quantity for sale modal */}
+            <div
+                className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-black transition-opacity duration-300 ${
+                    isQuantityModalOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/4 transform transition-all duration-300 ${
+                        isQuantityModalOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-semibold mb-4 text-center">Enter Quantity</h2>
+                    <input
+                        type="number"
+                        min="1"
+                        value={inputQuantity}
+                        onChange={(e) => setInputQuantity(parseInt(e.target.value) || 1)}
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                    />
+                    <div className="flex justify-end mt-4 gap-4">
+                        <button
+                            onClick={() => setIsQuantityModalOpen(false)}
+                            className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleAddItem}
+                            className="px-4 py-2 bg-blue-500 hover:bg-blue-400 text-white rounded"
+                        >
+                            Add Item
+                        </button>
                     </div>
                 </div>
-            )}
+            </div>
+
+            <div
+                className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-black transition-opacity duration-300 ${
+                    isSerialModalOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-[400px] text-black flex flex-col transform transition-all duration-300 ${
+                        isSerialModalOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-center flex-grow">Select Serials</h3>
+                        <span className="text-sm text-gray-600">
+                {selectedSerials.length} of {maxSelectable}
+            </span>
+                    </div>
+
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSerialConfirm();
+                        }}
+                        className="flex flex-col flex-grow"
+                    >
+                        <div className="overflow-y-auto mb-4 pr-2 space-y-2" style={{ maxHeight: '200px' }}>
+                            {availableSerials.map((serial: any) => {
+                                const isChecked = selectedSerials.includes(serial.unitId);
+                                const isDisabled = !isChecked && selectedSerials.length >= maxSelectable;
+
+                                return (
+                                    <div
+                                        key={serial.id}
+                                        className={`bg-gray-100 rounded-md px-3 py-2 flex justify-between items-center ${
+                                            isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
+                                    >
+                                        <span className="text-sm">{serial.serialNumber}</span>
+                                        <input
+                                            type="checkbox"
+                                            value={serial.unitId}
+                                            checked={isChecked}
+                                            disabled={isDisabled}
+                                            className="w-5 h-5 accent-green-600"
+                                            onChange={(e) => {
+                                                const id = serial.unitId;
+                                                setSelectedSerials((prev) =>
+                                                    e.target.checked
+                                                        ? [...prev, id]
+                                                        : prev.filter((s) => s !== id)
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <div className="flex justify-end gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setIsSerialModalOpen(false)}
+                                className="text-gray-500 bg-gray-200 px-4 py-2 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="bg-blue-500 text-white px-4 py-2 rounded"
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* generate report modal */}
+            <div
+                className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 ${
+                    isGenerateReportModalOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg text-black w-full max-w-md transform transition-all duration-300 ${
+                        isGenerateReportModalOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg mb-4 text-center">Generate Sales Report</h2>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">From:</label>
+                            <DatePicker
+                                selected={startDate}
+                                onChange={(date: Date | null) => setStartDate(date)}
+                                className="w-[300px] p-2 border border-gray-300 rounded-lg"
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="Select a date"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">To:</label>
+                            <DatePicker
+                                selected={endDate}
+                                onChange={(date: Date | null) => setEndDate(date)}
+                                className="w-[300px] p-2 border border-gray-300 rounded-lg"
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="Select a date"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end mt-6">
+                        <button
+                            className="px-4 py-2 mr-2 bg-gray-300 rounded"
+                            onClick={() => setIsGenerateReportModalOpen(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="px-4 py-2 bg-blue-500 text-white rounded"
+                            onClick={triggerReportGeneration}
+                        >
+                            Generate
+                        </button>
+                    </div>
+                </div>
+            </div>
         </>
     )
 }

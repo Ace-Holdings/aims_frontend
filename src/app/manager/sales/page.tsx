@@ -251,6 +251,7 @@ export default function ManagerSales() {
 
         if (searchQuery) {
             fetchInventories(searchQuery);
+            console.log(inventories);
         }
     }, [searchQuery]);
 

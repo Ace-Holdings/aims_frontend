@@ -128,92 +128,109 @@ export default function Loans() {
                     <div className="h-7"/>
                     <LoanTable/>
                 </div>
-
             </div>
 
-            {isDialogOpen && (
-                <div className="fixed inset-0 bg-black text-black bg-opacity-50 flex justify-center items-center z-50 font-custom">
-                    <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
-                        {/* Loan Conditions Notice */}
-                        <div className="bg-blue-100 text-blue-800 p-4 rounded-md mb-6 border border-blue-300">
-                            <h2 className="text-lg font-semibold mb-2">Loan Application Conditions</h2>
-                            <p className="text-sm">
-                                - You must have been employed for at least 6 months.<br/>
-                                - Maximum loan amount is determined by your salary bracket.<br/>
-                                - Loan repayment is deducted monthly from your salary.<br/>
-                                - Late payments will incur a 5% penalty.<br/>
-                                - Loans will be granted upon managerial review and you will be notified
-                            </p>
+            {/* modal for generating loan request */}
+            <div
+                className={`fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
+                    isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative transform transition-all duration-300 ease-out ${
+                        isDialogOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                    }`}
+                >
+                    {/* Loan Conditions Notice */}
+                    <div className="bg-blue-100 text-blue-800 p-4 rounded-md mb-6 border border-blue-300">
+                        <h2 className="text-lg font-semibold mb-2">Loan Application Conditions</h2>
+                        <p className="text-sm">
+                            - You must have been employed for at least 6 months.<br />
+                            - Maximum loan amount is determined by your salary bracket.<br />
+                            - Loan repayment is deducted monthly from your salary.<br />
+                            - Late payments will incur a 5% penalty.<br />
+                            - Loans will be granted upon managerial review and you will be notified
+                        </p>
+                    </div>
+
+                    <form className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Loan Amount (MWK)</label>
+                            <input
+                                type="text"
+                                value={loanAmount.toLocaleString("en-US")}
+                                onChange={(e) => {
+                                    const raw = e.target.value.replace(/,/g, "");
+                                    if (!isNaN(Number(raw))) {
+                                        setLoanAmount(Number(raw));
+                                    }
+                                }}
+                                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter amount"
+                                inputMode="numeric"
+                            />
                         </div>
 
-                        <form className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Loan Amount (MWK)</label>
-                                <input
-                                    type="text"
-                                    value={loanAmount.toLocaleString("en-US")}
-                                    onChange={(e) => {
-                                        const raw = e.target.value.replace(/,/g, "");
-                                        if (!isNaN(Number(raw))) {
-                                            setLoanAmount(Number(raw));
-                                        }
-                                    }}
-                                    className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Enter amount"
-                                    inputMode="numeric"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Loan Purpose</label>
-                                <textarea
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                                    rows={3}
-                                    required
-                                    value={loanPurpose}
-                                    onChange={(e) => setLoanPurpose(e.target.value)}
-                                ></textarea>
-                            </div>
-
-                            {/* Buttons: Submit + Close */}
-                            <div className="flex justify-end gap-4 mt-6">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsDialogOpen(false)}
-                                    className="bg-gray-300 hover:bg-gray-400 text-gray-800  py-2 px-6 rounded-md"
-                                >
-                                    Close
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 hover:bg-blue-600 text-white  py-2 px-6 rounded-md"
-                                    onClick={handleSubmitLoanRequest}
-                                >
-                                    Submit Application
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {isSuccessVisible && (
-                <div className="fixed inset-0 flex items-center justify-center font-custom bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-6 rounded-xl shadow-2xl text-center max-w-md w-full animate-scale-in">
-                        <div className="flex justify-center">
-                            <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mb-4 animate-bounce">
-                                <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" strokeWidth="2"
-                                     viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                          d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Loan Purpose</label>
+                            <textarea
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                                rows={3}
+                                required
+                                value={loanPurpose}
+                                onChange={(e) => setLoanPurpose(e.target.value)}
+                            ></textarea>
                         </div>
-                        <h2 className="text-xl font-bold text-gray-800">Loan Request Sent!</h2>
-                        <p className="text-sm text-gray-600 mt-2">Your application has been submitted successfully.</p>
-                    </div>
+
+                        {/* Buttons: Submit + Close */}
+                        <div className="flex justify-end gap-4 mt-6">
+                            <button
+                                type="button"
+                                onClick={() => setIsDialogOpen(false)}
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-6 rounded-md"
+                            >
+                                Close
+                            </button>
+                            <button
+                                type="submit"
+                                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md"
+                                onClick={handleSubmitLoanRequest}
+                            >
+                                Submit Application
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </div>
+
+            {/* modal for loan request success */}
+            <div
+                className={`fixed inset-0 flex items-center justify-center font-custom bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
+                    isSuccessVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-xl shadow-2xl text-center max-w-md w-full transform transition-all duration-300 ${
+                        isSuccessVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                    }`}
+                >
+                    <div className="flex justify-center">
+                        <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mb-4 animate-bounce">
+                            <svg
+                                className="w-12 h-12 text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-800">Loan Request Sent!</h2>
+                    <p className="text-sm text-gray-600 mt-2">Your application has been submitted successfully.</p>
+                </div>
+            </div>
 
         </>
     )

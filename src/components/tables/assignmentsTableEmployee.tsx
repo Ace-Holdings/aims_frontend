@@ -12,6 +12,8 @@ export default function AssignmentsTableEmployee() {
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
 
+    const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
+
 
     useEffect(() => {
         fetch("http://localhost:3002/assignments", {
@@ -25,6 +27,15 @@ export default function AssignmentsTableEmployee() {
                 setFilteredData(data)
             })
     }, []);
+
+    useEffect(() => {
+        if (showDetailsDialog) {
+            setShouldRenderDialog(true);
+        } else {
+            const timeout = setTimeout(() => setShouldRenderDialog(false), 400);
+            return () => clearTimeout(timeout);
+        }
+    }, [showDetailsDialog]);
 
 
     const openDetailsDialog = (assignment: any) => {
@@ -180,65 +191,64 @@ export default function AssignmentsTableEmployee() {
                 />
             </div>
 
-
-            {showDetailsDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Assignment Details</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <div>
-                                <strong>Assignment:</strong> {selectedAssignment.assignmentName}
+            {shouldRenderDialog &&
+                ReactDOM.createPortal(
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                        }`}
+                    >
+                        <div
+                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                            }`}
+                        >
+                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Assignment Details</h3>
+                            <div className="flex flex-wrap gap-4">
+                                <div><strong>Assignment:</strong> {selectedAssignment.assignmentName}</div>
+                                <div><strong>Location:</strong> {selectedAssignment.location}</div>
+                                <div><strong>Description:</strong> {selectedAssignment.description}</div>
+                                <div>
+                                    <strong>Employees to attend:</strong> {selectedAssignment.users?.map(user => user.username).join(", ")}
+                                </div>
+                                <div><strong>Status:</strong> {selectedAssignment.status}</div>
+                                <div>
+                                    <strong>Start At:</strong> {new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
+                                    weekday: "short",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                })}
+                                </div>
+                                <div>
+                                    <strong>Ends At:</strong> {new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
+                                    weekday: "short",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                })}
+                                </div>
                             </div>
-                            <div>
-                                <strong>Location:</strong> {selectedAssignment.location}
-                            </div>
-                            <div>
-                                <strong>Description:</strong> {selectedAssignment.description}
-                            </div>
-                            <div>
-                                <strong>Employees to attend:</strong> {selectedAssignment.users.map(user => user.username).join(", ")}
-                            </div>
-                            <div>
-                                <strong>Status:</strong> {selectedAssignment.status}
-                            </div>
-                            <div>
-                                <strong>Start At:</strong> {new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
-                                weekday: "short",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                            })}
-                            </div>
-                            <div>
-                                <strong>Ends At:</strong> {new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
-                                weekday: "short",
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                            })}
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                    onClick={() => setShowDetailsDialog(false)}
+                                >
+                                    Close
+                                </button>
                             </div>
                         </div>
-                        <div className="mt-6 flex justify-end">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowDetailsDialog(false)}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
-
+                    </div>,
+                    document.body
+                )
+            }
 
         </>
-
     )
 }

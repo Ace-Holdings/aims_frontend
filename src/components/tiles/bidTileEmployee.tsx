@@ -8,13 +8,14 @@ import {jwtDecode} from "jwt-decode";
 export default function BidTileEmployee ({ bid }: { bid: { id: number, description: string, deadline: Date, status: string } }) {
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [selectedBid, setSelectedBid] = useState(null);
     const [downloadDialog, setDownloadDialog] = useState(false);
     const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
     const [editablePreviewUrl, setEditablePreviewUrl] = useState<string | null>(null);
     const [showChecklistDialog, setShowChecklistDialog] = useState(false);
     const [checklist, setChecklist] = useState([]);
+
+    const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
     // update states
     const [description, setDescription] = useState("");
@@ -29,6 +30,15 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
             previewEditableFile(selectedBid.bidId);
         }
     }, [downloadDialog, selectedBid]);
+
+    useEffect(() => {
+        if (showDetailsDialog) {
+            setShouldRenderDialog(true);
+        } else {
+            const timeout = setTimeout(() => setShouldRenderDialog(false), 400);
+            return () => clearTimeout(timeout);
+        }
+    }, [showDetailsDialog]);
 
     const openDetailsDialog= (bid: any) => {
         setSelectedBid(bid);
@@ -313,52 +323,76 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                 <p className="font-bold">{bid.status}</p>
             </div>
 
-            {showDetailsDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black font-custom backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Bid Details</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <div>
-                                <strong>Bid ID:</strong>{selectedBid.bidId}
+            {shouldRenderDialog &&
+                ReactDOM.createPortal(
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                        }`}
+                    >
+                        <div
+                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                            }`}
+                        >
+                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Bid Details</h3>
+                            <div className="flex flex-wrap gap-4">
+                                <div>
+                                    <strong>Bid ID:</strong>{selectedBid.bidId}
+                                </div>
+                                <div>
+                                    <strong>Description:</strong>{selectedBid.description}
+                                </div>
+                                <div>
+                                    <strong>Status:</strong>{selectedBid.status}
+                                </div>
+                                <div>
+                                    <strong>Deadline:</strong>{' '}
+                                    {new Date(selectedBid.deadline).toLocaleString('en-GB', {
+                                        day: '2-digit',
+                                        month: 'long',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: true,
+                                    })}
+                                </div>
                             </div>
-                            <div>
-                                <strong>Description:</strong>{selectedBid.description}
-                            </div>
-                            <div>
-                                <strong>Status:</strong>{selectedBid.status}
-                            </div>
-                            <div>
-                                <strong>Deadline:</strong>{selectedBid.deadline}
-                            </div>
-                            <div>
-                                <strong>Recently accessed user:</strong>{selectedBid.userId}
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                    onClick={() => setShowDetailsDialog(false)}
+                                >
+                                    Close
+                                </button>
                             </div>
                         </div>
-                        <div className="mt-6 flex justify-end">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowDetailsDialog(false)}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
+                    </div>,
+                    document.body
+                )
+            }
 
-            {showUpdateDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+            {/* modal for updating a bid */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
+                        showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300 ${
+                            showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
                         <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update bid</h3>
                         <form>
-                            <div className="mb-4 ">
+                            <div className="mb-4">
                                 <label>Description</label>
                                 <input
                                     type="text"
                                     className="border p-2 w-full bg-white"
                                     value={description}
-                                    onChange={(e: any) => setDescription(e.target.value)}
+                                    onChange={(e) => setDescription(e.target.value)}
                                 />
                             </div>
                             <div className="mb-4">
@@ -368,7 +402,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                                 <div className="relative overflow-visible">
                                     <DatePicker
                                         selected={deadline}
-                                        onChange={(e: any) => setDeadline(e.target.value)}
+                                        onChange={(e: any) => setDeadline(e)}
                                         dateFormat="yyyy-MM-dd h:mm aa"
                                         showTimeSelect
                                         timeFormat="h:mm aa"
@@ -381,32 +415,31 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                                 </div>
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                <label htmlFor="bidFile" className="block text-gray-700 font-medium mb-2">
                                     Bid File
                                 </label>
                                 <input
                                     type="file"
-                                    id="title"
+                                    id="bidFile"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Name of item"
                                     onChange={handleUpdateBidFileChange}
                                 />
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="title" className="block text-red-600 font-medium mb-2">
+                                <label htmlFor="editableFile" className="block text-red-600 font-medium mb-2">
                                     Editable file
                                 </label>
                                 <input
                                     type="file"
-                                    id="title"
+                                    id="editableFile"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Name of item"
                                     onChange={handleUpdateEditableFileChange}
                                 />
                             </div>
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button
                                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                    type="button"
                                     onClick={() => setShowUpdateDialog(false)}
                                 >
                                     Cancel
@@ -425,31 +458,20 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                 document.body
             )}
 
-            {showDeleteDialog &&
-                ReactDOM.createPortal(
-                    <div className="fixed inset-0 flex items-center justify-center bg-black  text-black  font-custom bg-opacity-30 backdrop-blur-sm z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10">
-                            <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
-                            <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this bid</p>
-                            <div className="mt-4 flex justify-end space-x-3">
-                                <button className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md" onClick={() => setShowDeleteDialog(false)}>
-                                    Cancel
-                                </button>
-                                <button className="bg-red-600 text-white px-4 py-2 rounded-md" onClick={handleDelete}>
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>,
-                    document.body
-                )}
-
-            {downloadDialog && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black text-black bg-opacity-30 backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-2/3">
+            {/* modal for downloading bid files */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black z-50 transition-opacity duration-300 ${
+                        downloadDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg w-2/3 transform transition-all duration-300 ${
+                            downloadDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
                         <h2 className="text-lg font-medium mb-4 text-center font-bold">Preview Bid Files</h2>
 
-                        {/* Two iframes side by side */}
                         <div className="flex justify-between space-x-4 mb-4">
                             {/* PDF Preview */}
                             <div className="flex flex-col items-center w-1/2">
@@ -478,23 +500,21 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                             </div>
                         </div>
 
-                        {/* Buttons Below Previews */}
                         <div className="flex justify-between">
                             <button
                                 className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                onClick={() => handleDownloadFile(selectedBid?.bidId, "pdf")}
+                                onClick={() => handleDownloadFile(selectedBid?.bidId, 'pdf')}
                             >
                                 Download Bid File
                             </button>
                             <button
                                 className="bg-green-500 hover:bg-green-400 text-white py-2 px-4 rounded-lg"
-                                onClick={() => handleDownloadEditable(selectedBid?.bidId, "docx")}
+                                onClick={() => handleDownloadEditable(selectedBid?.bidId, 'docx')}
                             >
                                 Download Editable File
                             </button>
                         </div>
 
-                        {/* Close Button */}
                         <div className="mt-4 text-center">
                             <button
                                 className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
@@ -504,48 +524,61 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
-            {showChecklistDialog &&
-                ReactDOM.createPortal(
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-50 font-custom">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] mx-auto z-10">
-                            <h3 className="text-xl font-semibold mb-4 text-gray-700 text-center">Checklist</h3>
-                            <div className="mb-6 space-y-2 text-gray-800 text-sm max-h-[300px] overflow-y-auto pr-2">
-                                {checklist.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className="bg-gray-100 px-4 py-2 rounded-md shadow-sm flex justify-between items-start"
-                                    >
-                                        <span className="w-[95%]">{item.requirement}</span>
-                                        <span className="text-lg">{item.fulfilled ? '✅' : <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5 text-red-600"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="mt-4 flex justify-end">
-                                <button
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                    onClick={() => setShowChecklistDialog(false)}
+            {/* modal for displaying bid checklist */}
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-50 font-custom transition-opacity duration-300 ${
+                        showChecklistDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg w-[1000px] mx-auto z-10 transform transition-all duration-300 ${
+                            showChecklistDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
+                        <h3 className="text-xl font-semibold mb-4 text-gray-700 text-center">Checklist</h3>
+                        <div className="mb-6 space-y-2 text-gray-800 text-sm max-h-[300px] overflow-y-auto pr-2">
+                            {checklist.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className="bg-gray-100 px-4 py-2 rounded-md shadow-sm flex justify-between items-start"
                                 >
-                                    Close
-                                </button>
-                            </div>
+                                    <span className="w-[95%]">{item.requirement}</span>
+                                    <span className="text-lg">
+              {item.fulfilled ? '✅' : (
+                  <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-red-600"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                  >
+                      <path
+                          fillRule="evenodd"
+                          d="M4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z"
+                          clipRule="evenodd"
+                      />
+                  </svg>
+              )}
+            </span>
+                                </div>
+                            ))}
                         </div>
-                    </div>,
-                    document.body
-                )}
+                        <div className="mt-4 flex justify-end">
+                            <button
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                onClick={() => setShowChecklistDialog(false)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
 
         </>
     );

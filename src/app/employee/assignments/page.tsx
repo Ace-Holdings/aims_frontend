@@ -11,6 +11,7 @@ import AssignmentsTableEmployee from "@/components/tables/assignmentsTableEmploy
 
 export default function EmployeeAssignments() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDialogVisible, setDialogVisible] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const router = useRouter();
 
@@ -53,6 +54,15 @@ export default function EmployeeAssignments() {
 
         return () => clearInterval(interval);
     }, []);
+
+    useEffect(() => {
+        if (isDialogOpen) {
+            setDialogVisible(true);
+        } else {
+            const timeout = setTimeout(() => setDialogVisible(false), 400);
+            return () => clearTimeout(timeout);
+        }
+    }, [isDialogOpen]);
 
 
     const closeDialog = () => {
@@ -187,12 +197,20 @@ export default function EmployeeAssignments() {
                     )}</div>
                     <AssignmentsTableEmployee/>
                 </div>
-
             </div>
 
-            {isDialogOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-black">
-                    <div className="bg-white w-full max-w-2xl mx-4 p-8 rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
+            {/* modal for employee assignment details */}
+            {isDialogVisible && (
+                <div
+                    className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-black transition-opacity duration-300 ${
+                        isDialogOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white w-full max-w-2xl mx-4 p-8 rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto transform transition-all duration-300 ${
+                            isDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
                         {/* Header */}
                         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Active Assignment</h2>
 
@@ -266,9 +284,11 @@ export default function EmployeeAssignments() {
                                 Save
                             </button>
                         </div>
+
                     </div>
                 </div>
             )}
+
         </>
     )
 }

@@ -82,7 +82,7 @@ export default function Home() {
                 <div className="max-w-md mx-auto">
                   <div className="h-4"/>
                   <div>
-                    <h1 className="text-xl font-semibold text-black font-custom">
+                    <h1 className="text-xl  text-black font-custom">
                       Ace Integrated Management System
                     </h1>
                   </div>

@@ -11,6 +11,8 @@ export default function SalesTileEmployee({ id, title, date, amount, quantity, c
     const [searchQuery, setSearchQuery] = useState("");
     const [inventories, setInventories] = useState([]);
 
+    const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
+
     const openDetailDialog = (sale: any) => {
         setSelectedSale(sale);
         console.log(selectedSale)
@@ -21,6 +23,14 @@ export default function SalesTileEmployee({ id, title, date, amount, quantity, c
         }, 0);
     }
 
+    useEffect(() => {
+        if (showDetailsDialog) {
+            setShouldRenderDialog(true);
+        } else {
+            const timeout = setTimeout(() => setShouldRenderDialog(false), 400);
+            return () => clearTimeout(timeout);
+        }
+    }, [showDetailsDialog]);
 
     useEffect(() => {
         const fetchInventories = async (query: string) => {
@@ -143,47 +153,55 @@ export default function SalesTileEmployee({ id, title, date, amount, quantity, c
                 </p>
             </div>
 
-            {showDetailsDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black font-custom backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto">
-                        <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Sale Details</h3>
-                        <div className="flex flex-wrap gap-4">
-                            <div>
-                                <strong>Item:</strong> {selectedSale.title}
+            {shouldRenderDialog &&
+                ReactDOM.createPortal(
+                    <div
+                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                        }`}
+                    >
+                        <div
+                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                            }`}
+                        >
+                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Sale Details</h3>
+                            <div className="flex flex-wrap gap-4">
+                                <div>
+                                    <strong>Item:</strong> {selectedSale.title}
+                                </div>
+                                <div>
+                                    <strong>Customer:</strong> {selectedSale.customer}
+                                </div>
+                                <div>
+                                    <strong>Quantity:</strong> {selectedSale.quantity}
+                                </div>
+                                <div>
+                                    <strong>Description:</strong> {selectedSale.description}
+                                </div>
+                                <div>
+                                    <strong>Issuer:</strong> {selectedSale.issuer}
+                                </div>
+                                <div>
+                                    <strong>Amount:</strong> {new Intl.NumberFormat("en-US", {
+                                    style: "currency",
+                                    currency: "MWK",
+                                }).format(selectedSale.amount)}
+                                </div>
                             </div>
-                            <div>
-                                <strong>Customer:</strong> {selectedSale.customer}
-                            </div>
-                            <div>
-                                <strong>Quantity:</strong> {selectedSale.quantity}
-                            </div>
-                            <div>
-                                <strong>Description:</strong> {selectedSale.description}
-                            </div>
-                            <div>
-                                <strong>Issuer:</strong> {selectedSale.issuer}
-                            </div>
-                            <div>
-                                <strong>Amount:</strong> {new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: "MWK",
-                            }).format(selectedSale.amount)}
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                    onClick={() => setShowDetailsDialog(false)}
+                                >
+                                    Close
+                                </button>
                             </div>
                         </div>
-                        <div className="mt-6 flex justify-end">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowDetailsDialog(false)}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
-
-
+                    </div>,
+                    document.body
+                )
+            }
 
         </>
 
