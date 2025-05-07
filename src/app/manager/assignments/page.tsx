@@ -297,6 +297,7 @@ export default function AssignmentsManager() {
 
             </div>
 
+            {/* create assignments modal */}
             <div
                 className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
                     isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -445,6 +446,7 @@ export default function AssignmentsManager() {
                 </div>
             </div>
 
+            {/* modal for prompting for assignment objectives */}
             <div
                 className={`fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 ${
                     isObjectivePromptOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -475,6 +477,7 @@ export default function AssignmentsManager() {
                 </div>
             </div>
 
+            {/* modal for entering assignment objectives */}
             <div
                 className={`fixed inset-0 z-30 flex items-center justify-center text-black bg-black bg-opacity-50 transition-opacity duration-300 ${
                     isObjectiveListPromptOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -533,7 +536,6 @@ export default function AssignmentsManager() {
                     </div>
                 </div>
             </div>
-
         </>
     )
 }

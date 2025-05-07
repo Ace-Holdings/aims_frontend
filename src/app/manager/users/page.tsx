@@ -879,6 +879,7 @@ export default function UsersManager() {
                 </div>
             )}
 
+            {/* modal for granting loans directly */}
             <div
                 className={`fixed inset-0 flex items-center justify-center font-custom bg-black text-black bg-opacity-30 backdrop-blur-sm z-50 transition-opacity duration-300 ${
                     isDirectGrantDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -985,6 +986,7 @@ export default function UsersManager() {
                 </div>
             </div>
 
+            {/* modal for successful granting of loan */}
             <div
                 className={`fixed inset-0 flex items-center justify-center font-custom bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
                     isSuccessVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'

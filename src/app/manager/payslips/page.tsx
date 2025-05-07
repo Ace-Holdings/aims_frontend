@@ -683,7 +683,6 @@ export default function ManagerPayslips() {
                     </form>
                 </div>
             </div>
-
         </>
     )
 }

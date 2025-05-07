@@ -211,171 +211,174 @@ export default function AdminInventory() {
                 </div>
             </div>
 
-            {isDialogOpen && (
+            {/* modal for creating an inventory item */}
+            <div
+                className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
+                    isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
                 <div
-                    className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-lg font-medium mb-4 text-center text-bold">Add stock item</h2>
-                        <div className="h-2"/>
-                        <form>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    quantity
-                                </label>
-                                <input
-                                    value={itemQuantity}
-                                    onChange={(e: any) => setItemQuantity(e.target.value)}
-                                    type="number"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Item quantity"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    pricePerUnit
-                                </label>
-                                <input
-                                    value={itemPrice.toLocaleString("en-US")}
-                                    onChange={(e: any) => {
-                                        const rawValue = e.target.value.replace(/,/g, "");
-                                        if (!isNaN(Number(rawValue))) {
-                                            setItemPrice(Number(rawValue));
-                                        }
-                                    }}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Price per item"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Item name
-                                </label>
-                                <input
-                                    value={itemName}
-                                    onChange={(e: any) => setItemName(e.target.value)}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Name of item"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Description
-                                </label>
-                                <input
-                                    value={itemDescription}
-                                    onChange={(e: any) => setItemDescription(e.target.value)}
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Item description"
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Date and Time added
-                                </label>
-                                <div className="relative overflow-visible">
-                                    <DatePicker
-                                        selected={dateAdded}
-                                        onChange={(data) => setDateAdded(data)}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom"
-                                    />
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
-                                    Location
-                                </label>
-                                <select
-                                    id="role"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    defaultValue=""
-                                    value={location}
-                                    onChange={(e: any) => setLocation(e.target.value)}
-
-                                >
-                                    <option value="" disabled>
-                                        Select location
-                                    </option>
-                                    <option value="shop">Shop</option>
-                                    <option value="warehouse">Warehouse</option>
-                                </select>
-                            </div>
-                            <div className="flex justify-end gap-4">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
-                                    onClick={closeDialog}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                    onClick={handleInitialSubmit}
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {isSerialDialogOpen && (
-                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/4">
-                        <h2 className="text-lg font-medium mb-4 text-center">Enter Serial Numbers</h2>
-                        <div className="space-y-3 max-h-[300px] overflow-y-auto">
-                            {/* Dynamically generating inputs based on the itemQuantity */}
-                            {Array.from({ length: itemQuantity }).map((_, idx) => (
-                                <input
-                                    key={idx}
-                                    type="text"
-                                    value={serialNumbers[idx] || ''}
-                                    onChange={(e) => {
-                                        const updated = [...serialNumbers];
-                                        updated[idx] = e.target.value;
-                                        setSerialNumbers(updated);
-                                    }}
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder={`Serial #${idx + 1}`}
-                                />
-                            ))}
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/3 transform transition-all duration-300 ${
+                        isDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-medium mb-4 text-center text-bold">Add stock item</h2>
+                    <div className="h-2" />
+                    <form>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Quantity</label>
+                            <input
+                                value={itemQuantity}
+                                onChange={(e: any) => setItemQuantity(e.target.value)}
+                                type="number"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Item quantity"
+                            />
                         </div>
-                        <div className="flex justify-end gap-4 mt-6">
-                            <button
-                                onClick={() => {
-                                    setIsSerialDialogOpen(false);
-                                    setIsDialogOpen(true);
+
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Price Per Unit</label>
+                            <input
+                                value={itemPrice.toLocaleString("en-US")}
+                                onChange={(e: any) => {
+                                    const rawValue = e.target.value.replace(/,/g, "");
+                                    if (!isNaN(Number(rawValue))) {
+                                        setItemPrice(Number(rawValue));
+                                    }
                                 }}
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Price per item"
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Item Name</label>
+                            <input
+                                value={itemName}
+                                onChange={(e: any) => setItemName(e.target.value)}
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Name of item"
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Description</label>
+                            <input
+                                value={itemDescription}
+                                onChange={(e: any) => setItemDescription(e.target.value)}
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Item description"
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Date and Time Added</label>
+                            <div className="relative overflow-visible">
+                                <DatePicker
+                                    selected={dateAdded}
+                                    onChange={(data) => setDateAdded(data)}
+                                    dateFormat="yyyy-MM-dd h:mm aa"
+                                    showTimeSelect
+                                    timeFormat="h:mm aa"
+                                    timeIntervals={15}
+                                    className="grow p-2 bg-white w-[220px] border border-gray-300"
+                                    placeholderText="Select start date and time"
+                                    popperClassName="z-50"
+                                    popperPlacement="bottom"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="role" className="block text-gray-700 font-medium mb-2">Location</label>
+                            <select
+                                id="role"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                defaultValue=""
+                                value={location}
+                                onChange={(e: any) => setLocation(e.target.value)}
                             >
-                                Back
+                                <option value="" disabled>Select location</option>
+                                <option value="shop">Shop</option>
+                                <option value="warehouse">Warehouse</option>
+                            </select>
+                        </div>
+
+
+                        <div className="flex justify-end gap-4">
+                            <button
+                                type="button"
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                                onClick={closeDialog}
+                            >
+                                Cancel
                             </button>
                             <button
+                                type="submit"
                                 className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                onClick={handleFinalSubmit}
+                                onClick={handleInitialSubmit}
                             >
-                                Submit
+                                Save
                             </button>
                         </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* modal for entering serials of inventory item */}
+            <div
+                className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
+                    isSerialDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/4 transform transition-all duration-300 ${
+                        isSerialDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-medium mb-4 text-center">Enter Serial Numbers</h2>
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                        {Array.from({ length: itemQuantity }).map((_, idx) => (
+                            <input
+                                key={idx}
+                                type="text"
+                                value={serialNumbers[idx] || ''}
+                                onChange={(e) => {
+                                    const updated = [...serialNumbers];
+                                    updated[idx] = e.target.value;
+                                    setSerialNumbers(updated);
+                                }}
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder={`Serial #${idx + 1}`}
+                            />
+                        ))}
+                    </div>
+                    <div className="flex justify-end gap-4 mt-6">
+                        <button
+                            onClick={() => {
+                                setIsSerialDialogOpen(false);
+                                setIsDialogOpen(true);
+                            }}
+                            className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                        >
+                            Back
+                        </button>
+                        <button
+                            className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+                            onClick={handleFinalSubmit}
+                        >
+                            Submit
+                        </button>
                     </div>
                 </div>
-            )}
+            </div>
         </>
-
     )
 }

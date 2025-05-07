@@ -184,93 +184,86 @@ export default function AdminBids() {
 
                 </div>
 
-                {isDialogOpen && (
+                {/* modal for creating a bid */}
+                <div
+                    className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black transition-opacity duration-300 ${
+                        isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
                     <div
-                        className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
-                        <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                            <h2 className="text-lg font-medium mb-4 text-center text-bold">Add bid</h2>
-                            <div className="h-2"/>
-                            <form onSubmit={handleBidSubmit}>
-                                <div className="mb-4">
-                                    <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                        Description
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        id="title"
-                                        className="w-full p-2 border border-gray-300 rounded-lg"
-                                        placeholder="Bid description"
+                        className={`bg-white p-6 rounded-lg shadow-lg w-1/3 transform transition-all duration-300 ${
+                            isDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
+                        <h2 className="text-lg font-medium mb-4 text-center font-bold">Add bid</h2>
+                        <div className="h-2"/>
+                        <form onSubmit={handleBidSubmit}>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Description</label>
+                                <input
+                                    type="text"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    id="title"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Bid description"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="deadline" className="block text-gray-700 font-medium mb-2">Deadline</label>
+                                <div className="relative overflow-visible">
+                                    <DatePicker
+                                        selected={deadline}
+                                        onChange={(date) => setDeadline(date)}
+                                        dateFormat="yyyy-MM-dd h:mm aa"
+                                        showTimeSelect
+                                        timeFormat="h:mm aa"
+                                        timeIntervals={15}
+                                        className="grow p-2 bg-white w-[200px] border border-gray-300"
+                                        placeholderText="Select start date and time"
+                                        popperClassName="z-50"
+                                        popperPlacement="bottom"
                                     />
                                 </div>
-                                <div className="mb-4">
-                                    <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                        Deadline
-                                    </label>
-                                    <div className="relative overflow-visible">
-                                        <DatePicker
-                                            selected={deadline}
-                                            onChange={(date) => {
-                                                setDeadline(date)
-                                            }}
-                                            dateFormat="yyyy-MM-dd h:mm aa"
-                                            showTimeSelect
-                                            timeFormat="h:mm aa"
-                                            timeIntervals={15}
-                                            className="grow p-2 bg-white w-[200px] border border-gray-300"
-                                            placeholderText="Select start date and time"
-                                            popperClassName="z-50"
-                                            popperPlacement="bottom"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="mb-4">
-                                    <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                        Bid document file
-                                    </label>
-                                    <input
-                                        type="file"
-                                        id="title"
-                                        className="w-full p-2 border border-gray-300 rounded-lg"
-                                        placeholder="Name of item"
-                                        onChange={handleBidFileChange}
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                        Editable for for bid
-                                    </label>
-                                    <input
-                                        type="file"
-                                        id="title"
-                                        className="w-full p-2 border border-gray-300 rounded-lg"
-                                        placeholder="Name of item"
-                                        onChange={handleEditFileChange}
-                                    />
-                                </div>
-
-                                <div className="flex justify-end gap-4">
-                                    <button
-                                        type="button"
-                                        className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
-                                        onClick={closeDialog}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                    >
-                                        Save
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="bidFile" className="block text-gray-700 font-medium mb-2">Bid document file (PDF)</label>
+                                <input
+                                    type="file"
+                                    id="bidFile"
+                                    accept="application/pdf"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    onChange={handleBidFileChange}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="editFile" className="block text-gray-700 font-medium mb-2">Editable form for bid (DOCX)</label>
+                                <input
+                                    type="file"
+                                    id="editFile"
+                                    accept=".docx"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    onChange={handleEditFileChange}
+                                />
+                            </div>
+                            <div className="flex justify-end gap-4">
+                                <button
+                                    type="button"
+                                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                                    onClick={closeDialog}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                )}
-
+                </div>
             </>
-
         )
     }

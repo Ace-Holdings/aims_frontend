@@ -390,236 +390,240 @@ export default function Payslips() {
                                 <p className="text-gray-500">No sales found for this customer.</p>
                             )}
                         </div>
-
-
                     </div>
                 </div>
             </div>
 
-            {isDialogOpen && (
+            {/* payslips modal */}
+            <div
+                className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
+                    isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
                 <div
-                    className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-lg font-medium mb-4 text-center text-bold">Generate employee payslips</h2>
-                        <div className="h-2"/>
-                        <form onSubmit={(e) => e.preventDefault()}>
-                            <div className="mb-4 relative">
-                                <label htmlFor="item" className="block text-gray-700 font-medium mb-2">
-                                    Search Employee
-                                </label>
-                                <input
-                                    value={searchQuery}
-                                    onChange={(e) => {
-                                        setSearchQuery(e.target.value);
-                                    }}
-                                    type="text"
-                                    id="item"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Type to search for employees"
-                                />
-                                {searchQuery && (
-                                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
-                                        {users
-                                            .map((user) => (
-                                                <li
-                                                    key={user.userId}
-                                                    onClick={() => {
-                                                        setSelectedEmployee(user);
-                                                        console.log(user);
-                                                        setSearchQuery("");
-                                                    }}
-                                                    className="p-2 hover:bg-gray-100 cursor-pointer"
-                                                >
-                                                    {user.username}
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/3 transform transition-all duration-300 ${
+                        isDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-medium mb-4 text-center text-bold">Generate employee payslips</h2>
+                    <div className="h-2"/>
+                    <form onSubmit={(e) => e.preventDefault()}>
+                        <div className="mb-4 relative">
+                            <label htmlFor="item" className="block text-gray-700 font-medium mb-2">
+                                Search Employee
+                            </label>
+                            <input
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                }}
+                                type="text"
+                                id="item"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Type to search for employees"
+                            />
+                            {searchQuery && (
+                                <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
+                                    {users
+                                        .map((user) => (
+                                            <li
+                                                key={user.userId}
+                                                onClick={() => {
+                                                    setSelectedEmployee(user);
+                                                    console.log(user);
+                                                    setSearchQuery("");
+                                                }}
+                                                className="p-2 hover:bg-gray-100 cursor-pointer"
+                                            >
+                                                {user.username}
 
-                                                </li>
-                                            ))}
-                                    </ul>
-                                )}
-
-                                {selectedEmployee && (
-                                    <p className="mt-2 text-green-600">Selected: {selectedEmployee.username}</p>
-                                )}
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Period (in months)
-                                </label>
-                                <input
-                                    type="number"
-                                    id="period"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    value={period}
-                                    onChange={(e: any) => {
-                                        const newValue = Math.max(1, parseInt(e.target.value, 10) || 1);
-                                        setPeriod(newValue);
-                                    }}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Additional Earnings
-                                </label>
-                                <div className="flex items-center space-x-2">
-                                    <input
-                                        type="text"
-                                        id="title"
-                                        className="w-full p-2 border border-gray-300 rounded-lg"
-                                        placeholder="Item description"
-                                        value={itemDescription}
-                                        onChange={(e) => setItemDescription(e.target.value)}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={handleAddItem}
-                                        className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                                    >
-                                        Add
-                                    </button>
-                                </div>
-
-                                {/* Earnings List */}
-                                {additionalEarnings.length > 0 && (
-                                    <ul className="mt-2 text-gray-700">
-                                        {additionalEarnings.map((earning, index) => (
-                                            <li key={index} className="flex justify-between p-2 border rounded-lg mb-1">
-                                                <span>{earning.description}</span>
-                                                <span className="font-bold text-green-600">
-                                                    {new Intl.NumberFormat('en-US', {
-                                                    style: 'currency',
-                                                    currency: 'MWK'
-                                                }).format(earning.value)}</span>
                                             </li>
                                         ))}
-                                    </ul>
-                                )}
+                                </ul>
+                            )}
 
-                                {/* Dialog (Modal) */}
-                                {isValueDialogOpen && (
-                                    <div className="fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
-                                        <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                                            <h2 className="text-lg font-bold mb-4">Enter Earning Value</h2>
-                                            <input
-                                                type="number"
-                                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                                placeholder="Amount"
-                                                value={earningValue}
-                                                onChange={(e) => setEarningValue(e.target.value)}
-                                            />
-                                            <div className="flex justify-end mt-4 space-x-2">
-                                                <button onClick={() => setIsDialogOpen(false)} className="px-4 py-2 bg-gray-300 rounded-lg">
-                                                    Cancel
-                                                </button>
-                                                <button type="button" onClick={handleSaveEarning} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
-                                                    Add
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
+                            {selectedEmployee && (
+                                <p className="mt-2 text-green-600">Selected: {selectedEmployee.username}</p>
+                            )}
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Period (in months)
+                            </label>
+                            <input
+                                type="number"
+                                id="period"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                value={period}
+                                onChange={(e: any) => {
+                                    const newValue = Math.max(1, parseInt(e.target.value, 10) || 1);
+                                    setPeriod(newValue);
+                                }}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Additional Earnings
+                            </label>
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    type="text"
+                                    id="title"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Item description"
+                                    value={itemDescription}
+                                    onChange={(e) => setItemDescription(e.target.value)}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddItem}
+                                    className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                >
+                                    Add
+                                </button>
                             </div>
 
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Deductions
-                                </label>
-                                <div className="flex items-center space-x-2">
-                                    <input
-                                        type="text"
-                                        id="title"
-                                        className="w-full p-2 border border-gray-300 rounded-lg"
-                                        placeholder="Item description"
-                                        value={deductionItemDescription}
-                                        onChange={(e) => setDeductionItemDescription(e.target.value)}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                                        onClick={handleAddDeductionItem}
-                                    >
-                                        Add
-                                    </button>
-                                </div>
+                            {/* Earnings List */}
+                            {additionalEarnings.length > 0 && (
+                                <ul className="mt-2 text-gray-700">
+                                    {additionalEarnings.map((earning, index) => (
+                                        <li key={index} className="flex justify-between p-2 border rounded-lg mb-1">
+                                            <span>{earning.description}</span>
+                                            <span className="font-bold text-green-600">
+                                                    {new Intl.NumberFormat('en-US', {
+                                                        style: 'currency',
+                                                        currency: 'MWK'
+                                                    }).format(earning.value)}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
 
-                                {deductions.length > 0 && (
-                                    <ul className="mt-2 text-gray-700">
-                                        {deductions.map((deduction, index) => (
-                                            <li key={index} className="flex justify-between p-2 border rounded-lg mb-1">
-                                                <span>{deduction.description}</span>
-                                                <span className="font-bold text-green-600">
+                            {/* Dialog (Modal) */}
+                            {isValueDialogOpen && (
+                                <div className="fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
+                                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                                        <h2 className="text-lg font-bold mb-4">Enter Earning Value</h2>
+                                        <input
+                                            type="number"
+                                            className="w-full p-2 border border-gray-300 rounded-lg"
+                                            placeholder="Amount"
+                                            value={earningValue}
+                                            onChange={(e) => setEarningValue(e.target.value)}
+                                        />
+                                        <div className="flex justify-end mt-4 space-x-2">
+                                            <button onClick={() => setIsDialogOpen(false)} className="px-4 py-2 bg-gray-300 rounded-lg">
+                                                Cancel
+                                            </button>
+                                            <button type="button" onClick={handleSaveEarning} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                                                Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Deductions
+                            </label>
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    type="text"
+                                    id="title"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Item description"
+                                    value={deductionItemDescription}
+                                    onChange={(e) => setDeductionItemDescription(e.target.value)}
+                                />
+                                <button
+                                    type="button"
+                                    className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                    onClick={handleAddDeductionItem}
+                                >
+                                    Add
+                                </button>
+                            </div>
+
+                            {deductions.length > 0 && (
+                                <ul className="mt-2 text-gray-700">
+                                    {deductions.map((deduction, index) => (
+                                        <li key={index} className="flex justify-between p-2 border rounded-lg mb-1">
+                                            <span>{deduction.description}</span>
+                                            <span className="font-bold text-green-600">
                                                     {new Intl.NumberFormat('en-US', {
                                                         style: 'currency',
                                                         currency: 'MWK'
                                                     }).format(deduction.value)}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
 
-                                {isDeductionValueDialogOpen && (
-                                    <div className="fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
-                                        <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                                            <h2 className="text-lg font-bold mb-4">Enter Deduction Value</h2>
-                                            <input
-                                                type="number"
-                                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                                placeholder="Amount"
-                                                value={deductionValue}
-                                                onChange={(e) => setDeductionValue(e.target.value)}
-                                            />
-                                            <div className="flex justify-end mt-4 space-x-2">
-                                                <button onClick={() => setIsDeductionValueDialogOpen(false)} className="px-4 py-2 bg-gray-300 rounded-lg">
-                                                    Cancel
-                                                </button>
-                                                <button type="button" onClick={handleSaveDeduction} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
-                                                    Add
-                                                </button>
-                                            </div>
+                            {isDeductionValueDialogOpen && (
+                                <div className="fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
+                                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                                        <h2 className="text-lg font-bold mb-4">Enter Deduction Value</h2>
+                                        <input
+                                            type="number"
+                                            className="w-full p-2 border border-gray-300 rounded-lg"
+                                            placeholder="Amount"
+                                            value={deductionValue}
+                                            onChange={(e) => setDeductionValue(e.target.value)}
+                                        />
+                                        <div className="flex justify-end mt-4 space-x-2">
+                                            <button onClick={() => setIsDeductionValueDialogOpen(false)} className="px-4 py-2 bg-gray-300 rounded-lg">
+                                                Cancel
+                                            </button>
+                                            <button type="button" onClick={handleSaveDeduction} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                                                Add
+                                            </button>
                                         </div>
                                     </div>
-                                )}
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    Date generated
-                                </label>
-                                <div className="relative overflow-visible">
-                                    <DatePicker
-                                        selected={selectedDate}
-                                        onChange={(e: Date | null) => setSelectedDate(e)}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom"
-                                    />
                                 </div>
-                            </div>
+                            )}
+                        </div>
 
-                            <div className="flex justify-end gap-4">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
-                                    onClick={() => setIsDialogOpen(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                    onClick={handlePaySlipSubmit}
-                                >
-                                    Save
-                                </button>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Date generated
+                            </label>
+                            <div className="relative overflow-visible">
+                                <DatePicker
+                                    selected={selectedDate}
+                                    onChange={(e: Date | null) => setSelectedDate(e)}
+                                    dateFormat="yyyy-MM-dd h:mm aa"
+                                    showTimeSelect
+                                    timeFormat="h:mm aa"
+                                    timeIntervals={15}
+                                    className="grow p-2 bg-white w-[220px] border border-gray-300"
+                                    placeholderText="Select start date and time"
+                                    popperClassName="z-50"
+                                    popperPlacement="bottom"
+                                />
                             </div>
-                        </form>
-                    </div>
+                        </div>
+
+                        <div className="flex justify-end gap-4">
+                            <button
+                                type="button"
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                                onClick={() => setIsDialogOpen(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+                                onClick={handlePaySlipSubmit}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </div>
         </>
     )
 }

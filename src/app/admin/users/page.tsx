@@ -606,193 +606,206 @@ export default function UsersAdmin() {
                 </div>
             </div>
 
-            {isDialogOpen && (
-                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-lg font-medium mb-4 text-center text-bold">Add User</h2>
-                        <div className="h-2"/>
-                        <form onSubmit={handleUserRegistration}>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    firstName
-                                </label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter user firstname"
-                                    onChange={(e):void => setFirstname(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    lastName
-                                </label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter user lastname"
-                                    onChange={(e)=>setLastname(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    username
-                                </label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter username"
-                                    onChange={(e)=>setUsername(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    password
-                                </label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter password"
-                                    onChange={(e)=>setPassword(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
-                                    Role
-                                </label>
-                                <select
-                                    id="role"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    defaultValue=""
-                                    onChange={(e) => setRoleId(e.target.value)}
-                                    value={roleId}
-                                >
-                                    <option value="" disabled>
-                                        Select a role
-                                    </option>
-                                    <option value="2">Manager</option>
-                                    <option value="3">Employee</option>
-                                </select>
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    email
-                                </label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter user email"
-                                    onChange={(e)=>setEmail(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
-                                    Salary
-                                </label>
-                                <select
-                                    id="role"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    defaultValue=""
-                                    onChange={(e) => setSalaryId(e.target.value)}
-                                    value={salaryId}
-                                >
-                                    <option value="" disabled>
-                                        Select a salary class
-                                    </option>
-                                    <option value="1">A</option>
-                                    <option value="2">B</option>
-                                    <option value="3">C</option>
-                                    <option value="4">D</option>
-                                    <option value="5">E</option>
-                                    <option value="6">F</option>
-                                </select>
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
-                                    idNumber
-                                </label>
-                                <input
-                                    type="text"
-                                    id="title"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Enter location name"
-                                />
-                            </div>
-
-                            <div className="flex justify-end gap-4">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
-                                    onClick={closeDialog}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {isSalariesDialogOpen && (
-                <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                        <h2 className="text-lg font-medium mb-4 text-center">Manage Salaries</h2>
+            {/* modal for creating a user */}
+            <div
+                className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
+                    isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/3 transform transition-all duration-300 ${
+                        isDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-medium mb-4 text-center text-bold">Add User</h2>
+                    <div className="h-2"/>
+                    <form onSubmit={handleUserRegistration}>
                         <div className="mb-4">
-                            {/* Dropdown to select salary class */}
-                            <label className="block text-gray-700 font-medium mb-1">Select Class</label>
-                            <select
+                            <label htmlFor="firstName" className="block text-gray-700 font-medium mb-2">First Name</label>
+                            <input
+                                type="text"
+                                id="firstName"
                                 className="w-full p-2 border border-gray-300 rounded-lg"
-                                value={salaryClass}
-                                onChange={(e) => setSalaryClass(e.target.value)}
-                            >
-                                <option value="" disabled>Select a class</option>
-                                {salaries.map((salary) => (
-                                    <option key={salary.class} value={salary.class}>
-                                        {salary.class} ({new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(salary.amount)})
-                                    </option>
-                                ))}
-                            </select>
-
-                            {/* Amount input field */}
-                            <div className="mt-4">
-                                <label className="block text-gray-700 font-medium mb-1">Amount</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    value={amount}
-                                    onChange={handleAmountChange}
-                                />
-                            </div>
+                                placeholder="Enter user firstname"
+                                onChange={(e): void => setFirstname(e.target.value)}
+                            />
                         </div>
-                        <div className="flex justify-end mt-4">
-                            <button
-                                className="btn bg-gray-300 hover:bg-gray-400 text-black font-medium py-2 px-4 rounded-lg mr-2"
-                                onClick={() => setIsSalariesDialogOpen(false)}
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Last Name
+                            </label>
+                            <input
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Enter user lastname"
+                                onChange={(e)=>setLastname(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Username
+                            </label>
+                            <input
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Enter username"
+                                onChange={(e)=>setUsername(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Password
+                            </label>
+                            <input
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Enter password"
+                                onChange={(e)=>setPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
+                                Role
+                            </label>
+                            <select
+                                id="role"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                defaultValue=""
+                                onChange={(e) => setRoleId(e.target.value)}
+                                value={roleId}
                             >
-                                Close
+                                <option value="" disabled>
+                                    Select a role
+                                </option>
+                                <option value="2">Manager</option>
+                                <option value="3">Employee</option>
+                            </select>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                Email
+                            </label>
+                            <input
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Enter user email"
+                                onChange={(e)=>setEmail(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
+                                Salary
+                            </label>
+                            <select
+                                id="role"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                defaultValue=""
+                                onChange={(e) => setSalaryId(e.target.value)}
+                                value={salaryId}
+                            >
+                                <option value="" disabled>
+                                    Select a salary class
+                                </option>
+                                <option value="1">A</option>
+                                <option value="2">B</option>
+                                <option value="3">C</option>
+                                <option value="4">D</option>
+                                <option value="5">E</option>
+                                <option value="6">F</option>
+                            </select>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                ID Number
+                            </label>
+                            <input
+                                type="text"
+                                id="title"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Enter location name"
+                                value={idNumber}
+                                onChange={(e)=>setIdNumber(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="flex justify-end gap-4">
+                            <button
+                                type="button"
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                                onClick={closeDialog}
+                            >
+                                Cancel
                             </button>
                             <button
-                                className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg"
-                                onClick={handleUpdateSalaryClick}
+                                type="submit"
+                                className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
                             >
                                 Save
                             </button>
                         </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* modal for displaying salary brackets */}
+            <div
+                className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black transition-opacity duration-300 ${
+                    isSalariesDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/3 transform transition-all duration-300 ${
+                        isSalariesDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-medium mb-4 text-center">Manage Salaries</h2>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 font-medium mb-1">Select Class</label>
+                        <select
+                            className="w-full p-2 border border-gray-300 rounded-lg"
+                            value={salaryClass}
+                            onChange={(e) => setSalaryClass(e.target.value)}
+                        >
+                            <option value="" disabled>Select a class</option>
+                            {salaries.map((salary) => (
+                                <option key={salary.class} value={salary.class}>
+                                    {salary.class} ({new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(salary.amount)})
+                                </option>
+                            ))}
+                        </select>
+
+                        <div className="mt-4">
+                            <label className="block text-gray-700 font-medium mb-1">Amount</label>
+                            <input
+                                type="number"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                value={amount}
+                                onChange={(e) => setAmount(Number(e.target.value))}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex justify-end mt-4">
+                        <button
+                            className="bg-gray-300 hover:bg-gray-400 text-black font-medium py-2 px-4 rounded-lg mr-2"
+                            onClick={() => setIsSalariesDialogOpen(false)}
+                        >
+                            Close
+                        </button>
+                        <button
+                            className="bg-blue-500 hover:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg"
+                            onClick={handleUpdateSalaryClick}
+                        >
+                            Save
+                        </button>
                     </div>
                 </div>
-            )}
+            </div>
 
+            {/* loans modal */}
             {isLoansDialogOpen && (
                 <div className="fixed inset-0 bg-black font-custom bg-opacity-50 flex justify-center items-center z-50">
                     <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl p-6">
@@ -916,116 +929,143 @@ export default function UsersAdmin() {
                 </div>
             )}
 
-            {isDirectGrantDialogOpen && (
-                <div className="fixed inset-0 flex items-center justify-center font-custom bg-black text-black bg-opacity-30 backdrop-blur-sm z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-                        <h2 className="text-xl font-semibold mb-4 text-center ">Grant New Loan</h2>
-                        <form  className="space-y-4"   onSubmit={(e) => {
+            {/* modal for granting loans directly */}
+            <div
+                className={`fixed inset-0 flex items-center justify-center font-custom bg-black text-black bg-opacity-30 backdrop-blur-sm z-50 transition-opacity duration-300 ${
+                    isDirectGrantDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg max-w-lg w-full transform transition-all duration-300 ${
+                        isDirectGrantDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-xl font-semibold mb-4 text-center">Grant New Loan</h2>
+                    <form
+                        className="space-y-4"
+                        onSubmit={(e) => {
                             e.preventDefault();
                             directApplicationGrant();
-                        }}>
-                            <div className="relative mb-4">
-                                <label className="block text-sm font-medium">Applicant</label>
-                                <input
-                                    type="text"
-                                    value={searchTerm}
-                                    onChange={(e) => handleApplicantSearch(e.target.value)}
-                                    placeholder="Search applicant by username"
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                />
-                                {applicantResults.length > 0 && (
-                                    <ul className="absolute w-full bg-white border rounded shadow-lg z-10 max-h-48 overflow-auto">
-                                        {applicantResults.map((user) => (
-                                            <li
-                                                key={user.userId}
-                                                onClick={() => handleSelectApplicant(user)}
-                                                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                            >
-                                                {user.username} ({user.firstName})
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                                {selectedApplicant && (
-                                    <div className="mt-2">
-            <span className="bg-gray-200 p-1 rounded inline-block">
-                {selectedApplicant.username}
-                <button
-                    type="button"
-                    onClick={() => {
-                        setSelectedApplicant(null);
-                        setNewLoan((prev) => ({ ...prev, userId: '' }));
-                    }}
-                    className="ml-2 text-red-500"
-                >
-                    &times;
-                </button>
-            </span>
-                                    </div>
-                                )}
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Loan Amount (MWK)</label>
-                                <input
-                                    type="text"
-                                    value={loanAmount.toLocaleString("en-US")}
-                                    onChange={(e) => {
-                                        const raw = e.target.value.replace(/,/g, "");
-                                        if (!isNaN(Number(raw))) {
-                                            setLoanAmount(Number(raw));
-                                        }
-                                    }}
-                                    className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Enter amount"
-                                    inputMode="numeric"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium ">Purpose</label>
-                                <textarea
-                                    value={purpose}
-                                    onChange={(e) => {setPurpose(e.target.value)}}
-                                    className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                                    required
-                                />
-                            </div>
-                            <div className="flex justify-end space-x-2">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300  px-4 py-2 rounded"
-                                    onClick={handleCloseDirectGrandDialog}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                >
-                                    Submit
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {isSuccessVisible && (
-                <div className="fixed inset-0 flex items-center justify-center font-custom bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-6 rounded-xl shadow-2xl text-center max-w-md w-full animate-scale-in">
-                        <div className="flex justify-center">
-                            <div className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mb-4 animate-bounce">
-                                <svg className="w-12 h-12 text-red-600" fill="none" stroke="currentColor" strokeWidth="2"
-                                     viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round"
-                                          d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </div>
+                        }}
+                    >
+                        {/* Applicant Search */}
+                        <div className="relative mb-4">
+                            <label className="block text-sm font-medium">Applicant</label>
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => handleApplicantSearch(e.target.value)}
+                                placeholder="Search applicant by username"
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                            />
+                            {applicantResults.length > 0 && (
+                                <ul className="absolute w-full bg-white border rounded shadow-lg z-10 max-h-48 overflow-auto">
+                                    {applicantResults.map((user) => (
+                                        <li
+                                            key={user.userId}
+                                            onClick={() => handleSelectApplicant(user)}
+                                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                        >
+                                            {user.username} ({user.firstName})
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                            {selectedApplicant && (
+                                <div className="mt-2">
+                        <span className="bg-gray-200 p-1 rounded inline-block">
+                            {selectedApplicant.username}
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setSelectedApplicant(null);
+                                    setNewLoan((prev) => ({ ...prev, userId: '' }));
+                                }}
+                                className="ml-2 text-red-500"
+                            >
+                                &times;
+                            </button>
+                        </span>
+                                </div>
+                            )}
                         </div>
-                        <h2 className="text-xl font-bold text-gray-800">Loan granted!</h2>
-                        <p className="text-sm text-gray-600 mt-2">Loan has been granted to {selectedApplicant?.username}</p>
-                    </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Loan Amount (MWK)</label>
+                            <input
+                                type="text"
+                                value={loanAmount.toLocaleString('en-US')}
+                                onChange={(e) => {
+                                    const raw = e.target.value.replace(/,/g, '');
+                                    if (!isNaN(Number(raw))) {
+                                        setLoanAmount(Number(raw));
+                                    }
+                                }}
+                                className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter amount"
+                                inputMode="numeric"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium">Purpose</label>
+                            <textarea
+                                value={purpose}
+                                onChange={(e) => setPurpose(e.target.value)}
+                                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                                required
+                            />
+                        </div>
+
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                type="button"
+                                className="bg-gray-300 px-4 py-2 rounded"
+                                onClick={handleCloseDirectGrandDialog}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </div>
+
+            {/* modal for successful granting of loan */}
+            <div
+                className={`fixed inset-0 flex items-center justify-center font-custom bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
+                    isSuccessVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-xl shadow-2xl text-center max-w-md w-full transform transition-all duration-300 ${
+                        isSuccessVisible ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <div className="flex justify-center">
+                        <div className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mb-4 animate-bounce">
+                            <svg
+                                className="w-12 h-12 text-red-600"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-800">Loan granted!</h2>
+                    <p className="text-sm text-gray-600 mt-2">
+                        Loan has been granted to {selectedApplicant?.username}
+                    </p>
+                </div>
+            </div>
 
         </>
 
