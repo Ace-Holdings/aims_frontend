@@ -95,6 +95,10 @@ export default function EmployeeSales() {
     }
 
     useEffect(() => {
+        console.log("Updated selectedSerials:", selectedItems);
+    }, [selectedItems]);
+
+    useEffect(() => {
         const token = localStorage.getItem("token");
 
         if(!token) {
@@ -178,10 +182,17 @@ export default function EmployeeSales() {
                     "authorization": `Bearer ${localStorage.getItem("token")}`,
                 }
             });
+
             if (response.ok) {
                 const data = await response.json();
+
+
+                setAvailableSerials([]);
+                setInputQuantity(1);
+                setMaxSelectable(1);
                 setSelectedItemDetails({ id: inventoryId, name: data.name, unitPrice: data.pricePerUnit });
-                setIsQuantityModalOpen(true);
+
+                setIsQuantityModalOpen(true); // Open quantity modal
             } else {
                 console.log("Could not fetch inventory details");
             }
@@ -199,7 +210,6 @@ export default function EmployeeSales() {
             if (response.ok) {
                 const data = await response.json();
                 setAvailableSerials(data);
-                console.log(data);
                 setMaxSelectable(inputQuantity);
                 setIsQuantityModalOpen(false);
                 setIsSerialModalOpen(true);
@@ -310,7 +320,8 @@ export default function EmployeeSales() {
             return;
         }
 
-        const serialData = availableSerials.filter((s) => selectedSerials.includes(s.id));
+        const serialData = availableSerials.filter((s) => selectedSerials.includes(s.unitId));
+
         const itemWithSerials = {
             ...selectedItemDetails,
             quantity: inputQuantity,
@@ -318,10 +329,9 @@ export default function EmployeeSales() {
         };
 
         setSelectedItems((prev) => [...prev, itemWithSerials]);
+        console.log(itemWithSerials);
         setIsSerialModalOpen(false);
     };
-
-
 
     // handler function to submit sales transaction
     const handleSalesSubmit = async (e: any) => {
@@ -397,22 +407,27 @@ export default function EmployeeSales() {
 
             // 4. Delete used serials
             await Promise.allSettled(
-                selectedSerials.map((unitId: string) =>
-                    fetch(`http://localhost:3002/unit/${unitId}`, {
-                        method: "DELETE",
-                        headers: {
-                            authorization: `Bearer ${localStorage.getItem("token")}`,
-                        },
-                    }).catch(err => console.error(`Error deleting serial ${unitId}`, err))
+                selectedItems.flatMap((item) =>
+                    (item.serials || []).map((serial: any) =>
+                        fetch(`http://localhost:3002/unit/${serial.unitId}`, {
+                            method: "DELETE",
+                            headers: {
+                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                        }).catch((err) =>
+                            console.error(`Error deleting serial ${serial.unitId}`, err)
+                        )
+                    )
                 )
             );
 
+            setSelectedItems([]);
             setSelectedSerials([]);
             setAvailableSerials([]);
             setInputQuantity(1);
 
             closeDialog();
-            window.location.reload();
+            // window.location.reload();
 
 
         } catch (err) {
@@ -807,7 +822,7 @@ export default function EmployeeSales() {
                                         />
                                     ))
                             ) : (
-                                <p className="text-gray-500">No sales found for this customer.</p>
+                                <p className="text-gray-500">No sales found.</p>
                             )}
                         </div>
                     </div>

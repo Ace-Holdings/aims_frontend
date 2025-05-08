@@ -320,6 +320,7 @@ export default function ManagerSales() {
         };
 
         setSelectedItems((prev) => [...prev, itemWithSerials]);
+        setSelectedSerials([]);
         setIsSerialModalOpen(false);
     };
 
@@ -801,7 +802,7 @@ export default function ManagerSales() {
                                         />
                                     ))
                             ) : (
-                                <p className="text-gray-500">No sales found for this customer.</p>
+                                <p className="text-gray-500">No sales found.</p>
                             )}
                         </div>
                     </div>

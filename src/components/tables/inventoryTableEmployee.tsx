@@ -590,7 +590,5 @@ export default function InventoryTableEmployee() {
                 document.body
             )}
         </>
-
-
     );
 }

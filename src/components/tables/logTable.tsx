@@ -6,9 +6,6 @@ import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
 import ReactDOM from "react-dom";
 
 export default function LogTable() {
-
-    const [filter, setFilter] = useState("All");
-    const [search, setSearch] = useState("");
     const [filteredData, setFilteredData] = useState();
     const [selectedLog, setSelectedLog] = useState(null);
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);

@@ -448,7 +448,7 @@ export default function AssignmentsManager() {
 
             {/* modal for prompting for assignment objectives */}
             <div
-                className={`fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 ${
+                className={`fixed inset-0 z-30 flex items-center justify-center font-custom bg-black bg-opacity-50 transition-opacity duration-300 ${
                     isObjectivePromptOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                 }`}
             >
@@ -459,7 +459,7 @@ export default function AssignmentsManager() {
                             : 'scale-95 -translate-y-4 opacity-0'
                     }`}
                 >
-                    <h2 className="text-lg font-semibold mb-4">Would you like to add assignment objectives?</h2>
+                    <h2 className="text-lg text-black mb-4">Would you like to add assignment objectives?</h2>
                     <div className="flex justify-center gap-4">
                         <button
                             onClick={handleObjectivesListOpen}
@@ -490,7 +490,7 @@ export default function AssignmentsManager() {
                             : 'opacity-0 scale-95 -translate-y-4'
                     }`}
                 >
-                    <h3 className="text-lg font-semibold mb-4 text-center">Add Assignment Objectives</h3>
+                    <h3 className="text-lg  mb-4 text-center">Add Assignment Objectives</h3>
 
                     {assignmentObjectives.map((objective, index) => (
                         <div key={index} className="mb-2 flex items-center gap-2">

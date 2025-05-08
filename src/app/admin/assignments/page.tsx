@@ -461,7 +461,7 @@ export default function AssignmentsAdmin() {
                             : 'scale-95 -translate-y-4 opacity-0'
                     }`}
                 >
-                    <h2 className="text-lg font-semibold mb-4">Would you like to add assignment objectives?</h2>
+                    <h2 className="text-lg text-black mb-4">Would you like to add assignment objectives?</h2>
                     <div className="flex justify-center gap-4">
                         <button
                             onClick={handleObjectivesListOpen}
@@ -492,7 +492,7 @@ export default function AssignmentsAdmin() {
                             : 'opacity-0 scale-95 -translate-y-4'
                     }`}
                 >
-                    <h3 className="text-lg font-semibold mb-4 text-center">Add Assignment Objectives</h3>
+                    <h3 className="text-lg  mb-4 text-center">Add Assignment Objectives</h3>
 
                     {assignmentObjectives.map((objective, index) => (
                         <div key={index} className="mb-2 flex items-center gap-2">

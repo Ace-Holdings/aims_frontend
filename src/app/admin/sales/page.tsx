@@ -79,7 +79,7 @@ export default function AdminSales() {
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
 
-
+    const [confirmedItems, setConfirmedItems] = useState<any[]>([]);
 
     // filtered sales by search
     useEffect(() => {
@@ -282,13 +282,20 @@ export default function AdminSales() {
         }
 
         const serialData = availableSerials.filter((s) => selectedSerials.includes(s.id));
+
         const itemWithSerials = {
             ...selectedItemDetails,
             quantity: inputQuantity,
             serials: serialData,
         };
 
-        setSelectedItems((prev) => [...prev, itemWithSerials]);
+        setConfirmedItems((prev) => [...prev, itemWithSerials]);
+
+        // Clean up
+        setSelectedItemDetails(null);
+        setInputQuantity(1);
+        setAvailableSerials([]);
+        setSelectedSerials([]);
         setIsSerialModalOpen(false);
     };
 
@@ -312,11 +319,11 @@ export default function AdminSales() {
         const sale = {
             customer,
             amount,
-            quantity: selectedItems.map(item => item.quantity),
+            quantity: confirmedItems.map(item => item.quantity),
             timestamp: new Date().toISOString(),
             userId,
-            inventoryIds: selectedItems.map(item => item.id),
-            items: selectedItems.map(({ name, quantity, unitPrice }) => ({ name, quantity, unitPrice })),
+            inventoryIds: confirmedItems.map(item => item.id),
+            items: confirmedItems.map(({ name, quantity, unitPrice }) => ({ name, quantity, unitPrice })),
         };
 
         try {
@@ -379,13 +386,17 @@ export default function AdminSales() {
 
             // 4. Delete used serials
             await Promise.allSettled(
-                selectedSerials.map((unitId: string) =>
-                    fetch(`http://localhost:3002/unit/${unitId}`, {
-                        method: "DELETE",
-                        headers: {
-                            authorization: `Bearer ${localStorage.getItem("token")}`,
-                        },
-                    }).catch(err => console.error(`Error deleting serial ${unitId}`, err))
+                confirmedItems.flatMap(item =>
+                    (item.serials || []).map((serial: any) =>
+                        fetch(`http://localhost:3002/unit/${serial.id}`, {
+                            method: "DELETE",
+                            headers: {
+                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                        }).catch(err =>
+                            console.error(`Error deleting serial ${serial.id}`, err)
+                        )
+                    )
                 )
             );
 
@@ -394,7 +405,7 @@ export default function AdminSales() {
             setInputQuantity(1);
 
             closeDialog();
-            window.location.reload();
+            // window.location.reload();
 
 
         } catch (err) {
@@ -792,7 +803,7 @@ export default function AdminSales() {
                                         />
                                     ))
                             ) : (
-                                <p className="text-gray-500">No sales found for this customer.</p>
+                                <p className="text-gray-500">No sales found</p>
                             )}
                         </div>
                     </div>
@@ -858,20 +869,20 @@ export default function AdminSales() {
                         <div className="mb-4">
                             <label className="block text-gray-700 font-medium mb-2">Selected Items</label>
                             <ul>
-                                {selectedItems.map((item, index) => (
+                                {confirmedItems.map((item, index) => (
                                     <li key={index} className="flex justify-between items-center p-2 border-b">
                                         <span>{item.name} (x{item.quantity})</span>
                                         <span>
-                                {new Intl.NumberFormat('en-US', {
-                                    style: 'currency',
-                                    currency: 'MWK',
-                                }).format(item.unitPrice * item.quantity)}
-                            </span>
+                {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'MWK',
+                }).format(item.unitPrice * item.quantity)}
+            </span>
                                         <button
                                             type="button"
                                             className="text-red-500 ml-2"
                                             onClick={() =>
-                                                setSelectedItems(selectedItems.filter((_, i) => i !== index))
+                                                setConfirmedItems(confirmedItems.filter((_, i) => i !== index))
                                             }
                                         >
                                             ❌

@@ -387,7 +387,7 @@ export default function Payslips() {
                                         />
                                     ))
                             ) : (
-                                <p className="text-gray-500">No sales found for this customer.</p>
+                                <p className="text-gray-500">No payslips found</p>
                             )}
                         </div>
                     </div>
