@@ -160,10 +160,17 @@ export default function ManagerSales() {
                     "authorization": `Bearer ${localStorage.getItem("token")}`,
                 }
             });
+
             if (response.ok) {
                 const data = await response.json();
+
+
+                setAvailableSerials([]);
+                setInputQuantity(1);
+                setMaxSelectable(1);
                 setSelectedItemDetails({ id: inventoryId, name: data.name, unitPrice: data.pricePerUnit });
-                setIsQuantityModalOpen(true);
+
+                setIsQuantityModalOpen(true); // Open quantity modal
             } else {
                 console.log("Could not fetch inventory details");
             }
@@ -200,7 +207,6 @@ export default function ManagerSales() {
             if (response.ok) {
                 const data = await response.json();
                 setAvailableSerials(data);
-                console.log(data);
                 setMaxSelectable(inputQuantity);
                 setIsQuantityModalOpen(false);
                 setIsSerialModalOpen(true);
@@ -312,7 +318,8 @@ export default function ManagerSales() {
             return;
         }
 
-        const serialData = availableSerials.filter((s) => selectedSerials.includes(s.id));
+        const serialData = availableSerials.filter((s) => selectedSerials.includes(s.unitId));
+
         const itemWithSerials = {
             ...selectedItemDetails,
             quantity: inputQuantity,
@@ -321,6 +328,10 @@ export default function ManagerSales() {
 
         setSelectedItems((prev) => [...prev, itemWithSerials]);
         setSelectedSerials([]);
+        setAvailableSerials([]);
+        setInputQuantity(1);
+        setMaxSelectable(1);
+        setSelectedItemDetails(null);
         setIsSerialModalOpen(false);
     };
 
@@ -398,25 +409,27 @@ export default function ManagerSales() {
 
             // 4. Delete used serials
             await Promise.allSettled(
-                selectedSerials.map((unitId: string) =>
-                    fetch(`http://localhost:3002/unit/${unitId}`, {
-                        method: "DELETE",
-                        headers: {
-                            authorization: `Bearer ${localStorage.getItem("token")}`,
-                        },
-                    }).catch(err => console.error(`Error deleting serial ${unitId}`, err))
+                selectedItems.flatMap((item) =>
+                    (item.serials || []).map((serial: any) =>
+                        fetch(`http://localhost:3002/unit/${serial.unitId}`, {
+                            method: "DELETE",
+                            headers: {
+                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                        }).catch((err) =>
+                            console.error(`Error deleting serial ${serial.unitId}`, err)
+                        )
+                    )
                 )
             );
 
-            console.log("function reached here");
-
+            setSelectedItems([]);
             setSelectedSerials([]);
             setAvailableSerials([]);
             setInputQuantity(1);
 
             closeDialog();
             window.location.reload();
-
 
         } catch (err) {
             console.error("Sales submission error:", err);

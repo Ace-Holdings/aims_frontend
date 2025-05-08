@@ -128,10 +128,17 @@ export default function AdminSales() {
                     "authorization": `Bearer ${localStorage.getItem("token")}`,
                 }
             });
+
             if (response.ok) {
                 const data = await response.json();
+
+
+                setAvailableSerials([]);
+                setInputQuantity(1);
+                setMaxSelectable(1);
                 setSelectedItemDetails({ id: inventoryId, name: data.name, unitPrice: data.pricePerUnit });
-                setIsQuantityModalOpen(true);
+
+                setIsQuantityModalOpen(true); // Open quantity modal
             } else {
                 console.log("Could not fetch inventory details");
             }
@@ -142,20 +149,19 @@ export default function AdminSales() {
 
     const handleAddItem = async () => {
         if (!selectedItemDetails || inputQuantity < 1) return;
-        
-        try {
-           const response = await fetch(`http://localhost:3002/unit/serials/${selectedItemDetails.id}`);
 
-           if (response.ok) {
-               const data = await response.json();
-               setAvailableSerials(data);
-               console.log(data);
-               setMaxSelectable(inputQuantity);
-               setIsQuantityModalOpen(false);
-               setIsSerialModalOpen(true);
-           } else {
-               console.log('failed to fetch inventory details');
-           }
+        try {
+            const response = await fetch(`http://localhost:3002/unit/serials/${selectedItemDetails.id}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                setAvailableSerials(data);
+                setMaxSelectable(inputQuantity);
+                setIsQuantityModalOpen(false);
+                setIsSerialModalOpen(true);
+            } else {
+                console.log('failed to fetch inventory details');
+            }
         } catch (e) {
             console.error("Error fetching inventory details");
         }
@@ -281,7 +287,7 @@ export default function AdminSales() {
             return;
         }
 
-        const serialData = availableSerials.filter((s) => selectedSerials.includes(s.id));
+        const serialData = availableSerials.filter((s) => selectedSerials.includes(s.unitId));
 
         const itemWithSerials = {
             ...selectedItemDetails,
@@ -289,13 +295,12 @@ export default function AdminSales() {
             serials: serialData,
         };
 
-        setConfirmedItems((prev) => [...prev, itemWithSerials]);
-
-        // Clean up
-        setSelectedItemDetails(null);
-        setInputQuantity(1);
-        setAvailableSerials([]);
+        setSelectedItems((prev) => [...prev, itemWithSerials]);
         setSelectedSerials([]);
+        setAvailableSerials([]);
+        setInputQuantity(1);
+        setMaxSelectable(1);
+        setSelectedItemDetails(null);
         setIsSerialModalOpen(false);
     };
 
@@ -319,11 +324,11 @@ export default function AdminSales() {
         const sale = {
             customer,
             amount,
-            quantity: confirmedItems.map(item => item.quantity),
+            quantity: selectedItems.map(item => item.quantity),
             timestamp: new Date().toISOString(),
             userId,
-            inventoryIds: confirmedItems.map(item => item.id),
-            items: confirmedItems.map(({ name, quantity, unitPrice }) => ({ name, quantity, unitPrice })),
+            inventoryIds: selectedItems.map(item => item.id),
+            items: selectedItems.map(({ name, quantity, unitPrice }) => ({ name, quantity, unitPrice })),
         };
 
         try {
@@ -386,32 +391,33 @@ export default function AdminSales() {
 
             // 4. Delete used serials
             await Promise.allSettled(
-                confirmedItems.flatMap(item =>
+                selectedItems.flatMap((item) =>
                     (item.serials || []).map((serial: any) =>
-                        fetch(`http://localhost:3002/unit/${serial.id}`, {
+                        fetch(`http://localhost:3002/unit/${serial.unitId}`, {
                             method: "DELETE",
                             headers: {
                                 authorization: `Bearer ${localStorage.getItem("token")}`,
                             },
-                        }).catch(err =>
-                            console.error(`Error deleting serial ${serial.id}`, err)
+                        }).catch((err) =>
+                            console.error(`Error deleting serial ${serial.unitId}`, err)
                         )
                     )
                 )
             );
 
+            setSelectedItems([]);
             setSelectedSerials([]);
             setAvailableSerials([]);
             setInputQuantity(1);
 
             closeDialog();
-            // window.location.reload();
-
+            window.location.reload();
 
         } catch (err) {
             console.error("Sales submission error:", err);
         }
     };
+
 
     // function to generate invoice pdf
     const generateInvoicePdf = (sale: any) => {

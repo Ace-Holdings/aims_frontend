@@ -329,7 +329,11 @@ export default function EmployeeSales() {
         };
 
         setSelectedItems((prev) => [...prev, itemWithSerials]);
-        console.log(itemWithSerials);
+        setSelectedSerials([]);
+        setAvailableSerials([]);
+        setInputQuantity(1);
+        setMaxSelectable(1);
+        setSelectedItemDetails(null);
         setIsSerialModalOpen(false);
     };
 
