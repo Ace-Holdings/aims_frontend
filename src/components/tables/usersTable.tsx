@@ -352,6 +352,9 @@ export default function UsersTable() {
                                 <div>
                                     <strong>Roles:</strong> {selectedUser.roles.map(role => role.name).join(", ")}
                                 </div>
+                                <div>
+                                    <strong>Salary bracket:</strong> {selectedUser?.salary.class}
+                                </div>
                             </div>
                             <div className="mt-6 flex justify-end">
                                 <button
