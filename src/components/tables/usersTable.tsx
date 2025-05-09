@@ -21,6 +21,7 @@ export default function UsersTable() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
+    const [salaryId, setSalaryId] = useState("");
     const [idNumber, setIdNumber] = useState("");
     const [role, setRole] = useState("");
 
@@ -93,6 +94,7 @@ export default function UsersTable() {
                 ...(username && { username }),
                 ...(password && { password }),
                 ...(email && { email }),
+                ...(salaryId && {salaryId: parseInt(salaryId)}),
                 ...(idNumber && { idNumber }),
                 ...(role && {roleId: [parseInt(role)]}),
             };
@@ -422,6 +424,28 @@ export default function UsersTable() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
+                                    Salary
+                                </label>
+                                <select
+                                    id="role"
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    defaultValue=""
+                                    onChange={(e) => setSalaryId(e.target.value)}
+                                    value={salaryId}
+                                >
+                                    <option value="" disabled>
+                                        Select a salary class
+                                    </option>
+                                    <option value="1">A</option>
+                                    <option value="2">B</option>
+                                    <option value="3">C</option>
+                                    <option value="4">D</option>
+                                    <option value="5">E</option>
+                                    <option value="6">F</option>
+                                </select>
                             </div>
                             <div className="mb-4">
                                 <label>Id number</label>

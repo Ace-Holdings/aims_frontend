@@ -431,7 +431,7 @@ export default function EmployeeSales() {
             setInputQuantity(1);
 
             closeDialog();
-            // window.location.reload();
+            window.location.reload();
 
 
         } catch (err) {

@@ -875,20 +875,20 @@ export default function AdminSales() {
                         <div className="mb-4">
                             <label className="block text-gray-700 font-medium mb-2">Selected Items</label>
                             <ul>
-                                {confirmedItems.map((item, index) => (
+                                {selectedItems.map((item, index) => (
                                     <li key={index} className="flex justify-between items-center p-2 border-b">
                                         <span>{item.name} (x{item.quantity})</span>
                                         <span>
-                {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'MWK',
-                }).format(item.unitPrice * item.quantity)}
-            </span>
+                                {new Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'MWK',
+                                }).format(item.unitPrice * item.quantity)}
+                            </span>
                                         <button
                                             type="button"
                                             className="text-red-500 ml-2"
                                             onClick={() =>
-                                                setConfirmedItems(confirmedItems.filter((_, i) => i !== index))
+                                                setSelectedItems(selectedItems.filter((_, i) => i !== index))
                                             }
                                         >
                                             ❌

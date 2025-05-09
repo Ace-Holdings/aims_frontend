@@ -20,7 +20,6 @@ export default function AdminInventory() {
     const [itemPrice, setItemPrice] = useState(0);
     const [itemName, setItemName] = useState("");
     const [itemDescription, setItemDescription] = useState("");
-    const [dateAdded, setDateAdded] = useState<Date | null>(null);
     const [location, setLocation] = useState("");
 
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
@@ -86,6 +85,12 @@ export default function AdminInventory() {
     const handleFinalSubmit = async () => {
         const user = jwtDecode(localStorage.getItem('token')).user;
 
+        // 🚨 Validate all serial numbers are filled
+        if (serialNumbers.some(sn => !sn.trim())) {
+            alert("Please fill out all serial number fields before submitting.");
+            return;
+        }
+
         try {
             // Step 1: Create the inventory record
             const inventoryResponse = await fetch('http://localhost:3002/inventory', {
@@ -99,7 +104,6 @@ export default function AdminInventory() {
                     pricePerUnit: itemPrice,
                     description: itemDescription,
                     name: itemName,
-                    dateAdded: dateAdded,
                     location: location,
                     lastModifiedBy: user,
                 })
@@ -118,10 +122,10 @@ export default function AdminInventory() {
                 return;
             }
 
-
+            // Step 2: Submit units with valid serials
             const inventoryUnits = serialNumbers.map((serialNumber) => ({
-                serialNumber,
-                inventoryId: inventoryId
+                serialNumber: serialNumber.trim(),
+                inventoryId
             }));
 
             const inventoryUnitResponse = await fetch('http://localhost:3002/unit', {
@@ -133,7 +137,8 @@ export default function AdminInventory() {
             });
 
             if (!inventoryUnitResponse.ok) {
-                throw new Error('Error creating inventory units');
+                const errText = await inventoryUnitResponse.text();
+                throw new Error(`Error creating inventory units: ${errText}`);
             }
 
             window.location.reload();
@@ -141,7 +146,7 @@ export default function AdminInventory() {
         } catch (e) {
             console.error("Submission error:", e);
         }
-    }
+    };
 
     return (
         <>
@@ -276,24 +281,6 @@ export default function AdminInventory() {
                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                 placeholder="Item description"
                             />
-                        </div>
-
-                        <div className="mb-4">
-                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Date and Time Added</label>
-                            <div className="relative overflow-visible">
-                                <DatePicker
-                                    selected={dateAdded}
-                                    onChange={(data) => setDateAdded(data)}
-                                    dateFormat="yyyy-MM-dd h:mm aa"
-                                    showTimeSelect
-                                    timeFormat="h:mm aa"
-                                    timeIntervals={15}
-                                    className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                    placeholderText="Select start date and time"
-                                    popperClassName="z-50"
-                                    popperPlacement="bottom"
-                                />
-                            </div>
                         </div>
 
                         <div className="mb-4">

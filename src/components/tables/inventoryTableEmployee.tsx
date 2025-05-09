@@ -445,24 +445,6 @@ export default function InventoryTableEmployee() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-gray-700 font-medium mb-2">Date Added</label>
-                                <div className="relative overflow-visible">
-                                    <DatePicker
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="top"
-                                        showTimeSelectOnly={false}
-                                        selected={dateAdded}
-                                        onChange={(date) => setDateAdded(date as Date)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="mb-4">
                                 <label className="block text-gray-700 font-medium mb-2">Location</label>
                                 <select
                                     className="w-full p-2 border border-gray-300 rounded-lg"
