@@ -957,7 +957,7 @@ export default function AdminSales() {
                         isQuantityModalOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                     }`}
                 >
-                    <h2 className="text-lg font-semibold mb-4 text-center">Enter Quantity</h2>
+                    <h2 className="text-lg mb-4 text-center">Enter Quantity</h2>
                     <input
                         type="number"
                         min="1"
@@ -994,7 +994,7 @@ export default function AdminSales() {
                     }`}
                 >
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-center flex-grow">Select Serials</h3>
+                        <h3 className="text-lg  text-center flex-grow">Select Serials</h3>
                         <span className="text-sm text-gray-600">
                 {selectedSerials.length} of {maxSelectable}
             </span>

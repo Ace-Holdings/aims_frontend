@@ -975,7 +975,7 @@ export default function EmployeeSales() {
                         isQuantityModalOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                     }`}
                 >
-                    <h2 className="text-lg font-semibold mb-4 text-center">Enter Quantity</h2>
+                    <h2 className="text-lg  mb-4 text-center">Enter Quantity</h2>
                     <input
                         type="number"
                         min="1"

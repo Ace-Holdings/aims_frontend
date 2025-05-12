@@ -47,6 +47,7 @@ export default function UsersAdmin() {
     const [loanRequests, setLoansRequests] = useState([]);
 
     const [grantedRequests, setGrantedRequests] = useState<Set<number>>(new Set());
+    const [rejectedRequests, setRejectedRequests] = useState<Set<number>>(new Set());
 
     const [searchTerm, setSearchTerm] = useState('');
     const [applicantResults, setApplicantResults] = useState([]);
@@ -67,7 +68,6 @@ export default function UsersAdmin() {
         termMonths: '',
     });
 
-
     useEffect(() => {
         const fetchLoanRequests = async () => {
             try {
@@ -80,6 +80,11 @@ export default function UsersAdmin() {
                         .filter((request) => request.status === "approved")
                         .map((request) => request.requestId);
                     setGrantedRequests(new Set(approvedIds));
+
+                    const rejectedIds = data
+                        .filter((request) => request.status === "rejected")
+                        .map((request) => request.requestId);
+                    setRejectedRequests(new Set(rejectedIds));
 
                     const hasPending = data.some((request) => request.status === "pending");
                     setHasPendingRequests(hasPending);
@@ -449,6 +454,30 @@ export default function UsersAdmin() {
         }
     }
 
+    const handleRejectLoanApplication = async (request: any) => {
+        const { requestId, applicantId, amountRequested, purpose } = request;
+
+        try {
+            const response = await fetch(`http://localhost:3002/loanRequests/${requestId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ status: "rejected" }),
+            });
+
+            if (!response.ok) {
+                console.log("Failed to reject loan request.");
+            }
+
+            setRejectedRequests(prev => new Set(prev).add(requestId));
+
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     // handler function to submit user details
     const handleUserRegistration = async (e: any) => {
         e.preventDefault();
@@ -755,7 +784,7 @@ export default function UsersAdmin() {
             <div
                 className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black transition-opacity duration-300 ${
                     isSalariesDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                }`}
+                } backdrop-blur-sm`}
             >
                 <div
                     className={`bg-white p-6 rounded-lg shadow-lg w-1/3 transform transition-all duration-300 ${
@@ -807,7 +836,7 @@ export default function UsersAdmin() {
 
             {/* loans modal */}
             {isLoansDialogOpen && (
-                <div className="fixed inset-0 bg-black font-custom bg-opacity-50 flex justify-center items-center z-50">
+                <div className="fixed inset-0 bg-black font-custom bg-opacity-50 flex backdrop-blur-sm justify-center items-center z-50">
                     <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl p-6">
 
                         <button
@@ -911,13 +940,36 @@ export default function UsersAdmin() {
                                                             />
                                                         </svg>
                                                     </div>
+                                                ) : rejectedRequests.has(request.requestId) ? (
+                                                    <div className="text-red-600 transition-transform animate-pulse">
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            className="h-12 w-12"
+                                                            viewBox="0 0 24 24"
+                                                            fill="currentColor"
+                                                        >
+                                                            <path
+                                                                fillRule="evenodd"
+                                                                d="M12 10.586l4.95-4.95a1 1 0 111.414 1.414L13.414 12l4.95 4.95a1 1 0 01-1.414 1.414L12 13.414l-4.95 4.95a1 1 0 01-1.414-1.414L10.586 12l-4.95-4.95a1 1 0 111.414-1.414L12 10.586z"
+                                                                clipRule="evenodd"
+                                                            />
+                                                        </svg>
+                                                    </div>
                                                 ) : (
-                                                    <button
-                                                        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 transform hover:scale-105"
-                                                        onClick={() => handleGrantLoanApplication(request)}
-                                                    >
-                                                        Grant
-                                                    </button>
+                                                    <div className="flex gap-3">
+                                                        <button
+                                                            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 transform hover:scale-105"
+                                                            onClick={() => handleGrantLoanApplication(request)}
+                                                        >
+                                                            Grant
+                                                        </button>
+                                                        <button
+                                                            className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 transform hover:scale-105"
+                                                            onClick={() => handleRejectLoanApplication(request)}
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    </div>
                                                 )}
                                             </div>
                                         ))}
