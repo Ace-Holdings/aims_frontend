@@ -203,7 +203,7 @@ export default function AssignmentsTableEmployee() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Assignment Details</h3>
+                            <h3 className="text-lg  mb-6 text-center text-black">Assignment Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div><strong>Assignment:</strong> {selectedAssignment.assignmentName}</div>
                                 <div><strong>Location:</strong> {selectedAssignment.location}</div>

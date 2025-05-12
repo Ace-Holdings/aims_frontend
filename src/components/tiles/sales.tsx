@@ -8,7 +8,6 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
     const formattedDate = format(new Date(date), "dd/MM/yyyy");
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [selectedSale, setSelectedSale] = useState(null);
-    const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [inventories, setInventories] = useState([]);
@@ -42,14 +41,6 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
         }, 0);
     }
 
-    const openUpdateDialog = (sale: any) => {
-        setSelectedSale(sale);
-        setShowUpdateDialog(true);
-
-        setTimeout(() => {
-            console.log("Updated selectedSale:", sale);
-        }, 0);
-    }
 
     const openDeleteDialog = (sale: any) => {
         setSelectedSale(sale);
@@ -62,40 +53,6 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
         setSearchQuery("");
     };
 
-    const handleUpdateSale = async () => {
-        try {
-            const updatedSale = {
-                ...(quantityState  && { quantity: quantityState }),
-                ...(itemState && { inventoryId: itemState }),
-                ...(customerState  && { customer: customerState }),
-                ...(descriptionState  && { description: descriptionState }),
-                ...(amountState  && { amount: amountState }),
-                ...(issuerState  && { issuer: issuerState }),
-            };
-
-
-            if (Object.keys(updatedSale).length === 0) {
-                console.log("No changes detected.");
-                return; // Exit if there's nothing to update
-            }
-
-            const response = await fetch(`http://localhost:3002/sales/${selectedSale.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json", "authorization": `Bearer ${localStorage.getItem("token")}` },
-                body: JSON.stringify(updatedSale),
-            });
-
-            if (!response.ok) {
-                console.log("Failed to update sale");
-                return;
-            }
-
-            setShowUpdateDialog(false);
-            window.location.reload();
-        } catch (error) {
-            console.error("Error updating sale:", error);
-        }
-    };
 
     const handleDeleteSale = async () => {
         try {
@@ -203,22 +160,6 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                     </button>
                     <div className="h-1/2"/>
                     <button
-                        className="text-green-600 bg-gray-200  hover:text-green-800 transition-colors duration-200
-               rounded-full p-2 hover:bg-green-100"
-                        title="Edit"
-                        onClick={() =>
-                            openUpdateDialog({
-                                id, title, date, amount, quantity, customer, issuer, description,
-                                inventory: inventory ? inventory : { name: "" },
-                                user: user ? user : { username: "" },
-                                pricePerUnit
-                            })
-                        }
-                    >
-                        <FiEdit className="w-5 h-5" />
-                    </button>
-                    <div className="h-1/2"/>
-                    <button
                         className="text-purple-600 hover:text-purple-800 bg-gray-200 transition-colors duration-200
                rounded-full p-2 hover:bg-purple-100"
                         title="Download"
@@ -283,7 +224,7 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Sale Details</h3>
+                            <h3 className="text-lg  mb-6 text-center text-black">Sale Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
                                     <strong>Item:</strong> {selectedSale.title}
@@ -321,121 +262,6 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                 )
             }
 
-            {/* modal for showing update dialog */}
-            {ReactDOM.createPortal(
-                <div
-                    className={`fixed inset-0 text-black z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm font-custom transition-opacity duration-300 ${
-                        showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                    }`}
-                >
-                    <div
-                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300 ${
-                            showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
-                        }`}
-                    >
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Sale</h3>
-                        <form>
-                            <div className="mb-4 relative">
-                                <label htmlFor="item" className="block text-gray-700 font-medium mb-2">
-                                    Search Inventories
-                                </label>
-                                <input
-                                    value={selectedSale ? inventories.find(item => item.inventoryId === selectedSale)?.inventoryId : searchQuery}
-                                    onChange={(e) => {
-                                        setSearchQuery(e.target.value);
-                                        setSelectedSale("");
-                                    }}
-                                    type="text"
-                                    id="item"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Type to search for items"
-                                />
-                                {searchQuery && (
-                                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
-                                        {inventories
-                                            .filter((inventory) =>
-                                                inventory.name.toLowerCase().includes(searchQuery.toLowerCase())
-                                            )
-                                            .map((inventory) => (
-                                                <li
-                                                    key={inventory.inventoryId}
-                                                    onClick={() => handleSelectInventory(inventory.inventoryId)}
-                                                    className="p-2 hover:bg-gray-100 cursor-pointer"
-                                                >
-                                                    {inventory.name}
-                                                    <p className="text-green-600 font-bold">
-                                                        {new Intl.NumberFormat('en-US', {
-                                                            style: 'currency',
-                                                            currency: 'MWK'
-                                                        }).format(inventory.pricePerUnit)}
-                                                    </p>
-                                                </li>
-                                            ))}
-                                    </ul>
-                                )}
-                            </div>
-
-                            <div className="mb-4">
-                                <label>Quantity</label>
-                                <input
-                                    type="number"
-                                    className="border p-2 w-full bg-white"
-                                    value={quantityState}
-                                    onChange={(e) => setQuantity(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label>Description</label>
-                                <input
-                                    type="text"
-                                    className="border p-2 w-full bg-white"
-                                    value={descriptionState}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label>Customer</label>
-                                <input
-                                    type="text"
-                                    className="border p-2 w-full bg-white"
-                                    value={customerState}
-                                    onChange={(e) => setCustomer(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label>Issuer</label>
-                                <input
-                                    type="text"
-                                    className="border p-2 w-full bg-white"
-                                    onChange={(e) => setIssuer(e.target.value)}
-                                />
-                            </div>
-
-                            <div className="mt-6 flex justify-end space-x-3">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                    onClick={() => setShowUpdateDialog(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                                    onClick={handleUpdateSale}
-                                >
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>,
-                document.body
-            )}
-
             {/* modal for showing delete dialog */}
             {ReactDOM.createPortal(
                 <div
@@ -448,7 +274,7 @@ const SalesTile = ({ id, title, date, amount, quantity, customer, issuer, descri
                             showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                        <h3 className="text-lg  mb-4 text-black text-center">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">
                             Are you sure you want to delete this sale?
                         </p>

@@ -148,9 +148,13 @@ export default function AssignmentsManager() {
                     "authorization": 'Bearer ' + localStorage.getItem('token')
                 },
             });
+
             if (response.ok) {
                 const data = await response.json();
-                setEmployeeResults(data);
+
+                const filtered = data.filter((user: any) => !user.assignment?.status);
+
+                setEmployeeResults(filtered);
             }
         } catch (error) {
             console.error("Error fetching employees:", error);

@@ -61,7 +61,7 @@ export default function ManagerPayslips() {
     };
 
     const handleSaveEarning = () => {
-        if (!earningValue.trim()) return;
+        if (!earningValue) return;
         setAdditionalEarnings([...additionalEarnings, { description: itemDescription, value: earningValue }]);
         console.log(additionalEarnings);
         setItemDescription("");
@@ -70,7 +70,7 @@ export default function ManagerPayslips() {
     };
 
     const handleSaveDeduction = () => {
-        if (!deductionValue.trim()) return;
+        if (!deductionValue) return;
         setDeductions([...deductions, { description: deductionItemDescription, value: deductionValue}]);
         console.log(deductions);
         setDeductionItemDescription("");
@@ -561,14 +561,20 @@ export default function ManagerPayslips() {
                             {/* Dialog (Modal) */}
                             {isValueDialogOpen && (
                                 <div className="fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
-                                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                                        <h2 className="text-lg font-bold mb-4">Enter Earning Value</h2>
+                                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4">
+                                        <h2 className="text-lg  mb-4 text-center">Enter Earning Value</h2>
                                         <input
-                                            type="number"
-                                            className="w-full p-2 border border-gray-300 rounded-lg"
-                                            placeholder="Amount"
-                                            value={earningValue}
-                                            onChange={(e) => setEarningValue(e.target.value)}
+                                            type="text"
+                                            value={earningValue.toLocaleString('en-US')}
+                                            onChange={(e) => {
+                                                const raw = e.target.value.replace(/,/g, '');
+                                                if (!isNaN(Number(raw))) {
+                                                    setEarningValue(Number(raw));
+                                                }
+                                            }}
+                                            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Enter amount"
+                                            inputMode="numeric"
                                         />
                                         <div className="flex justify-end mt-4 space-x-2">
                                             <button onClick={() => setIsDialogOpen(false)} className="px-4 py-2 bg-gray-300 rounded-lg">
@@ -622,20 +628,33 @@ export default function ManagerPayslips() {
 
                             {isDeductionValueDialogOpen && (
                                 <div className="fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
-                                    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                                        <h2 className="text-lg font-bold mb-4">Enter Deduction Value</h2>
+                                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4 sm:mx-auto">
+                                        <h2 className="text-lg text-center mb-4">Enter Deduction Value</h2>
                                         <input
-                                            type="number"
-                                            className="w-full p-2 border border-gray-300 rounded-lg"
-                                            placeholder="Amount"
-                                            value={deductionValue}
-                                            onChange={(e) => setDeductionValue(e.target.value)}
+                                            type="text"
+                                            value={deductionValue.toLocaleString('en-US')}
+                                            onChange={(e) => {
+                                                const raw = e.target.value.replace(/,/g, '');
+                                                if (!isNaN(Number(raw))) {
+                                                    setDeductionValue(Number(raw));
+                                                }
+                                            }}
+                                            className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Enter amount"
+                                            inputMode="numeric"
                                         />
                                         <div className="flex justify-end mt-4 space-x-2">
-                                            <button onClick={() => setIsDeductionValueDialogOpen(false)} className="px-4 py-2 bg-gray-300 rounded-lg">
+                                            <button
+                                                onClick={() => setIsDeductionValueDialogOpen(false)}
+                                                className="px-4 py-2 bg-gray-300 rounded-lg"
+                                            >
                                                 Cancel
                                             </button>
-                                            <button type="button" onClick={handleSaveDeduction} className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                                            <button
+                                                type="button"
+                                                onClick={handleSaveDeduction}
+                                                className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                                            >
                                                 Add
                                             </button>
                                         </div>

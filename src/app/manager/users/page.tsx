@@ -42,6 +42,7 @@ export default function UsersManager() {
     const [loanRequests, setLoansRequests] = useState([]);
 
     const [grantedRequests, setGrantedRequests] = useState<Set<number>>(new Set());
+    const [rejectedRequests, setRejectedRequests] = useState<Set<number>>(new Set());
 
     const [searchTerm, setSearchTerm] = useState('');
     const [applicantResults, setApplicantResults] = useState([]);
@@ -75,6 +76,11 @@ export default function UsersManager() {
                         .filter((request) => request.status === "approved")
                         .map((request) => request.requestId);
                     setGrantedRequests(new Set(approvedIds));
+
+                    const rejectedIds = data
+                    .filter((request) => request.status === "rejected")
+                    .map((request) => request.requestId);
+                    setRejectedRequests(new Set(rejectedIds));
 
                     const hasPending = data.some((request) => request.status === "pending");
                     setHasPendingRequests(hasPending);
@@ -247,6 +253,30 @@ export default function UsersManager() {
             console.error("Error processing loan:", error);
         }
     };
+
+    const handleRejectLoanApplication = async (request: any) => {
+        const { requestId, applicantId, amountRequested, purpose } = request;
+
+        try {
+            const response = await fetch(`http://localhost:3002/loanRequests/${requestId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ status: "rejected" }),
+            });
+
+            if (!response.ok) {
+                console.log("Failed to reject loan request.");
+            }
+
+            setRejectedRequests(prev => new Set(prev).add(requestId));
+
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     const handleUserRegistration = async (e: any) => {
         e.preventDefault();
@@ -729,12 +759,19 @@ export default function UsersManager() {
                         </select>
 
                         <div className="mt-4">
-                            <label className="block text-gray-700 font-medium mb-1">Amount</label>
+                            <label className="block text-sm font-medium text-gray-700">Amount (MWK)</label>
                             <input
-                                type="number"
-                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                value={amount}
-                                onChange={(e) => setAmount(Number(e.target.value))}
+                                type="text"
+                                value={amount.toLocaleString('en-US')}
+                                onChange={(e) => {
+                                    const raw = e.target.value.replace(/,/g, '');
+                                    if (!isNaN(Number(raw))) {
+                                        setAmount(Number(raw));
+                                    }
+                                }}
+                                className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter amount"
+                                inputMode="numeric"
                             />
                         </div>
                     </div>
@@ -847,27 +884,50 @@ export default function UsersManager() {
                                                 </div>
 
                                                 {grantedRequests.has(request.requestId) ? (
-                                                    <div className="text-green-500 transition-transform animate-bounce-in">
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            className="h-8 w-8"
-                                                            viewBox="0 0 20 20"
-                                                            fill="currentColor"
-                                                        >
-                                                            <path
-                                                                fillRule="evenodd"
-                                                                d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
-                                                                clipRule="evenodd"
-                                                            />
-                                                        </svg>
-                                                    </div>
-                                                ) : (
-                                                    <button
-                                                        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 transform hover:scale-105"
-                                                        onClick={() => handleGrantLoanApplication(request)}
+                                                <div className="text-green-500 transition-transform animate-bounce-in">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-8 w-8"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
                                                     >
-                                                        Grant
-                                                    </button>
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                ) : rejectedRequests.has(request.requestId) ? (
+                                                <div className="text-red-600 transition-transform animate-pulse">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-12 w-12"
+                                                        viewBox="0 0 24 24"
+                                                        fill="currentColor"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M12 10.586l4.95-4.95a1 1 0 111.414 1.414L13.414 12l4.95 4.95a1 1 0 01-1.414 1.414L12 13.414l-4.95 4.95a1 1 0 01-1.414-1.414L10.586 12l-4.95-4.95a1 1 0 111.414-1.414L12 10.586z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                ) : (
+                                                    <div className="flex gap-3">
+                                                        <button
+                                                            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 transform hover:scale-105"
+                                                            onClick={() => handleGrantLoanApplication(request)}
+                                                        >
+                                                            Grant
+                                                        </button>
+                                                        <button
+                                                            className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 transform hover:scale-105"
+                                                            onClick={() => handleRejectLoanApplication(request)}
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    </div>
                                                 )}
                                             </div>
                                         ))}
@@ -890,7 +950,7 @@ export default function UsersManager() {
                         isDirectGrantDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                     }`}
                 >
-                    <h2 className="text-xl font-semibold mb-4 text-center">Grant New Loan</h2>
+                    <h2 className="text-xl  mb-4 text-center">Grant New Loan</h2>
                     <form
                         className="space-y-4"
                         onSubmit={(e) => {

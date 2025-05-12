@@ -357,7 +357,7 @@ export default function InventoryTableEmployee() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Stock Item Details</h3>
+                            <h3 className="text-lg  mb-6 text-center ">Stock Item Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
                                     <strong>Item name:</strong> {selectedItem.name}
@@ -415,7 +415,7 @@ export default function InventoryTableEmployee() {
                             showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Stock Item</h3>
+                        <h3 className="text-lg  mb-4 text-center ">Update Stock Item</h3>
                         <form>
                             <div className="mb-4">
                                 <label>Quantity</label>
@@ -490,7 +490,7 @@ export default function InventoryTableEmployee() {
                             showSerialDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-600">
+                        <h3 className="text-lg mb-4 text-center ">
                             Serial numbers of items in stock for {selectedItem?.name} {selectedItem?.description}
                         </h3>
 

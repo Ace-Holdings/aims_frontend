@@ -332,7 +332,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Bid Details</h3>
+                            <h3 className="text-lg mb-6 text-center text-black">Bid Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
                                     <strong>Bid ID:</strong>{selectedBid.bidId}
@@ -380,7 +380,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                             showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update bid</h3>
+                        <h3 className="text-lg mb-4 text-center text-black">Update bid</h3>
                         <form>
                             <div className="mb-4">
                                 <label>Description</label>
@@ -465,7 +465,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                             showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                        <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this bid?</p>
                         <div className="mt-4 flex justify-end space-x-3">
                             <button
@@ -564,7 +564,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                             showChecklistDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-xl font-semibold mb-4 text-gray-700 text-center">Checklist</h3>
+                        <h3 className="text-lg mb-4 text-black text-center">Checklist</h3>
                         <div className="mb-6 space-y-2 text-gray-800 text-sm max-h-[300px] overflow-y-auto pr-2">
                             {checklist.map((item, index) => (
                                 <div

@@ -404,7 +404,7 @@ export default function InventoryTable() {
                             showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                        <h3 className="text-lg  mb-4 text-black text-center">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">
                             Are you sure you want to delete this stock item?
                         </p>
@@ -440,7 +440,7 @@ export default function InventoryTable() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Stock Item Details</h3>
+                            <h3 className="text-lg  mb-6 text-center text-black">Stock Item Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
                                     <strong>Item name:</strong> {selectedItem.name}
@@ -498,7 +498,7 @@ export default function InventoryTable() {
                             showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Stock Item</h3>
+                        <h3 className="text-lg mb-4 text-center text-black">Update Stock Item</h3>
                         <form>
                             <div className="mb-4">
                                 <label className="block mb-2">Quantity</label>
@@ -515,13 +515,20 @@ export default function InventoryTable() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block mb-2">Price per unit</label>
+                                <label htmlFor="pricePerUnit" className="block text-gray-700 font-medium mb-2">Price Per Unit</label>
                                 <input
-                                    type="number"
-                                    name="locationName"
-                                    className="border p-2 w-full bg-white"
-                                    value={pricePerUnit}
-                                    onChange={(e) => setPricePerUnit(e.target.value)}
+                                    type="text"
+                                    id="pricePerUnit"
+                                    value={pricePerUnit.toLocaleString("en-US")}
+                                    onChange={(e) => {
+                                        const rawValue = e.target.value.replace(/,/g, "");
+                                        if (!isNaN(Number(rawValue))) {
+                                            setPricePerUnit(Number(rawValue));
+                                        }
+                                    }}
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Price per item"
+                                    inputMode="numeric"
                                 />
                             </div>
                             <div className="mb-4">
@@ -554,13 +561,14 @@ export default function InventoryTable() {
                             </div>
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button
+                                    type="button"
                                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
                                     onClick={() => setShowUpdateDialog(false)}
                                 >
                                     Cancel
                                 </button>
                                 <button
-                                    type="button"
+                                    type="submit"
                                     className="bg-blue-500 text-white px-4 py-2 rounded-md"
                                     onClick={handleUpdateStock1}
                                 >
@@ -585,7 +593,7 @@ export default function InventoryTable() {
                             showSerialDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-600">
+                        <h3 className="text-lg  mb-4 text-center text-black">
                             Serial numbers of items in stock for {selectedItem?.name} {selectedItem?.description}
                         </h3>
                         <div className="border border-gray-300 rounded-md max-h-60 overflow-y-auto p-2 max-h-[9.5rem]">

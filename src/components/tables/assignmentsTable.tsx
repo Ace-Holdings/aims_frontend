@@ -22,8 +22,8 @@ export default function AssignmentsTable() {
     const [location, setLocation] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState("");
-    const [startsAt, setStartsAt] = useState(new Date());
-    const [endsAt, setEndsAt] = useState(new Date());
+    const [startsAt, setStartsAt] = useState<Date | null>(null);
+    const [endsAt, setEndsAt] = useState<Date | null>(null);
 
     const [objectives, setObjectives] = useState([]);
     const [showObjectivesDialog, setShowObjectivesDialog] = useState(false);
@@ -339,7 +339,7 @@ export default function AssignmentsTable() {
                                 : 'opacity-0 scale-95 -translate-y-4'
                         }`}
                     >
-                        <h3 className="text-lg font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                        <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">
                             Are you sure you want to delete this assignment?
                         </p>
@@ -375,7 +375,7 @@ export default function AssignmentsTable() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Assignment Details</h3>
+                            <h3 className="text-lg  mb-6 text-center text-black">Assignment Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div><strong>Assignment:</strong> {selectedAssignment.assignmentName}</div>
                                 <div><strong>Location:</strong> {selectedAssignment.location}</div>
@@ -435,7 +435,7 @@ export default function AssignmentsTable() {
                                 : 'opacity-0 scale-95 -translate-y-4'
                         }`}
                     >
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update Assignment</h3>
+                        <h3 className="text-lg  mb-4 text-center text-black">Update Assignment</h3>
                         <form>
                             <div className="mb-4">
                                 <label>Assignment</label>
@@ -496,7 +496,6 @@ export default function AssignmentsTable() {
                                         timeFormat="h:mm aa"
                                         timeIntervals={15}
                                         className="grow p-2 bg-white w-[180px] border border-gray-300"
-                                        placeholderText="Select end date and time"
                                         popperClassName="z-50"
                                         popperPlacement="top"
                                         showTimeSelectOnly={false}
@@ -507,13 +506,14 @@ export default function AssignmentsTable() {
                             </div>
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button
+                                    type="button"
                                     className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
                                     onClick={() => setShowUpdateDialog(false)}
                                 >
                                     Cancel
                                 </button>
                                 <button
-                                    type="button"
+                                    type="submit"
                                     className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
                                     onClick={handleUpdateAssignment}
                                 >
@@ -540,7 +540,7 @@ export default function AssignmentsTable() {
                                 : 'opacity-0 scale-95 -translate-y-4'
                         }`}
                     >
-                        <h3 className="text-lg font-semibold mb-4 text-center">Assignment Objectives</h3>
+                        <h3 className="text-lg mb-4 text-center">Assignment Objectives</h3>
                         <div className="mb-4 max-h-80 overflow-y-auto">
                             {objectives.length === 0 ? (
                                 <p className="text-center text-black">No objectives for this assignment.</p>

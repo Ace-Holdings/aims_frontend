@@ -296,7 +296,7 @@ export default function UsersTable() {
                             showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                        <h3 className="text-lg  mb-4 text-black text-center">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this user?</p>
                         <div className="mt-4 flex justify-end space-x-3">
                             <button
@@ -329,7 +329,7 @@ export default function UsersTable() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">User Details</h3>
+                            <h3 className="text-lg  mb-6 text-center text-black">User Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
                                     <strong>First name:</strong> {selectedUser.firstName}
@@ -381,7 +381,7 @@ export default function UsersTable() {
                             showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-lg font-semibold mb-4 text-center text-gray-400">Update user</h3>
+                        <h3 className="text-lg  mb-4 text-center text-black">Update user</h3>
                         <form>
                             <div className="mb-4">
                                 <label>First name</label>

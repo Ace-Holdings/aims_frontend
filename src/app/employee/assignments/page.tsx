@@ -186,7 +186,7 @@ export default function EmployeeAssignments() {
                     </div>
                     <div className="h-7" />
                     <div>{hasActiveAssignment && (
-                        <button onClick={openDialog} className="flex items-center text-left justify-between bg-green-500 text-white p-4 rounded-lg shadow-md w-fit mt-4 ml-6 hover:bg-green-600 transition">
+                        <button onClick={openDialog} className="flex font-custom items-center text-left justify-between bg-green-500 text-white p-4 rounded-lg shadow-md w-fit mt-4 ml-6 hover:bg-green-600 transition">
                             <div>
                                 You have an active assignment:<br />
                                 <strong>{hasActiveAssignment.assignmentName}</strong> at <strong>{hasActiveAssignment.location}</strong>
@@ -212,7 +212,7 @@ export default function EmployeeAssignments() {
                         }`}
                     >
                         {/* Header */}
-                        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Active Assignment</h2>
+                        <h2 className="text-2xl  mb-6 text-center text-gray-800">Active Assignment</h2>
 
                         {/* Assignment Info */}
                         <div className="space-y-2 text-sm sm:text-base text-gray-700 mb-8">
@@ -226,7 +226,7 @@ export default function EmployeeAssignments() {
                         <hr className="mb-6 border-gray-300" />
 
                         {/* Objectives */}
-                        <h3 className="text-xl font-semibold mb-4 text-gray-800">Objectives</h3>
+                        <h3 className="text-xl  mb-4 text-gray-800">Objectives</h3>
                         <ul className="space-y-3">
                             {objectives.map((objective) => {
                                 const isChecked = completedObjectives.includes(objective.objectiveId);

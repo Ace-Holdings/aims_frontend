@@ -165,7 +165,7 @@ export default function LoanTable() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Loan Details</h3>
+                            <h3 className="text-lg  mb-6 text-center text-black">Loan Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div><strong>Loan ID:</strong> {selectedLoan.loanId}</div>
                                 <div><strong>Amount:</strong> {selectedLoan.amount.toLocaleString('en-MW', { style: 'currency', currency: 'MWK' })}</div>

@@ -160,47 +160,45 @@ const PaySlipsTile = ({ id, employee, earnings, deductions, date }) => {
             {shouldRenderDialog && (
                 ReactDOM.createPortal(
                     <div
-                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
                             showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                         }`}
                     >
                         <div
-                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                            className={`bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl mx-4 sm:mx-auto transition-all transform duration-300 overflow-y-auto max-h-[90vh] ${
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg font-semibold mb-6 text-center text-gray-400">Payslip Details</h3>
-                            <div className="flex flex-wrap gap-4">
+                            <h3 className="text-lg mb-6 text-center text-black">Payslip Details</h3>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div><strong>ID:</strong> {selectedSlip.id}</div>
+                                <div><strong>Employee:</strong> {selectedSlip.employee}</div>
                                 <div>
-                                    <strong>ID:</strong> {selectedSlip.id}
-                                </div>
-                                <div>
-                                    <strong>Employee:</strong> {selectedSlip.employee}
-                                </div>
-                                <div>
-                                    <strong>Total earnings:</strong>
+                                    <strong>Total earnings:</strong>{" "}
                                     {new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(selectedSlip.earnings)}
                                 </div>
                                 <div>
-                                    <strong>Total deductions:</strong>
+                                    <strong>Total deductions:</strong>{" "}
                                     {new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(selectedSlip.deductions)}
                                 </div>
                                 <div>
-                                    <strong>Date:</strong>
+                                    <strong>Date:</strong>{" "}
                                     {new Date(selectedSlip.date).toLocaleDateString('en-GB', {
                                         day: '2-digit',
                                         month: 'long',
                                         year: 'numeric',
                                     })}
                                 </div>
-                                <div className="mt-6 flex justify-end">
-                                    <button
-                                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
-                                        onClick={() => setShowDetailsDialog(false)}
-                                    >
-                                        Close
-                                    </button>
-                                </div>
+                            </div>
+
+                            <div className="mt-8 flex justify-end">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                    onClick={() => setShowDetailsDialog(false)}
+                                >
+                                    Close
+                                </button>
                             </div>
                         </div>
                     </div>,
@@ -220,7 +218,7 @@ const PaySlipsTile = ({ id, employee, earnings, deductions, date }) => {
                             showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-xl font-semibold mb-4 text-gray-400 text-center">Confirm Delete</h3>
+                        <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
                         <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this payslip?</p>
                         <div className="mt-4 flex justify-end space-x-3">
                             <button
