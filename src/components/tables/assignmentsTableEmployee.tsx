@@ -131,16 +131,21 @@ export default function AssignmentsTableEmployee() {
     const [filteredData, setFilteredData] = useState();
 
     // Handle Filter Change
-    const handleFilterChange = (e: any) => {
+    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         setFilter(value);
+        console.log(value);
 
-        // Filter data based on status or show all
-        if (value === "All") {
-            setFilteredData(data);
-        } else {
-            setFilteredData(data.filter((item) => item.status === value));
-        }
+        const filtered =
+            value === "All"
+                ? assignments
+                : assignments.filter((item: any) => {
+                    const status = item.status;
+                    const isActive = value === "true";
+                    return isActive ? status === true : status === false || status === null;
+                });
+
+        setFilteredData(filtered);
     };
 
     // Handle Search
@@ -149,8 +154,8 @@ export default function AssignmentsTableEmployee() {
         setSearch(value);
 
         setFilteredData(
-            data.filter((item) =>
-                item.name.toLowerCase().includes(value.toLowerCase())
+            assignments.filter((item) =>
+                item.assignmentName.toLowerCase().includes(value.toLowerCase())
             )
         );
     };
@@ -166,8 +171,8 @@ export default function AssignmentsTableEmployee() {
                         className="border border-gray-300 rounded-md px-2 py-1"
                     >
                         <option value="All">All</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
                     </select>
 
                     {/* Search Bar */}

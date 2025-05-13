@@ -80,12 +80,6 @@ export default function LoanTable() {
             sortable: true,
         },
         {
-            name: "Granted by",
-            selector: (row: any) => row.grantedBy,
-            sortable: true,
-            maxWidth: "150px",
-        },
-        {
             name: "Status",
             selector: (row: any) => row.status,
             sortable: true,
@@ -129,17 +123,6 @@ export default function LoanTable() {
     return(
         <>
             <div className="p-4">
-                <div className="flex justify-between items-center mb-4 text-black">
-                    {/* Filter Dropdown */}
-                    <select
-                        className="border border-gray-300 rounded-md px-2 py-1"
-                    >
-                        <option value="All">All</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                    </select>
-
-                </div>
 
                 {/* DataTable Component */}
                 <DataTable
@@ -172,7 +155,6 @@ export default function LoanTable() {
                                 <div><strong>Purpose:</strong> {selectedLoan.purpose}</div>
                                 <div><strong>Status:</strong> {selectedLoan.status}</div>
                                 <div><strong>Date Applied:</strong> {new Date(selectedLoan.dateApplied).toLocaleString()}</div>
-                                <div><strong>Granted By:</strong> {selectedLoan.grantedBy || "N/A"}</div>
                                 <div><strong>Date Granted:</strong> {selectedLoan.dateGranted ? new Date(selectedLoan.dateGranted).toLocaleString() : "N/A"}</div>
                                 <div><strong>Applicant:</strong> {selectedLoan.applicant?.username}</div>
                             </div>

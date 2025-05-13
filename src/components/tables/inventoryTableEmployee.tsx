@@ -278,6 +278,7 @@ export default function InventoryTableEmployee() {
     };
 
     // Handle Filter Change
+    // Handle Filter Change
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         setFilter(value);
@@ -285,11 +286,13 @@ export default function InventoryTableEmployee() {
         const filtered =
             value === "All"
                 ? stock
-                : stock.filter((item: any) => item.status === value);
+                : stock.filter((item: any) => item.location.toLowerCase() === value.toLowerCase());
 
-        setFilteredData(filtered.filter((item: any) =>
-            item.name.toLowerCase().includes(search.toLowerCase())
-        ));
+        setFilteredData(
+            filtered.filter((item: any) =>
+                item.name.toLowerCase().includes(search.toLowerCase())
+            )
+        );
     };
 
     // Handle Search Change
@@ -319,8 +322,8 @@ export default function InventoryTableEmployee() {
                         className="border border-gray-300 rounded-md px-2 py-1"
                     >
                         <option value="All">All</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
+                        <option value="shop">Shop</option>
+                        <option value="warehouse">Warehouse</option>
                     </select>
 
                     {/* Search Bar */}
