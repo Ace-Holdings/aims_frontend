@@ -471,7 +471,7 @@ export default function UsersAdmin() {
             }
 
             setRejectedRequests(prev => new Set(prev).add(requestId));
-
+            window.location.reload();
 
         } catch (e) {
             console.error(e);
@@ -992,7 +992,7 @@ export default function UsersAdmin() {
                         isDirectGrantDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                     }`}
                 >
-                    <h2 className="text-xl font-semibold mb-4 text-center">Grant New Loan</h2>
+                    <h2 className="text-lg mb-4 text-center">Grant New Loan</h2>
                     <form
                         className="space-y-4"
                         onSubmit={(e) => {

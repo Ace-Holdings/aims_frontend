@@ -241,7 +241,7 @@ export default function AdminBids() {
                                 <input
                                     type="file"
                                     id="editFile"
-                                    accept=".docx"
+                                    accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     onChange={handleEditFileChange}
                                 />

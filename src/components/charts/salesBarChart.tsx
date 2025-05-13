@@ -7,7 +7,7 @@ const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 export default function SalesBarChart() {
     const [chartData, setChartData] = useState({
-        series: [{ name: "Sales Amount", data: new Array(12).fill(0) }], // Initialize with 12 months
+        series: [{ name: "Sales Amount", data: new Array(12).fill(0) }],
         options: {
             chart: {
                 type: "bar",
@@ -22,6 +22,24 @@ export default function SalesBarChart() {
             },
             yaxis: {
                 title: { text: "Amount (MWK)" },
+                labels: {
+                    formatter: (val: number) =>
+                        new Intl.NumberFormat("en-MW", {
+                            style: "currency",
+                            currency: "MWK",
+                            minimumFractionDigits: 0,
+                        }).format(val),
+                },
+            },
+            tooltip: {
+                y: {
+                    formatter: (val: number) =>
+                        new Intl.NumberFormat("en-MW", {
+                            style: "currency",
+                            currency: "MWK",
+                            minimumFractionDigits: 0,
+                        }).format(val),
+                },
             },
             colors: ["#3498db"],
             plotOptions: {
@@ -44,16 +62,14 @@ export default function SalesBarChart() {
 
                 const data = await response.json();
 
-                // Process data: sum amounts by month
                 const monthlySales = new Array(12).fill(0);
 
                 data.forEach((sale: any) => {
-                    const date = new Date(sale.timestamp); // Convert timestamp to Date
+                    const date = new Date(sale.timestamp);
                     const monthIndex = date.getMonth();
                     monthlySales[monthIndex] += sale.amount;
                 });
 
-                // Update chart data
                 setChartData((prevData) => ({
                     ...prevData,
                     series: [{ name: "Sales Amount", data: monthlySales }],

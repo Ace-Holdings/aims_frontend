@@ -271,7 +271,7 @@ export default function UsersManager() {
             }
 
             setRejectedRequests(prev => new Set(prev).add(requestId));
-
+            window.location.reload();
 
         } catch (e) {
             console.error(e);

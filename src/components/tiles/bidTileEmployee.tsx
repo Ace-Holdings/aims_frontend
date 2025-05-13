@@ -416,22 +416,24 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="bidFile" className="block text-gray-700 font-medium mb-2">
-                                    Bid File
+                                    Bid File (PDF)
                                 </label>
                                 <input
                                     type="file"
                                     id="bidFile"
+                                    accept="application/pdf"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     onChange={handleUpdateBidFileChange}
                                 />
                             </div>
                             <div className="mb-4">
                                 <label htmlFor="editableFile" className="block text-red-600 font-medium mb-2">
-                                    Editable file
+                                    Editable file (DOCX)
                                 </label>
                                 <input
                                     type="file"
                                     id="editableFile"
+                                    accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                     onChange={handleUpdateEditableFileChange}
                                 />
