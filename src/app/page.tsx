@@ -130,12 +130,13 @@ export default function Home() {
                       </div>
 
                       <div className="flex items-center justify-center space-x-4">
-                        <a
-                            href="#"
-                            className="text-sm text-blue-500 hover:underline font-custom"
+                        <button
+                            type="button"
+                            onClick={() => router.push('./forgot-password')}
+                            className="text-sm text-blue-500 hover:underline font-custom bg-transparent border-none p-0 cursor-pointer"
                         >
                           Forgot password?
-                        </a>
+                        </button>
                       </div>
 
                       <div className="text-center -mb-10">
