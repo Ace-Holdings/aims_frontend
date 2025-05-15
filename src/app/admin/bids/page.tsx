@@ -102,6 +102,12 @@ export default function AdminBids() {
         }
 
         const formData = new FormData();
+
+        if (!(deadline instanceof Date) || isNaN(deadline.getTime())) {
+            console.error("Invalid or missing deadline.");
+            return;
+        }
+
         formData.append("description", description);
         formData.append("deadline", deadline.toISOString());
         formData.append("bidDocumentFile", bidFile);
