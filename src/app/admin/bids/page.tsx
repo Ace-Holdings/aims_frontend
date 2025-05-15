@@ -22,7 +22,14 @@ export default function AdminBids() {
     const [editFile, setEditFile] = useState("");
     const router = useRouter();
 
-    const user = jwtDecode(localStorage.getItem("token")).user
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        router.push("/");
+        return null;
+    }
+
+    const user = jwtDecode(token).user;
 
     const openDialog = () => {
         setIsDialogOpen(true);
