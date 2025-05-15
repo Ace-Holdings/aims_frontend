@@ -11,10 +11,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from "next/navigation";
 import {jwtDecode} from "jwt-decode";
 
-interface CustomJwtPayload extends JwtPayload {
-    roles?: string[];
-}
-
 export default function AssignmentsAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const router = useRouter();
@@ -71,7 +67,7 @@ export default function AssignmentsAdmin() {
         }
 
         try {
-            const decodedToken = jwtDecode<CustomJwtPayload>(token);
+            const decodedToken = jwtDecode(token) as { roles?: string[] };
             const roles: string[] = decodedToken.roles || [];
 
             if (!roles.includes("ROLE_ADMIN")) {
