@@ -13,6 +13,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from "next/navigation";
 import {jwtDecode} from "jwt-decode";
 
+interface DecodedToken {
+    user: {
+        id: string;
+        username: string;
+        roles: string[];
+    };
+    exp?: number;
+    iat?: number;
+}
+
 export default function AdminBids() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -29,7 +39,8 @@ export default function AdminBids() {
         return null;
     }
 
-    const user = jwtDecode(token).user;
+    const decoded = jwtDecode<DecodedToken>(token);
+    const user = decoded.user;
 
     const openDialog = () => {
         setIsDialogOpen(true);

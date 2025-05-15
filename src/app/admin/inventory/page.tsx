@@ -11,6 +11,16 @@ import InventoryTable from "@/components/tables/inventoryTable";
 import {jwtDecode} from "jwt-decode";
 import { useRouter } from "next/navigation";
 
+interface DecodedToken {
+    user: {
+        id: string;
+        username: string;
+        roles: string[];
+    };
+    exp?: number;
+    iat?: number;
+}
+
 export default function AdminInventory() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -83,7 +93,15 @@ export default function AdminInventory() {
 
     // handler function to submit inventory item creation form
     const handleFinalSubmit = async () => {
-        const user = jwtDecode(localStorage.getItem('token')).user;
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            // handle missing token, e.g. redirect or throw error
+            throw new Error("Token not found");
+        }
+
+        const decoded = jwtDecode<DecodedToken>(token);
+        const user = decoded.user;
 
         // 🚨 Validate all serial numbers are filled
         if (serialNumbers.some(sn => !sn.trim())) {
