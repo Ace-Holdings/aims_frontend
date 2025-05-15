@@ -15,6 +15,8 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     const [showChecklistDialog, setShowChecklistDialog] = useState(false);
     const [checklist, setChecklist] = useState([]);
 
+    const [showChecklistUnavailableDialog, setShowChecklistUnavailableDialog] = useState(false);
+
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
     // update states
@@ -54,12 +56,18 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                 }
             });
 
+            if (!response.ok) {
+                throw new Error("Checklist not available");
+            }
+
             const data = await response.json();
             setChecklist(data.checklist);
+            setShowChecklistDialog(true);
         } catch (e) {
             console.error(e);
+            setShowChecklistUnavailableDialog(true);
         }
-    }
+    };
 
     const openDeleteDialog = (bid: any) => {
         setSelectedBid(bid);
@@ -599,6 +607,47 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                             <button
                                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
                                 onClick={() => setShowChecklistDialog(false)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {ReactDOM.createPortal(
+                <div
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-50 font-custom transition-opacity duration-300 ${
+                        showChecklistUnavailableDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    }`}
+                >
+                    <div
+                        className={`bg-white p-6 rounded-lg shadow-lg w-[400px] mx-auto z-10 transform transition-all duration-300 ${
+                            showChecklistUnavailableDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        }`}
+                    >
+                        <div className="flex justify-center">
+                            <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4 animate-bounce">
+                                <svg
+                                    className="w-8 h-8 text-red-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 className="text-lg font-bold text-gray-800 text-center">Checklist Not Available</h2>
+                        <p className="text-sm text-gray-600 mt-2 text-center">
+                            We couldn’t find the checklist for this bid.
+                        </p>
+                        <div className="mt-4 flex justify-center">
+                            <button
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                onClick={() => setShowChecklistUnavailableDialog(false)}
                             >
                                 Close
                             </button>

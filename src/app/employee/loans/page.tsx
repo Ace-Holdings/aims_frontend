@@ -148,7 +148,6 @@ export default function Loans() {
                             - You must have been employed for at least 6 months.<br />
                             - Maximum loan amount is determined by your salary bracket.<br />
                             - Loan repayment is deducted monthly from your salary.<br />
-                            - Late payments will incur a 5% penalty.<br />
                             - Loans will be granted upon managerial review and you will be notified
                         </p>
                     </div>

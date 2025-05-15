@@ -222,7 +222,7 @@ export default function EmployeeBids() {
                             </div>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="bidFile" className="block text-gray-700 font-medium mb-2">Bid document file (PDF)</label>
+                            <label htmlFor="bidFile" className="block text-gray-700 font-medium mb-2">Bid requirements file (PDF)</label>
                             <input
                                 type="file"
                                 id="bidFile"
