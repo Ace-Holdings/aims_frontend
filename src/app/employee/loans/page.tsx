@@ -9,6 +9,7 @@ import {useEffect, useState} from "react";
 import LoanTile from "@/components/tiles/loan";
 import LoanTable from "@/components/tables/loanTable";
 import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
 
 export default function Loans() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -16,12 +17,34 @@ export default function Loans() {
     const [loanAmount, setLoanAmount] = useState(0);
     const [loanPurpose, setLoanPurpose] = useState("");
     const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+    const router = useRouter();
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
         localStorage.setItem("adminSidebarCollapsed", String(newState));
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+            return;
+        }
+
+        try {
+            const decodedToken = jwtDecode(token) as { roles?: string[] };
+            const roles: string[] = decodedToken.roles || [];
+
+            if (!roles.includes("ROLE_EMPLOYEE")) {
+                router.push("/");
+            }
+        } catch (e) {
+            console.log(e);
+            router.push("/");
+        }
+    }, [router])
 
     useEffect(() => {
         const storedState = localStorage.getItem("adminSidebarCollapsed");

@@ -265,21 +265,21 @@ export default function AdminSales() {
 
         if (!token) {
             router.push("/");
+            return;
         }
 
         try {
-            const decodedToken = jwtDecode(token);
+            const decodedToken = jwtDecode(token) as { roles?: string[] };
             const roles: string[] = decodedToken.roles || [];
 
-            if(!roles.includes("ROLE_ADMIN")) {
+            if (!roles.includes("ROLE_ADMIN")) {
                 router.push("/");
             }
-
-        } catch (e: any) {
-            console.error(e);
+        } catch (e) {
+            console.log(e);
             router.push("/");
         }
-    }, [router]);
+    }, [router])
 
     const handleSerialConfirm = () => {
         if (selectedSerials.length !== inputQuantity) {

@@ -33,23 +33,23 @@ export default function EmployeeHome() {
     useEffect(() => {
         const token = localStorage.getItem("token");
 
-        if(!token) {
+        if (!token) {
             router.push("/");
+            return;
         }
 
         try {
-            const decodedToken = jwtDecode(token);
-            const roles = decodedToken.roles || [];
+            const decodedToken = jwtDecode(token) as { roles?: string[] };
+            const roles: string[] = decodedToken.roles || [];
 
             if (!roles.includes("ROLE_EMPLOYEE")) {
                 router.push("/");
             }
         } catch (e) {
-            console.error(e);
+            console.log(e);
             router.push("/");
         }
-
-    }, [router]);
+    }, [router])
 
     return(
         <div className="h-screen flex bg-gray-100">

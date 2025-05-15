@@ -62,18 +62,18 @@ export default function AdminInventory() {
 
         if (!token) {
             router.push("/");
+            return;
         }
 
         try {
-            const decodedToken = jwtDecode(token);
+            const decodedToken = jwtDecode(token) as { roles?: string[] };
             const roles: string[] = decodedToken.roles || [];
 
-            if(!roles.includes("ROLE_ADMIN")) {
+            if (!roles.includes("ROLE_ADMIN")) {
                 router.push("/");
             }
-
         } catch (e) {
-            console.error(e);
+            console.log(e);
             router.push("/");
         }
     }, [router]);

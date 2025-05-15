@@ -34,23 +34,20 @@ export default function AdminHome() {
 
         if (!token) {
             router.push("/");
+            return;
         }
 
         try {
-            const decodedToken = jwtDecode(token);
+            const decodedToken = jwtDecode(token) as { roles?: string[] };
             const roles: string[] = decodedToken.roles || [];
 
-            console.log(roles);
-
             if (!roles.includes("ROLE_ADMIN")) {
-                console.log('item removed');
                 router.push("/");
             }
-        } catch (e: any) {
-            console.error(e);
+        } catch (e) {
+            console.log(e);
             router.push("/");
         }
-
     }, [router])
 
 
