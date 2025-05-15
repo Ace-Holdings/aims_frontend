@@ -139,7 +139,7 @@ export default function EmployeeInventory() {
             if (!roles.includes("ROLE_EMPLOYEE")) {
                 router.push("/");
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
             router.push("/");
         }

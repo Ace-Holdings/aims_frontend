@@ -83,7 +83,7 @@ export default function AdminSales() {
 
     // filtered sales by search
     useEffect(() => {
-        const filtered = sales.filter((sale) =>
+        const filtered = sales.filter((sale: any) =>
             sale.customer.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredSales(filtered);
@@ -162,7 +162,7 @@ export default function AdminSales() {
             } else {
                 console.log('failed to fetch inventory details');
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error("Error fetching inventory details");
         }
 
@@ -175,7 +175,7 @@ export default function AdminSales() {
                 const decodedToken: any = jwtDecode(token);
                 console.log(decodedToken);
                 setUsername(decodedToken.user || "User");
-            } catch (e) {
+            } catch (e: any) {
                 console.error(e);
             }
         } else {
@@ -275,7 +275,7 @@ export default function AdminSales() {
                 router.push("/");
             }
 
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
             router.push("/");
         }
@@ -568,7 +568,7 @@ export default function AdminSales() {
         canvas.height = 300;
         const ctx = canvas.getContext("2d");
 
-        const salesByDate = report.salesData.reduce((acc: any, sale) => {
+        const salesByDate = report.salesData.reduce((acc: any, sale: any) => {
             const date = new Date(sale.timestamp).toLocaleDateString();
             acc[date] = (acc[date] || 0) + sale.amount;
             return acc;
@@ -624,7 +624,7 @@ export default function AdminSales() {
             return saleDate >= start && saleDate <= end;
         });
 
-        const totalQuantity = filteredSales.reduce((acc, sale) => {
+        const totalQuantity = filteredSales.reduce((acc: any, sale: any) => {
             const saleQuantity = Array.isArray(sale.quantity)
                 ? sale.quantity.reduce((sum, q) => sum + q, 0)
                 : 0;

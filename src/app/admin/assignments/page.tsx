@@ -125,7 +125,7 @@ export default function AssignmentsAdmin() {
         setIsObjectivePromptOpen(true);
     }
 
-    const handleObjectivesListOpen = (e) => {
+    const handleObjectivesListOpen = (e: any) => {
         e.preventDefault();
         setIsObjectivePromptOpen(false);
         setIsObjectiveListPromptOpen(true);
@@ -164,7 +164,7 @@ export default function AssignmentsAdmin() {
 
 
     // handler function to submit assignment form data to server
-    const handleAssignmentSubmit = async (e) => {
+    const handleAssignmentSubmit = async (e: any) => {
         e.preventDefault();
 
         try {

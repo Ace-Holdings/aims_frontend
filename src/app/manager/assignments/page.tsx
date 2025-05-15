@@ -162,7 +162,7 @@ export default function AssignmentsManager() {
     };
 
     // handler function to submit assignment form data to server
-    const handleAssignmentSubmit = async (e) => {
+    const handleAssignmentSubmit = async (e: any) => {
         e.preventDefault();
 
         try {

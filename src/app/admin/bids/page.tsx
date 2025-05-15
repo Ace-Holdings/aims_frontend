@@ -106,7 +106,7 @@ export default function AdminBids() {
             } else {
                 console.log("Could not create bid");
             }
-        } catch (e) {
+        } catch (e: any) {
             console.log(e);
         }
     }

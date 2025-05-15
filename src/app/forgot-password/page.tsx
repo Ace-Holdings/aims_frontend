@@ -29,7 +29,7 @@ export default function ForgotPassword() {
             } else {
                 console.log("Something went wrong");
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
         } finally {
             setLoading(false);

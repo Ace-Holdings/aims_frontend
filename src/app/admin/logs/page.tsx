@@ -39,7 +39,7 @@ export default function AdminLogs() {
                 router.push("/");
             }
 
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
             router.push("/");
         }

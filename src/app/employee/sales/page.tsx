@@ -310,7 +310,7 @@ export default function EmployeeSales() {
     }, []);
 
     useEffect(() => {
-        const total = selectedItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+        const total = selectedItems.reduce((sum: any, item: any) => sum + item.quantity * item.unitPrice, 0);
         setAmount(total);
     }, [selectedItems]);
 
@@ -383,7 +383,7 @@ export default function EmployeeSales() {
 
             // 3. Update inventory quantities
             await Promise.allSettled(
-                selectedItems.map(async (item) => {
+                selectedItems.map(async (item: any) => {
                     try {
                         const invRes = await fetch(`http://localhost:3002/inventory/${item.id}`, {
                             headers: {

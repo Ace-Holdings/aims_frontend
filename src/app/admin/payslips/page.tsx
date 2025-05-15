@@ -75,7 +75,7 @@ export default function Payslips() {
                 router.push("/");
             }
 
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
             router.push("/");
         }
