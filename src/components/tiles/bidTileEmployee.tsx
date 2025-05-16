@@ -48,6 +48,8 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
     const [editableFileSend, setEditableFileSend] = useState<File | null>(null);
     const [fileType, setFileType] = useState("");
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     useEffect(() => {
         if (downloadDialog && selectedBid?.bidId) {
             previewBidFile(selectedBid.bidId);
@@ -76,7 +78,6 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
 
     const router = useRouter();
 
-    const token = localStorage.getItem("token");
 
     if (!token) {
         router.push("/");
@@ -138,7 +139,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
             const response = await fetch(`http://localhost:3002/bids/${selectedBid?.bidId}`, {
                 method: "PUT",
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: formData,
             });
@@ -160,7 +161,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
         try {
             const response = await fetch(`http://localhost:3002/bids/${bidId}/file`, {
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    "authorization": `Bearer ` + token,
                 }
             });
             if (!response.ok) {
@@ -187,7 +188,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
         try {
             const response = await fetch(`http://localhost:3002/bids/${bidId}/file`, {
                 headers: {
-                    "authorization": "Bearer " + localStorage.getItem("token"),
+                    "authorization": "Bearer " + token,
                 },
             });
 
@@ -209,7 +210,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
         try {
             const response = await fetch(`http://localhost:3002/bids/${bidId}/filePreview`, {
                 headers: {
-                    "authorization": "Bearer " + localStorage.getItem("token"),
+                    "authorization": "Bearer " + token,
                 },
             });
 
@@ -237,7 +238,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
         try {
             const response = await fetch(`http://localhost:3002/bids/${bidId}/editablePreview`, {
                 headers: {
-                    "authorization": "Bearer " + localStorage.getItem("token"),
+                    "authorization": "Bearer " + token,
                 },
             });
 

@@ -22,6 +22,7 @@ export default function LogTable() {
 
 
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
 
     const customStyles = {
@@ -40,7 +41,7 @@ export default function LogTable() {
                 const response = await fetch('http://localhost:3002/logs', {
                     method: "GET",
                     headers: {
-                        "authorization": "Bearer " + localStorage.getItem("token"),
+                        "authorization": "Bearer " + token,
                     }
                 });
 
@@ -76,7 +77,7 @@ export default function LogTable() {
             const response = await fetch(`http://localhost:3002/logs/${selectedLog?.id}`, {
                 method: "DELETE",
                 headers: {
-                    "authorization": "Bearer " + localStorage.getItem("token"),
+                    "authorization": "Bearer " + token,
                 }
             });
             if (!response.ok) {
@@ -94,7 +95,7 @@ export default function LogTable() {
             try {
                 const response = await fetch('http://localhost:3002/logs', {
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
                 if (!response.ok) {

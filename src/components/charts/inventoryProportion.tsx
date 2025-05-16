@@ -6,6 +6,8 @@ import {useEffect, useState} from "react";
 export default function InventoryProportion() {
     const [orgSeries, setOrgSeries] = useState([0, 0]);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
     useEffect(() => {
@@ -14,7 +16,7 @@ export default function InventoryProportion() {
                 const response = await fetch('http://localhost:3002/inventory', {
                     method: "GET",
                     headers: {
-                        "authorization": 'Bearer ' + localStorage.getItem("token"),
+                        "authorization": 'Bearer ' + token,
                     }
                 });
 

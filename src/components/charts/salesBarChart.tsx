@@ -12,6 +12,8 @@ interface Sale {
 }
 
 export default function SalesBarChart() {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     const [chartData, setChartData] = useState<{
         series: { name: string; data: number[] }[];
         options: ApexOptions;
@@ -63,7 +65,7 @@ export default function SalesBarChart() {
             try {
                 const response = await fetch("http://localhost:3002/sales", {
                     headers: {
-                        authorization: `Bearer ${localStorage.getItem("token")}`,
+                        authorization: `Bearer ` + token,
                     },
                 });
 

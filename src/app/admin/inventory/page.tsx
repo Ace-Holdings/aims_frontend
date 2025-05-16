@@ -35,6 +35,8 @@ export default function AdminInventory() {
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
     const [serialNumbers, setSerialNumbers] = useState<string[]>([]);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
 
     const openDialog = () => {
         setIsDialogOpen(true);
@@ -58,7 +60,6 @@ export default function AdminInventory() {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -79,21 +80,26 @@ export default function AdminInventory() {
     }, [router]);
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
+
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     // handler function to submit inventory item creation form
     const handleFinalSubmit = async () => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             // handle missing token, e.g. redirect or throw error
@@ -114,7 +120,7 @@ export default function AdminInventory() {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: JSON.stringify({
                     quantity: itemQuantity,

@@ -32,6 +32,8 @@ export default function AssignmentsManager() {
 
     const [isObjectiveListPromptOpen, setIsObjectiveListPromptOpen] = useState(false);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     const router = useRouter();
 
     const openDialog = () => {
@@ -54,16 +56,21 @@ export default function AssignmentsManager() {
     }
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     const handleSubmitWithoutObjectives = async (e: any) => {
@@ -74,7 +81,7 @@ export default function AssignmentsManager() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: JSON.stringify({
                     assignmentName: assignmentName,
@@ -114,7 +121,6 @@ export default function AssignmentsManager() {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -145,7 +151,7 @@ export default function AssignmentsManager() {
         try {
             const response = await fetch(`http://localhost:3002/users/search?username=${query}`, {
                 headers: {
-                    "authorization": 'Bearer ' + localStorage.getItem('token')
+                    "authorization": 'Bearer ' + token
                 },
             });
 
@@ -171,7 +177,7 @@ export default function AssignmentsManager() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: JSON.stringify({
                     assignmentName: assignmentName,
@@ -195,7 +201,7 @@ export default function AssignmentsManager() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     },
                     body: JSON.stringify({
                         employeeIds: selectedEmployees.map(emp => emp.userId),

@@ -47,12 +47,14 @@ export default function AssignmentsTable() {
     const [objectives, setObjectives] = useState<Objective[]>([]);
     const [showObjectivesDialog, setShowObjectivesDialog] = useState(false);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
 
     useEffect(() => {
         fetch("http://localhost:3002/assignments", {
             method: "GET",
             headers: {
-                "authorization": `Bearer ${localStorage.getItem("token")}`,
+                "authorization": `Bearer ` + token,
             }
         }).then((response) => response.json())
             .then((data) => {
@@ -128,7 +130,7 @@ export default function AssignmentsTable() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: JSON.stringify(updatedAssignment),
             });
@@ -151,7 +153,7 @@ export default function AssignmentsTable() {
             const response = await fetch(`http://localhost:3002/assignments/${selectedAssignment?.assignmentId}`, {
                 method: "DELETE",
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 }
             });
 

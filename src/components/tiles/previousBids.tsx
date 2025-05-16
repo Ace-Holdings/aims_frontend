@@ -11,6 +11,7 @@ interface Bid {
 export default function PreviousBids() {
     const [previousBids, setPreviousBids] = useState<Bid[]>([]);
     const [loading, setLoading] = useState(true);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     useEffect(() => {
         const fetchBids = async () => {
@@ -19,7 +20,7 @@ export default function PreviousBids() {
                 const response = await fetch('http://localhost:3002/bids', {
                     method: 'GET',
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
                 if (response.ok) {

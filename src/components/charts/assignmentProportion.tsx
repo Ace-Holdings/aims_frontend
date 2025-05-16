@@ -8,13 +8,15 @@ export default function ActiveAssignmentsProportion() {
     const [activeCount, setActiveCount] = useState(0);
     const [animatedValue, setAnimatedValue] = useState(0);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
                 const response = await fetch("http://localhost:3002/assignments", {
                     method: "GET",
                     headers: {
-                        authorization: `Bearer ${localStorage.getItem("token")}`,
+                        authorization: `Bearer ` + token,
                     },
                 });
 

@@ -84,8 +84,7 @@ export default function Payslips() {
     const [searchTerm, setSearchTerm] = useState("");
     const router = useRouter();
 
-
-
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     const handleAddItem = () => {
         if (!itemDescription.trim()) return;
@@ -98,20 +97,24 @@ export default function Payslips() {
     }
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = window.localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -164,7 +167,7 @@ export default function Payslips() {
         const fetchUsers = async (query: string) => {
             const response = await fetch(`http://localhost:3002/users/search?username=${query}`, {
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 }
             });
             if (!response.ok) {
@@ -184,7 +187,7 @@ export default function Payslips() {
             try {
                 const response = await fetch('http://localhost:3002/payslips', {
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
                 if (!response.ok) {
@@ -391,7 +394,7 @@ export default function Payslips() {
             const response = await fetch('http://localhost:3002/payslips', {
                 method: "POST",
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: payslip,
             })

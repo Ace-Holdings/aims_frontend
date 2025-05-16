@@ -25,13 +25,14 @@ export default function AssignmentsTableEmployee() {
     const [selectedAssignment, setSelectedAssignment] = useState<SelectedAssignment | null>(null);
 
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
 
     useEffect(() => {
         fetch("http://localhost:3002/assignments", {
             method: "GET",
             headers: {
-                "authorization": `Bearer ${localStorage.getItem("token")}`,
+                "authorization": `Bearer ` + token,
             }
         }).then((response) => response.json())
             .then((data) => {

@@ -19,6 +19,7 @@ const PaySlipsTile: React.FC<PaySlipProps> = ({ id, employee, earnings, deductio
     const [selectedSlip, setSelectedSlip] = useState<SelectedSlip | null>(null);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     const formattedDate = format(new Date(date), "dd/MM/yyyy");
 
@@ -46,7 +47,7 @@ const PaySlipsTile: React.FC<PaySlipProps> = ({ id, employee, earnings, deductio
         try {
             const response = await fetch(`http://localhost:3002/payslips/${slip.id}/file`, {
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
             });
 
@@ -76,7 +77,7 @@ const PaySlipsTile: React.FC<PaySlipProps> = ({ id, employee, earnings, deductio
             const response = await fetch(`http://localhost:3002/payslips/${selectedSlip.id}`, {
                 method: "DELETE",
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
             });
 

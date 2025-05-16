@@ -48,10 +48,12 @@ export default function UsersTable() {
     const [idNumber, setIdNumber] = useState("");
     const [role, setRole] = useState("");
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     useEffect(() => {
         fetch("http://localhost:3002/users", {
             headers: {
-                authorization: `Bearer ${localStorage.getItem("token")}`,
+                authorization: `Bearer ` + token,
             },
         })
             .then((res) => res.json())
@@ -78,7 +80,7 @@ export default function UsersTable() {
             const res = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
                 method: "DELETE",
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
             });
 
@@ -125,7 +127,7 @@ export default function UsersTable() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
                 body: JSON.stringify(updatedUser),
             });

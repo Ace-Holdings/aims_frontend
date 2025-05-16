@@ -22,10 +22,10 @@ interface Loan {
 
 export default function LoanTile() {
     const [accumulatedDebt, setAccumulatedDebts] = useState(0);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     useEffect(() => {
         const fetchLoans = async () => {
-            const token = localStorage.getItem("token");
             if (!token) return;
 
             const decoded = jwtDecode<DecodedToken>(token);

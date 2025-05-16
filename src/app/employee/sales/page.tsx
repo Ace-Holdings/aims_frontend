@@ -108,6 +108,8 @@ export default function EmployeeSales() {
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     useEffect(() => {
         const filtered = sales.filter((sale) =>
             sale.customer.toLowerCase().includes(searchTerm.toLowerCase())
@@ -132,8 +134,6 @@ export default function EmployeeSales() {
     }, [selectedItems]);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-
         if (!token) {
             router.push("/");
             return;
@@ -158,7 +158,7 @@ export default function EmployeeSales() {
                 const response: any = await fetch('http://localhost:3002/sales', {
                     method: "GET",
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
 
@@ -177,16 +177,21 @@ export default function EmployeeSales() {
     }, [selectedItems]);
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = window.localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     useEffect(() => {
@@ -212,7 +217,7 @@ export default function EmployeeSales() {
         try {
             const response = await fetch(`http://localhost:3002/inventory/${inventoryId}`, {
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 }
             });
 
@@ -256,7 +261,6 @@ export default function EmployeeSales() {
     }
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
         if (token) {
             try {
                 const decodedToken: any = jwtDecode(token);
@@ -276,7 +280,7 @@ export default function EmployeeSales() {
                 const response = await fetch(`http://localhost:3002/inventory/search?name=${query}`, {
                     method: "GET",
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
 
@@ -303,7 +307,7 @@ export default function EmployeeSales() {
                     const response = await fetch(`http://localhost:3002/users/search?username=${username}`, {
                         method: "GET",
                         headers: {
-                            "authorization": `Bearer ${localStorage.getItem("token")}`,
+                            "authorization": `Bearer ` + token,
                         }
                     });
 
@@ -329,7 +333,7 @@ export default function EmployeeSales() {
                 const response: any = await fetch('http://localhost:3002/sales', {
                     method: "GET",
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
 
@@ -390,7 +394,7 @@ export default function EmployeeSales() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
                 body: JSON.stringify(sale),
             });
@@ -407,7 +411,7 @@ export default function EmployeeSales() {
             const invoiceRes = await fetch("http://localhost:3002/invoices", {
                 method: "POST",
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
                 body: invoiceForm,
             });
@@ -420,7 +424,7 @@ export default function EmployeeSales() {
                     try {
                         const invRes = await fetch(`http://localhost:3002/inventory/${item.id}`, {
                             headers: {
-                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                                authorization: `Bearer ` + token,
                             },
                         });
 
@@ -432,7 +436,7 @@ export default function EmployeeSales() {
                             method: "PUT",
                             headers: {
                                 "Content-Type": "application/json",
-                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                                authorization: `Bearer ` + token,
                             },
                             body: JSON.stringify({ quantity: updatedQuantity }),
                         });
@@ -449,7 +453,7 @@ export default function EmployeeSales() {
                         fetch(`http://localhost:3002/unit/${serial.unitId}`, {
                             method: "DELETE",
                             headers: {
-                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                                authorization: `Bearer ` + token,
                             },
                         }).catch((err) =>
                             console.error(`Error deleting serial ${serial.unitId}`, err)

@@ -106,6 +106,8 @@ export default function UsersAdmin() {
 
     const [isSuccessVisible, setIsSuccessVisible] = useState(false);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     const [newLoan, setNewLoan] = useState({
         userId: '',
         amount: '',
@@ -165,9 +167,11 @@ export default function UsersAdmin() {
     }
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = window.localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
@@ -177,7 +181,7 @@ export default function UsersAdmin() {
                 const response = await fetch('http://localhost:3002/salaries', {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "Authorization": `Bearer ` + token,
                     }
                 });
                 const data = await response.json();
@@ -190,7 +194,6 @@ export default function UsersAdmin() {
     }, []);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -271,7 +274,7 @@ export default function UsersAdmin() {
         try {
             const response = await fetch(`http://localhost:3002/users/search?username=${term}`, {
                 headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Authorization": `Bearer ` + token,
                 }
             });
             if (response.ok) {
@@ -402,8 +405,6 @@ export default function UsersAdmin() {
     };
 
 
-
-
     const handleAmountChange = (e: any) => {
         let value = e.target.value.replace(/,/g, '');
         if (!isNaN(value) && value !== "") {
@@ -413,16 +414,21 @@ export default function UsersAdmin() {
     };
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = window.localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     useEffect(() => {
@@ -431,7 +437,7 @@ export default function UsersAdmin() {
                 const response = await fetch('http://localhost:3002/salaries', {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "Authorization": `Bearer ` + token,
                     }
                 });
                 const data = await response.json();
@@ -485,7 +491,7 @@ export default function UsersAdmin() {
             const response = await fetch(`http://localhost:3002/salaries/${id}`, {
                 method: "PUT",
                 headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Authorization": `Bearer ` + token,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(updatedSalary),
@@ -532,7 +538,7 @@ export default function UsersAdmin() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: JSON.stringify({
                     firstName: firstname,

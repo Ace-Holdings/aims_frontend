@@ -32,7 +32,7 @@ export default function ManagerBids() {
     const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
     const router = useRouter();
 
-    const token = localStorage.getItem("token");
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     if (!token) {
         router.push("/");
@@ -59,20 +59,24 @@ export default function ManagerBids() {
     }
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -119,7 +123,7 @@ export default function ManagerBids() {
             const response = await fetch("http://localhost:3002/bids", {
                 method: "POST",
                 headers: {
-                    "authorization": 'Bearer ' + localStorage.getItem('token'),
+                    "authorization": 'Bearer ' + token,
                 },
                 body: formData,
             });

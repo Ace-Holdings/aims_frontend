@@ -36,6 +36,8 @@ export default function ManagerInventory() {
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
     const [serialNumbers, setSerialNumbers] = useState<string[]>([]);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     const openDialog = () => {
         setIsDialogOpen(true);
     };
@@ -44,18 +46,22 @@ export default function ManagerInventory() {
         setIsDialogOpen(false);
     };
 
-
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     const handleInitialSubmit = (e: any) => {
@@ -71,8 +77,6 @@ export default function ManagerInventory() {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-
         if (!token) {
             router.push("/");
             return;
@@ -93,7 +97,6 @@ export default function ManagerInventory() {
 
     // handler function to submit inventory item creation form
     const handleFinalSubmit = async () => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             // handle missing token, e.g. redirect or throw error
@@ -114,7 +117,7 @@ export default function ManagerInventory() {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: JSON.stringify({
                     quantity: itemQuantity,

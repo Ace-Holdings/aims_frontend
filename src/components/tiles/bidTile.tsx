@@ -52,6 +52,8 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
     const [editablePreviewUrl, setEditablePreviewUrl] = useState<string | null>(null);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     const openDetailsDialog= (bid: any) => {
         setSelectedBid(bid);
         setShowDetailsDialog(true);
@@ -59,7 +61,6 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
     const router = useRouter();
 
-    const token = localStorage.getItem("token");
 
     if (!token) {
         router.push("/");
@@ -136,7 +137,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
             const response = await fetch(`http://localhost:3002/bids/${selectedBid?.bidId}`, {
                 method: "DELETE",
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    "authorization": `Bearer ` + token,
                 }
             });
 
@@ -166,7 +167,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
             const response = await fetch(`http://localhost:3002/bids/${selectedBid?.bidId}`, {
                 method: "PUT",
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: formData,
             });
@@ -188,7 +189,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
         try {
             const response = await fetch(`http://localhost:3002/bids/${bidId}/filePreview`, {
                 headers: {
-                    "authorization": "Bearer " + localStorage.getItem("token"),
+                    "authorization": "Bearer " + token,
                 },
             });
 
@@ -217,7 +218,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
         try {
             const response = await fetch(`http://localhost:3002/bids/${bidId}/editablePreview`, {
                 headers: {
-                    "authorization": "Bearer " + localStorage.getItem("token"),
+                    "authorization": "Bearer " + token,
                 },
             });
 
@@ -240,7 +241,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
         try {
             const response = await fetch(`http://localhost:3002/bids/${bidId}/file`, {
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    "authorization": `Bearer ` + token,
                 }
             });
             if (!response.ok) {

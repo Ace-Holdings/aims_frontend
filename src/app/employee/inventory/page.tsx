@@ -32,6 +32,8 @@ export default function EmployeeInventory() {
     const openDialog = () => setIsDialogOpen(true);
     const closeDialog = () => setIsDialogOpen(false);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     const handleInitialSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -43,20 +45,24 @@ export default function EmployeeInventory() {
     };
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = window.localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     const handleFinalSubmit = async () => {
-        const token = localStorage.getItem("token");
         if (!token) return;
         const decoded = jwtDecode<DecodedToken>(token);
         const user = decoded.user;
@@ -121,7 +127,6 @@ export default function EmployeeInventory() {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");

@@ -34,16 +34,21 @@ export default function AssignmentsAdmin() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
 
@@ -55,11 +60,12 @@ export default function AssignmentsAdmin() {
         setIsDialogOpen(false);
     };
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     // const toggleSidebar = () => {
     //     setIsSidebarCollapsed(!isSidebarCollapsed);
     // };
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -89,7 +95,7 @@ export default function AssignmentsAdmin() {
         try {
             const response = await fetch(`http://localhost:3002/users/search?username=${query}`, {
                 headers: {
-                    "authorization": 'Bearer ' + localStorage.getItem('token')
+                    "authorization": 'Bearer ' + token,
                 },
             });
 
@@ -139,7 +145,7 @@ export default function AssignmentsAdmin() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: JSON.stringify({
                     assignmentName: assignmentName,
@@ -173,7 +179,7 @@ export default function AssignmentsAdmin() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: JSON.stringify({
                     assignmentName: assignmentName,
@@ -197,7 +203,7 @@ export default function AssignmentsAdmin() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     },
                     body: JSON.stringify({
                         employeeIds: selectedEmployees.map(emp => emp.userId),

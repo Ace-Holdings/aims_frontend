@@ -4,6 +4,7 @@ import { useState, useEffect} from "react";
 
 export default function TotalAssignments() {
     const [assignmentsCount, setAssignmentsCount] = useState(0);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     useEffect(() => {
        try {
@@ -11,7 +12,7 @@ export default function TotalAssignments() {
               const response: any = await fetch('http://localhost:3002/assignments', {
                   method: 'GET',
                   headers: {
-                      "authorization": "Bearer " + localStorage.getItem("token")
+                      "authorization": "Bearer " + token,
                   }
               });
 

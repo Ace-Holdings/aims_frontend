@@ -49,6 +49,8 @@ const SalesTile: React.FC<SaleTileProps> = ({
     const [inventories, setInventories] = useState<Inventory[]>([]);
     const [shouldRenderDialog, setShouldRenderDialog] = useState<boolean>(false);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     useEffect(() => {
         if (showDetailsDialog) {
             setShouldRenderDialog(true);
@@ -82,7 +84,7 @@ const SalesTile: React.FC<SaleTileProps> = ({
             const response = await fetch(`http://localhost:3002/sales/${selectedSale.id}`, {
                 method: "DELETE",
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
             });
 
@@ -103,7 +105,7 @@ const SalesTile: React.FC<SaleTileProps> = ({
                 const response = await fetch(`http://localhost:3002/inventory/search?name=${query}`, {
                     method: "GET",
                     headers: {
-                        authorization: `Bearer ${localStorage.getItem("token")}`,
+                        authorization: `Bearer ` + token,
                     },
                 });
 
@@ -128,7 +130,7 @@ const SalesTile: React.FC<SaleTileProps> = ({
             const response = await fetch(`http://localhost:3002/invoices/${saleId}/file`, {
                 method: "GET",
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
             });
 

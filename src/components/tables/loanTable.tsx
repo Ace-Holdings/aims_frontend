@@ -34,10 +34,11 @@ export default function LoanTable() {
     const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     useEffect(() => {
         const fetchLoans = async () => {
             try {
-                const token = localStorage.getItem("token");
                 if (!token) return;
 
                 const decoded = jwtDecode<DecodedToken>(token);

@@ -2,12 +2,13 @@ import {useEffect, useState} from "react";
 
 export default function TotalActiveUsers() {
     const [activeUsersCount, setActiveUsersCount] = useState(0);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     useEffect(() => {
         const fetchActiveUsers = async () => {
             const response = await fetch("http://localhost:3002/assignments", {
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 }
             });
 

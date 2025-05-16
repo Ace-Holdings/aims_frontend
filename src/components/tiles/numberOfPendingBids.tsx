@@ -7,13 +7,14 @@ import { BarChart3 } from "lucide-react";
 export default function NumberOfBids() {
     const [numberOfActiveBids, setNumberOfActiveBids] = useState(0);
     const [animatedValue, setAnimatedValue] = useState(0);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     useEffect(() => {
         const fetchBids = async () => {
             try {
                 const response = await fetch("http://localhost:3002/bids", {
                     headers: {
-                        authorization: "Bearer " + localStorage.getItem("token"),
+                        authorization: "Bearer " + token,
                     },
                 });
 

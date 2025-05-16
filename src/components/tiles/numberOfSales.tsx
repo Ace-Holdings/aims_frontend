@@ -2,6 +2,7 @@ import {useState, useEffect} from "react"
 
 export default function NumberOfSales() {
     const [salesCount, setSalesCount] = useState(0);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     useEffect(() => {
        const fetchUsers = async () => {
@@ -9,7 +10,7 @@ export default function NumberOfSales() {
                const response: any = await fetch('http://localhost:3002/sales', {
                    method: 'GET',
                    headers: {
-                       "authorization": `Bearer ${localStorage.getItem("token")}`,
+                       "authorization": `Bearer ` + token,
                    }
                });
                const data = await response.json();

@@ -93,6 +93,8 @@ export default function UsersManager() {
     const [applicantResults, setApplicantResults] = useState<User[]>([]);
     const [selectedApplicant, setSelectedApplicant] = useState<User | null>(null);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     const [loans, setLoans] = useState<Loan[]>([]);
 
     // for direct grant
@@ -173,16 +175,21 @@ export default function UsersManager() {
     }
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     useEffect(() => {
@@ -191,7 +198,7 @@ export default function UsersManager() {
                 const response = await fetch('http://localhost:3002/salaries', {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "Authorization": `Bearer ` + token,
                     }
                 });
                 const data = await response.json();
@@ -204,7 +211,6 @@ export default function UsersManager() {
     }, []);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -247,7 +253,7 @@ export default function UsersManager() {
             const response = await fetch(`http://localhost:3002/salaries/${id}`, {
                 method: "PUT",
                 headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Authorization": `Bearer ` + token,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(updatedSalary),
@@ -331,7 +337,7 @@ export default function UsersManager() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    "authorization": `Bearer ` + token,
                 },
                 body: JSON.stringify({
                     firstName: firstname,
@@ -377,7 +383,7 @@ export default function UsersManager() {
         try {
             const response = await fetch(`http://localhost:3002/users/search?username=${term}`, {
                 headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Authorization": `Bearer ` + token,
                 }
             });
             if (response.ok) {

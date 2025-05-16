@@ -55,11 +55,13 @@ export default function InventoryTableEmployee() {
 
     const router = useRouter();
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     useEffect(() => {
         fetch('http://localhost:3002/inventory', {
             method: 'GET',
             headers: {
-                "authorization": 'Bearer ' + localStorage.getItem("token"),
+                "authorization": 'Bearer ' + token,
             }
         })
             .then((response) => response.json())
@@ -95,7 +97,7 @@ export default function InventoryTableEmployee() {
             const response = await fetch(`http://localhost:3002/unit/serials/${item.inventoryId}`, {
                 method: 'GET',
                 headers: {
-                    "authorization": 'Bearer ' + localStorage.getItem("token"),
+                    "authorization": 'Bearer ' + token,
                 }
             });
             if (!response.ok) {
@@ -111,7 +113,6 @@ export default function InventoryTableEmployee() {
     };
 
     const submitSerialsAndUpdateStock = async () => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -154,7 +155,7 @@ export default function InventoryTableEmployee() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": 'Bearer ' + localStorage.getItem("token"),
+                    "authorization": 'Bearer ' + token,
                 },
                 body: JSON.stringify({
                     ...updatedStock,
@@ -197,7 +198,6 @@ export default function InventoryTableEmployee() {
 
     // handler function to update stock item
     const handleUpdateStock1 = async () => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -224,7 +224,7 @@ export default function InventoryTableEmployee() {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
-                        "authorization": 'Bearer ' + localStorage.getItem("token"),
+                        "authorization": 'Bearer ' + token,
                     },
                     body: JSON.stringify({
                         ...updatedStock,

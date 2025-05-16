@@ -2,13 +2,14 @@ import {useEffect, useState} from "react";
 
 export default function InventoryWarehouse() {
     const [warehouseInventoryValue, setWarehouseInventoryValue] = useState(0);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     useEffect(() => {
         // Fetch inventory data
         fetch('http://localhost:3002/inventory', {
             method: 'GET',
             headers: {
-                "authorization": 'Bearer ' + localStorage.getItem("token"),
+                "authorization": 'Bearer ' + token,
             }
         })
             .then((response) => response.json())

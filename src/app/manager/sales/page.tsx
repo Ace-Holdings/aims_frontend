@@ -102,6 +102,7 @@ export default function ManagerSales() {
     const [selectedMonth, setSelectedMonth] = useState("");
     const [selectedDay, setSelectedDay] = useState("");
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     const [isGenerateReportModalOpen, setIsGenerateReportModalOpen] = useState(false);
 
@@ -129,20 +130,24 @@ export default function ManagerSales() {
     }
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -168,7 +173,7 @@ export default function ManagerSales() {
                 const response: any = await fetch('http://localhost:3002/sales', {
                     method: "GET",
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
 
@@ -190,7 +195,7 @@ export default function ManagerSales() {
         try {
             const response = await fetch(`http://localhost:3002/inventory/${inventoryId}`, {
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 }
             });
 
@@ -253,7 +258,7 @@ export default function ManagerSales() {
     }
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+
         if (token) {
             try {
                 const decodedToken: any = jwtDecode(token);
@@ -273,7 +278,7 @@ export default function ManagerSales() {
                 const response = await fetch(`http://localhost:3002/inventory/search?name=${query}`, {
                     method: "GET",
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
 
@@ -301,7 +306,7 @@ export default function ManagerSales() {
                     const response = await fetch(`http://localhost:3002/users/search?username=${username}`, {
                         method: "GET",
                         headers: {
-                            "authorization": `Bearer ${localStorage.getItem("token")}`,
+                            "authorization": `Bearer ` + token,
                         }
                     });
 
@@ -327,7 +332,7 @@ export default function ManagerSales() {
                 const response: any = await fetch('http://localhost:3002/sales', {
                     method: "GET",
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
 
@@ -388,7 +393,7 @@ export default function ManagerSales() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
                 body: JSON.stringify(sale),
             });
@@ -405,7 +410,7 @@ export default function ManagerSales() {
             const invoiceRes = await fetch("http://localhost:3002/invoices", {
                 method: "POST",
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
                 body: invoiceForm,
             });
@@ -418,7 +423,7 @@ export default function ManagerSales() {
                     try {
                         const invRes = await fetch(`http://localhost:3002/inventory/${item.id}`, {
                             headers: {
-                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                                authorization: `Bearer ` + token,
                             },
                         });
 
@@ -430,7 +435,7 @@ export default function ManagerSales() {
                             method: "PUT",
                             headers: {
                                 "Content-Type": "application/json",
-                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                                authorization: `Bearer ` + token,
                             },
                             body: JSON.stringify({ quantity: updatedQuantity }),
                         });
@@ -447,7 +452,7 @@ export default function ManagerSales() {
                         fetch(`http://localhost:3002/unit/${serial.unitId}`, {
                             method: "DELETE",
                             headers: {
-                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                                authorization: `Bearer ` + token,
                             },
                         }).catch((err) =>
                             console.error(`Error deleting serial ${serial.unitId}`, err)

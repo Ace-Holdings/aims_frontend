@@ -10,6 +10,7 @@ const Navbar = () => {
     const [username, setUsername] = useState("");
     const router = useRouter();
     const dialogRef = useRef<HTMLDivElement>(null);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     const toggleDialog = () => {
         setIsDialogOpen((prev) => !prev);
@@ -22,7 +23,6 @@ const Navbar = () => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
         if (token) {
             try {
                 const decodedToken: any = jwtDecode(token);
@@ -44,8 +44,10 @@ const Navbar = () => {
     }, [isDialogOpen]);
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        router.push('/');
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("token");
+            router.push('/');
+        }
     };
 
     return (

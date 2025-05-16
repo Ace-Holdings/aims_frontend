@@ -2,6 +2,7 @@ import {useState, useEffect} from "react";
 
 export default function InventoryShop() {
     const [shopInventoryValue, setShopInventoryValue] = useState(0);
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
 
     useEffect(() => {
@@ -9,7 +10,7 @@ export default function InventoryShop() {
         fetch('http://localhost:3002/inventory', {
             method: 'GET',
             headers: {
-                "authorization": `Bearer ${localStorage.getItem('token')}`,
+                "authorization": `Bearer ` + token,
             }
         })
             .then((response) => response.json())

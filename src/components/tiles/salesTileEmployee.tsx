@@ -50,6 +50,8 @@ export default function SalesTileEmployee({
     const [inventories, setInventories] = useState<Inventory[]>([]);
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     useEffect(() => {
         if (showDetailsDialog) {
             setShouldRenderDialog(true);
@@ -69,7 +71,7 @@ export default function SalesTileEmployee({
             const response = await fetch(`http://localhost:3002/invoices/${sale.id}/file`, {
                 method: "GET",
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
             });
 

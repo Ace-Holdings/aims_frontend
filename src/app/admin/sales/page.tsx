@@ -113,6 +113,8 @@ export default function AdminSales() {
 
     const [confirmedItems, setConfirmedItems] = useState<any[]>([]);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
     // filtered sales by search
     useEffect(() => {
         const filtered = sales.filter((sale: any) =>
@@ -157,7 +159,7 @@ export default function AdminSales() {
         try {
             const response = await fetch(`http://localhost:3002/inventory/${inventoryId}`, {
                 headers: {
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "authorization": `Bearer ` + token,
                 }
             });
 
@@ -201,7 +203,6 @@ export default function AdminSales() {
     }
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
         if (token) {
             try {
                 const decodedToken: any = jwtDecode(token);
@@ -221,7 +222,7 @@ export default function AdminSales() {
                 const response = await fetch(`http://localhost:3002/inventory/search?name=${query}`, {
                     method: "GET",
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
 
@@ -248,7 +249,7 @@ export default function AdminSales() {
                     const response = await fetch(`http://localhost:3002/users/search?username=${username}`, {
                         method: "GET",
                         headers: {
-                            "authorization": `Bearer ${localStorage.getItem("token")}`,
+                            "authorization": `Bearer ` + token,
                         }
                     });
 
@@ -274,7 +275,7 @@ export default function AdminSales() {
                 const response: any = await fetch('http://localhost:3002/sales', {
                     method: "GET",
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "authorization": `Bearer ` + token,
                     }
                 });
 
@@ -293,7 +294,6 @@ export default function AdminSales() {
     }, [selectedItems]);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         if (!token) {
             router.push("/");
@@ -337,16 +337,21 @@ export default function AdminSales() {
     };
 
     useEffect(() => {
-        const storedState = localStorage.getItem("adminSidebarCollapsed");
-        if (storedState !== null) {
-            setIsSidebarCollapsed(storedState === "true");
+        if (typeof window !== "undefined") {
+            const storedState = window.localStorage.getItem("adminSidebarCollapsed");
+            if (storedState !== null) {
+                setIsSidebarCollapsed(storedState === "true");
+            }
         }
     }, []);
 
     const toggleSidebar = () => {
         const newState = !isSidebarCollapsed;
         setIsSidebarCollapsed(newState);
-        localStorage.setItem("adminSidebarCollapsed", String(newState));
+
+        if (typeof window !== "undefined") {
+            window.localStorage.setItem("adminSidebarCollapsed", String(newState));
+        }
     };
 
     // handler function to submit sales transaction
@@ -369,7 +374,7 @@ export default function AdminSales() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
                 body: JSON.stringify(sale),
             });
@@ -386,7 +391,7 @@ export default function AdminSales() {
             const invoiceRes = await fetch("http://localhost:3002/invoices", {
                 method: "POST",
                 headers: {
-                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ` + token,
                 },
                 body: invoiceForm,
             });
@@ -399,7 +404,7 @@ export default function AdminSales() {
                     try {
                         const invRes = await fetch(`http://localhost:3002/inventory/${item.id}`, {
                             headers: {
-                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                                authorization: `Bearer ` + token,
                             },
                         });
 
@@ -411,7 +416,7 @@ export default function AdminSales() {
                             method: "PUT",
                             headers: {
                                 "Content-Type": "application/json",
-                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                                authorization: `Bearer ` + token,
                             },
                             body: JSON.stringify({ quantity: updatedQuantity }),
                         });
@@ -428,7 +433,7 @@ export default function AdminSales() {
                         fetch(`http://localhost:3002/unit/${serial.unitId}`, {
                             method: "DELETE",
                             headers: {
-                                authorization: `Bearer ${localStorage.getItem("token")}`,
+                                authorization: `Bearer ` + token,
                             },
                         }).catch((err) =>
                             console.error(`Error deleting serial ${serial.unitId}`, err)
