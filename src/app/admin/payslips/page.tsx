@@ -12,25 +12,68 @@ import PaySlipsTile from "@/components/tiles/payslips";
 import {jwtDecode} from "jwt-decode";
 import { useRouter } from "next/navigation";
 
+interface Payslip {
+    payslipId: number;
+    user: {
+        username: string;
+    };
+    totalEarnings: number;
+    deductions: number;
+    updatedAt: string;
+}
+
+interface Earning {
+    description: string;
+    value: number;
+}
+
+interface Deduction {
+    description: string;
+    value: number;
+}
+
+interface Loan {
+    status: string;
+    amount: number;
+    monthlyDeduction: number;
+}
+
+interface SelectedEmployee {
+    userId: number;
+    username: string;
+    jobTitle?: string;
+    category?: string;
+    accountNumber?: string;
+    branchName?: string;
+    salary: {
+        amount: number;
+    };
+    applicant: Loan[];
+}
+
+interface User {
+    userId: number;
+    username: string;
+}
 
 export default function Payslips() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [users, setUsers] = useState([]);
-    const [additionalEarnings, setAdditionalEarnings] = useState([]);
-    const [earningValue, setEarningValue] = useState("");
+    const [users, setUsers] = useState<User[]>([]);
+    const [additionalEarnings, setAdditionalEarnings] = useState<Earning[]>([]);
+    const [earningValue, setEarningValue] = useState<string>("");
     const [isValueDialogOpen, setIsValueDialogOpen] = useState(false);
     const [itemDescription, setItemDescription] = useState("");
-    const [deductions, setDeductions] = useState([]);
-    const [deductionValue, setDeductionValue] = useState("");
+    const [deductions, setDeductions] = useState<Deduction[]>([]);
+    const [deductionValue, setDeductionValue] = useState<number>(0);
     const [isDeductionValueDialogOpen, setIsDeductionValueDialogOpen] = useState(false);
     const [deductionItemDescription, setDeductionItemDescription] = useState("");
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
-    const [payslips, setPayslips] = useState([]);
-    const [filteredPaySlips, setFilteredPaySlips] = useState(payslips);
+    const [selectedEmployee, setSelectedEmployee] = useState<SelectedEmployee | null>(null);
+    const [payslips, setPayslips] = useState<Payslip[]>([]);
+    const [filteredPaySlips, setFilteredPaySlips] = useState<Payslip[]>([]);
     const [period, setPeriod] = useState(1);
 
     const [searchTerm, setSearchTerm] = useState("");
@@ -141,12 +184,12 @@ export default function Payslips() {
                     console.log(response);
                     return;
                 }
-                const data = await response.json();
+                const data: Payslip[] = await response.json();
                 setPayslips(data);
             } catch (e) {
                 console.log(e);
             }
-        }
+        };
 
         fetchPaySlips();
     }, []);
@@ -301,7 +344,10 @@ export default function Payslips() {
             + selectedEmployee.salary.amount
         ) * period;
 
-        const totalDeductions = updatedDeductions.reduce((sum, item) => sum + parseFloat(item.value), 0) * period;
+        const totalDeductions = updatedDeductions.reduce(
+            (sum, item) => sum + parseFloat(String(item.value)),
+            0
+        ) * period;
 
         const netPay = totalEarnings - totalDeductions;
 
@@ -327,7 +373,7 @@ export default function Payslips() {
         const slipPdf = generatePaySlipPdf(payslipData);
 
         const payslip = new FormData();
-        payslip.append("userId", selectedEmployee.userId);
+        payslip.append("userId", selectedEmployee.userId.toString());
         payslip.append("totalEarnings", totalEarnings.toString());
         payslip.append("period_in_months", period.toString());
         payslip.append("deductions", totalDeductions.toString());
@@ -553,7 +599,7 @@ export default function Payslips() {
                                                     {new Intl.NumberFormat('en-US', {
                                                         style: 'currency',
                                                         currency: 'MWK'
-                                                    }).format(earning.value)}</span>
+                                                    }).format(Number(earning.value))}</span>
                                         </li>
                                     ))}
                                 </ul>
