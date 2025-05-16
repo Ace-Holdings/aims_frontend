@@ -9,7 +9,7 @@ import { LuReceipt, LuLogs } from "react-icons/lu";
 import { GrDocumentPerformance } from "react-icons/gr";
 import { usePathname, useRouter } from "next/navigation";
 
-const SidebarAdmin = ({ isCollapsed, toggleSidebar }) => {
+const SidebarAdmin = ({ isCollapsed, toggleSidebar }: any) => {
     const router = useRouter();
     const currentPath = usePathname();
 

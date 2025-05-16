@@ -5,7 +5,27 @@ import DatePicker from "react-datepicker";
 import ReactDOM from "react-dom";
 import {jwtDecode} from "jwt-decode";
 import { FaRegClone } from "react-icons/fa";
+import {useRouter} from "next/navigation";
 
+interface DecodedToken {
+    user: {
+        id: string;
+        username: string;
+        roles: string[];
+    };
+    exp?: number;
+    iat?: number;
+}
+
+interface SelectedItem {
+    inventoryId: any;
+    name: string;
+    description: string;
+    quantity: number;
+    pricePerUnit: number;
+    dateAdded: string | Date;
+    location: string;
+}
 
 export default function InventoryTable() {
     const [stock, setStock] = useState([]);
@@ -15,7 +35,7 @@ export default function InventoryTable() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
 
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
@@ -36,6 +56,8 @@ export default function InventoryTable() {
     const [serialNumbersUpdate, setSerialNumbersUpdate] = useState<string[]>([]);
 
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
+
+    const router = useRouter();
 
 
 
@@ -101,7 +123,7 @@ export default function InventoryTable() {
     // function to handle the deletion of a stock item
     const handleDeleteItem = async () => {
         try {
-            const response = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
+            const response = await fetch(`http://localhost:3002/inventory/${selectedItem?.inventoryId}`, {
                 method: "DELETE",
                 headers: {
                     "authorization": 'Bearer ' + localStorage.getItem("token"),
@@ -112,7 +134,7 @@ export default function InventoryTable() {
                 console.log('could not delete item');
             }
 
-            const deleteUnitResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem.inventoryId}`, {
+            const deleteUnitResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem?.inventoryId}`, {
                 method: 'DELETE',
             });
 
@@ -129,12 +151,20 @@ export default function InventoryTable() {
     }
 
     const handleUpdateStock1 = async () => {
-        const user = jwtDecode(localStorage.getItem("token")).user;
+        const token = localStorage.getItem("token");
 
-        if (!quantity || quantity === selectedItem.quantity) {
+        if (!token) {
+            router.push("/");
+            return null;
+        }
+
+        const decoded = jwtDecode<DecodedToken>(token);
+        const user = decoded.user;
+
+        if (!quantity || quantity === selectedItem?.quantity) {
             try {
                 const updatedStock = {
-                    inventoryId: selectedItem.inventoryId,
+                    inventoryId: selectedItem?.inventoryId,
                     ...(quantity && { quantity }),
                     ...(pricePerUnit && { pricePerUnit }),
                     ...(name && { name }),
@@ -144,7 +174,7 @@ export default function InventoryTable() {
                     ...(status !== "" && { status }),
                 };
 
-                const response = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
+                const response = await fetch(`http://localhost:3002/inventory/${selectedItem?.inventoryId}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -176,7 +206,7 @@ export default function InventoryTable() {
     };
 
     // Columns Definition
-    const columns = [
+    const columns: any[] = [
         { name: "ID", selector: (row: any) => row.inventoryId, sortable: true },
         { name: "Item name", selector: (row: any) => row.name, sortable: true },
         { name: "Quantity", selector: (row: any) => row.quantity, sortable: true },
@@ -281,15 +311,23 @@ export default function InventoryTable() {
     };
 
     const submitSerialsAndUpdateStock = async () => {
-        const user = jwtDecode(localStorage.getItem("token")).user;
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+            return null;
+        }
+
+        const decoded = jwtDecode<DecodedToken>(token);
+        const user = decoded.user;
 
         try {
-            const inventoryCheckResponse = await fetch(`http://localhost:3002/unit/serials/${selectedItem.inventoryId}`);
+            const inventoryCheckResponse = await fetch(`http://localhost:3002/unit/serials/${selectedItem?.inventoryId}`);
 
             const inventoryCheckData = await inventoryCheckResponse.json();
 
             if (Array.isArray(inventoryCheckData) && inventoryCheckData.length > 0) {
-                const deleteResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem.inventoryId}`, {
+                const deleteResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem?.inventoryId}`, {
                     method: "DELETE",
                 });
 
@@ -301,7 +339,7 @@ export default function InventoryTable() {
 
             // 2. Prepare updated inventory payload
             const updatedStock = {
-                inventoryId: selectedItem.inventoryId,
+                inventoryId: selectedItem?.inventoryId,
                 ...(quantity && { quantity }),
                 ...(pricePerUnit && { pricePerUnit }),
                 ...(name && { name }),
@@ -312,7 +350,7 @@ export default function InventoryTable() {
             };
 
             // 3. UPDATE the inventory record
-            const updateResponse = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
+            const updateResponse = await fetch(`http://localhost:3002/inventory/${selectedItem?.inventoryId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -332,7 +370,7 @@ export default function InventoryTable() {
             // 4. CREATE new inventory units with updated serial numbers
             const inventoryUnits = serialNumbersUpdate.map((serialNumber) => ({
                 serialNumber,
-                inventoryId: selectedItem.inventoryId,
+                inventoryId: selectedItem?.inventoryId,
             }));
 
             const createUnitsResponse = await fetch("http://localhost:3002/unit", {
@@ -443,33 +481,40 @@ export default function InventoryTable() {
                             <h3 className="text-lg  mb-6 text-center text-black">Stock Item Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
-                                    <strong>Item name:</strong> {selectedItem.name}
+                                    <strong>Item name:</strong> {selectedItem?.name}
                                 </div>
                                 <div>
-                                    <strong>Description:</strong> {selectedItem.description}
+                                    <strong>Description:</strong> {selectedItem?.description}
                                 </div>
                                 <div>
-                                    <strong>Quantity:</strong> {selectedItem.quantity}
+                                    <strong>Quantity:</strong> {selectedItem?.quantity}
                                 </div>
                                 <div>
-                                    <strong>Unit price:</strong> {new Intl.NumberFormat("en-US", {
-                                    style: "currency",
-                                    currency: "MWK",
-                                }).format(selectedItem.pricePerUnit)}
+                                    <strong>Unit price:</strong>{" "}
+                                    {selectedItem?.pricePerUnit !== undefined
+                                        ? new Intl.NumberFormat("en-US", {
+                                            style: "currency",
+                                            currency: "MWK",
+                                        }).format(selectedItem.pricePerUnit)
+                                        : "N/A"}
+                                </div>
+
+                                <div>
+                                    <strong>Date added:</strong>{" "}
+                                    {selectedItem?.dateAdded
+                                        ? new Date(selectedItem.dateAdded).toLocaleString("en-US", {
+                                            weekday: "short",
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                        })
+                                        : "N/A"}
                                 </div>
                                 <div>
-                                    <strong>Date added:</strong> {new Date(selectedItem.dateAdded).toLocaleString("en-US", {
-                                    weekday: "short",
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                })}
-                                </div>
-                                <div>
-                                    <strong>Location:</strong> {selectedItem.location}
+                                    <strong>Location:</strong> {selectedItem?.location}
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end">

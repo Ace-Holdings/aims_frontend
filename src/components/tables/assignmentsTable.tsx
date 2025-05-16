@@ -8,12 +8,31 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ReactDOM from "react-dom";
 
+interface SelectedAssignment {
+    assignmentId: number;
+    assignmentName?: string;
+    location?: string;
+    description?: string;
+    status?: string | boolean;
+    startsAt?: string | Date;
+    endsAt?: string | Date;
+    updatedAt?: string;
+    users: any[];
+}
+
+interface Objective {
+    objectiveId: number;
+    assignmentId: number;
+    objectiveText: string;
+    isComplete: boolean;
+}
+
 export default function AssignmentsTable() {
-    const [assignments, setAssignments] = useState([])
+    const [assignments, setAssignments] = useState<SelectedAssignment[]>([])
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-    const [selectedAssignment, setSelectedAssignment] = useState(null);
+    const [selectedAssignment, setSelectedAssignment] = useState<SelectedAssignment | null>(null);
 
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
@@ -25,7 +44,7 @@ export default function AssignmentsTable() {
     const [startsAt, setStartsAt] = useState<Date | null>(null);
     const [endsAt, setEndsAt] = useState<Date | null>(null);
 
-    const [objectives, setObjectives] = useState([]);
+    const [objectives, setObjectives] = useState<Objective[]>([]);
     const [showObjectivesDialog, setShowObjectivesDialog] = useState(false);
 
 
@@ -95,7 +114,7 @@ export default function AssignmentsTable() {
     const handleUpdateAssignment = async () => {
         try {
             const updatedAssignment = {
-                assignmentId: selectedAssignment.assignmentId,
+                assignmentId: selectedAssignment?.assignmentId,
                 ...(assignmentName && { assignmentName }),
                 ...(location && { location }),
                 ...(description && { description }),
@@ -105,7 +124,7 @@ export default function AssignmentsTable() {
                 updatedAt: new Date().toISOString(),
             };
 
-            const response = await fetch(`http://localhost:3002/assignments/${selectedAssignment.assignmentId}`, {
+            const response = await fetch(`http://localhost:3002/assignments/${selectedAssignment?.assignmentId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -129,7 +148,7 @@ export default function AssignmentsTable() {
     // handler function for deleting an assignment
     const handleDeleteAssignment = async () => {
         try {
-            const response = await fetch(`http://localhost:3002/assignments/${selectedAssignment.assignmentId}`, {
+            const response = await fetch(`http://localhost:3002/assignments/${selectedAssignment?.assignmentId}`, {
                 method: "DELETE",
                 headers: {
                     "authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -147,7 +166,7 @@ export default function AssignmentsTable() {
     }
 
     // Columns Definition
-    const columns = [
+    const columns: any = [
         {
             name: "ID",
             selector: (row: any) => row.assignmentId,
@@ -257,7 +276,7 @@ export default function AssignmentsTable() {
     // States for filtering and searching
     const [filter, setFilter] = useState("All");
     const [search, setSearch] = useState("");
-    const [filteredData, setFilteredData] = useState();
+    const [filteredData, setFilteredData] = useState<any[]>([]);
 
     // Handle Filter Change
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -284,7 +303,7 @@ export default function AssignmentsTable() {
 
         setFilteredData(
             assignments.filter((item) =>
-                item.assignmentName.toLowerCase().includes(value.toLowerCase())
+                item.assignmentName?.toLowerCase().includes(value.toLowerCase())
             )
         );
     };
@@ -377,34 +396,41 @@ export default function AssignmentsTable() {
                         >
                             <h3 className="text-lg  mb-6 text-center text-black">Assignment Details</h3>
                             <div className="flex flex-wrap gap-4">
-                                <div><strong>Assignment:</strong> {selectedAssignment.assignmentName}</div>
-                                <div><strong>Location:</strong> {selectedAssignment.location}</div>
-                                <div><strong>Description:</strong> {selectedAssignment.description}</div>
+                                <div><strong>Assignment:</strong> {selectedAssignment?.assignmentName}</div>
+                                <div><strong>Location:</strong> {selectedAssignment?.location}</div>
+                                <div><strong>Description:</strong> {selectedAssignment?.description}</div>
                                 <div>
-                                    <strong>Employees to attend:</strong> {selectedAssignment.users?.map(user => user.username).join(", ")}
+                                    <strong>Employees to attend:</strong> {selectedAssignment?.users.map(user => user.username).join(", ")}
                                 </div>
-                                <div><strong>Status:</strong> {selectedAssignment.status}</div>
+                                <div><strong>Status:</strong> {selectedAssignment?.status}</div>
                                 <div>
-                                    <strong>Start At:</strong> {new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
-                                    weekday: "short",
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                })}
+                                    <strong>Start At:</strong>{" "}
+                                    {selectedAssignment?.startsAt
+                                        ? new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
+                                            weekday: "short",
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                        })
+                                        : "N/A"}
                                 </div>
+
                                 <div>
-                                    <strong>Ends At:</strong> {new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
-                                    weekday: "short",
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                })}
+                                    <strong>Ends At:</strong>{" "}
+                                    {selectedAssignment?.endsAt
+                                        ? new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
+                                            weekday: "short",
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                        })
+                                        : "N/A"}
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end">

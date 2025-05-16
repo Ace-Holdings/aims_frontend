@@ -1,21 +1,44 @@
-import React, {useEffect, useState} from "react";
-import DataTable from "react-data-table-component";
-import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
-import DatePicker from "react-datepicker";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import DataTable, { TableColumn } from "react-data-table-component";
+import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 import ReactDOM from "react-dom";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+
+interface Role {
+    name: string;
+    id: number;
+}
+
+interface Salary {
+    class: string;
+    id: number;
+}
+
+interface User {
+    userId: number;
+    firstName: string;
+    surname: string;
+    username: string;
+    email: string;
+    idNumber: string;
+    assignmentId?: number;
+    roles: Role[];
+    salary?: {
+        class: string;
+    };
+}
 
 export default function UsersTable() {
-
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState<User[]>([]);
+    const [filteredData, setFilteredData] = useState<User[]>([]);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
-
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
-    // states for updating
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [username, setUsername] = useState("");
@@ -25,17 +48,15 @@ export default function UsersTable() {
     const [idNumber, setIdNumber] = useState("");
     const [role, setRole] = useState("");
 
-
     useEffect(() => {
         fetch("http://localhost:3002/users", {
-            method: "GET",
             headers: {
-                "authorization": `Bearer ${localStorage.getItem('token')}`,
-            }
+                authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
         })
             .then((res) => res.json())
-            .then((fetchedUsers) => {
-                const sortedUsers = fetchedUsers.sort((a: any, b: any) => b.userId - a.userId);
+            .then((fetchedUsers: User[]) => {
+                const sortedUsers = fetchedUsers.sort((a, b) => b.userId - a.userId);
                 setUsers(sortedUsers);
                 setFilteredData(sortedUsers);
             });
@@ -50,239 +71,170 @@ export default function UsersTable() {
         }
     }, [showDetailsDialog]);
 
-    const openDeleteDialog = (user: any) => {
+    const handleDeleteUser = async () => {
+        if (!selectedUser) return;
+
+        try {
+            const res = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
+                method: "DELETE",
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+
+            if (!res.ok) console.error("Could not delete user");
+
+            setShowDeleteDialog(false);
+            window.location.reload();
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const openDeleteDialog = (user: User) => {
         setSelectedUser(user);
         setShowDeleteDialog(true);
     }
 
-    const openDetailDialog = (user: any) => {
-        setSelectedUser(user);
-        setShowDetailsDialog(true);
-    }
-
-    const openUpdateDialog = (user: any) => {
+    const openUpdateDialog = (user: User) => {
         setSelectedUser(user);
         setShowUpdateDialog(true);
     }
 
-    // function to delete user
-    const handleDeleteUser = async () => {
-        try {
-            const response = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
-                method: "DELETE",
-                headers: {
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
-                }
-            });
-
-            if (!response.ok) {
-                console.error('could not delete user');
-            }
-            setShowDeleteDialog(false);
-            window.location.reload();
-        } catch(e) {
-            console.log(e);
-        }
+    const openDetailDialog = (user: User) => {
+        setSelectedUser(user);
+        setShowDetailsDialog(true);
     }
 
-    // handler function to update a user
     const handleUpdateUser = async () => {
+        if (!selectedUser) return;
+
+        const updatedUser = {
+            ...(firstName && { firstName }),
+            ...(lastName && { surname: lastName }),
+            ...(username && { username }),
+            ...(password && { password }),
+            ...(email && { email }),
+            ...(salaryId && { salaryId: parseInt(salaryId) }),
+            ...(idNumber && { idNumber }),
+            ...(role && { roleId: [parseInt(role)] }),
+        };
+
         try {
-            const updatedUser = {
-                ...(firstName && { firstName }),
-                ...(lastName && {surname: lastName}),
-                ...(username && { username }),
-                ...(password && { password }),
-                ...(email && { email }),
-                ...(salaryId && {salaryId: parseInt(salaryId)}),
-                ...(idNumber && { idNumber }),
-                ...(role && {roleId: [parseInt(role)]}),
-            };
-
-            const user: any = jwtDecode(localStorage.getItem('token')).user;
-            console.log(user);
-
-            const response = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
+            const res = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify(updatedUser),
             });
 
-            if (!response.ok) {
-                console.log("Failed to user");
-                return;
-            }
+            if (!res.ok) console.error("Failed to update user");
 
             setShowUpdateDialog(false);
             window.location.reload();
-        } catch (error) {
-            console.log(error);
+        } catch (e) {
+            console.error(e);
         }
     };
 
-
-    // Columns Definition
-    const columns = [
+    const columns: TableColumn<User>[] = [
         {
             name: "ID",
-            selector: (row: any) => row.userId,
+            selector: (row) => row.userId,
             sortable: true,
         },
         {
             name: "Firstname",
-            selector: (row: any) => row.firstName,
+            selector: (row) => row.firstName,
             sortable: true,
         },
         {
             name: "Lastname",
-            selector: (row: any) => row.surname,
+            selector: (row) => row.surname,
             sortable: true,
         },
         {
             name: "Username",
-            selector: (row: any) => row.username,
-
+            selector: (row) => row.username,
         },
         {
-            name: "email",
-            selector: (row: any) => row.email,
+            name: "Email",
+            selector: (row) => row.email,
         },
         {
             name: "Role",
-            selector: (row: any) =>
-                row.roles && row.roles.length > 0
-                    ? row.roles.map((role: any) => role.name).join(", ")
-                    : "No Roles",
+            selector: (row) => row.roles?.map((r) => r.name).join(", ") || "No Roles",
             sortable: true,
         },
         {
             name: "Actions",
-            selector: (row: any) => (
+            cell: (row) => (
                 <div className="flex">
-                    <button
-                        className="text-green-600 hover:text-green-800 transition-colors duration-200
-               p-2 hover:bg-green-100 bg-gray-200 rounded-md"
-                        onClick={() => {openUpdateDialog(row)}}
-                    >
-                        <FiEdit className="size-6"/>
+                    <button className="text-green-600 p-2 bg-gray-200 rounded-md" onClick={() => openUpdateDialog(row)}>
+                        <FiEdit className="size-6" />
                     </button>
-                    <div className="w-2"/>
-                    <button
-                        className="text-blue-600 p-2 hover:text-blue-800 transition-colors hover:bg-blue-100 duration-200 bg-gray-200 rounded-md"
-                        title="View Details"
-                        onClick={() => {
-                            openDetailDialog(row)
-                        }}
-                    >
-                        <FiEye className="w-5 h-5"/>
+                    <div className="w-2" />
+                    <button className="text-blue-600 p-2 bg-gray-200 rounded-md" onClick={() => openDetailDialog(row)}>
+                        <FiEye className="w-5 h-5" />
                     </button>
-                    <div className="w-2"/>
-                    <button
-                        className="text-red-600 p-2 hover:text-red-800 transition-colors duration-200 hover:bg-red-100 bg-gray-200 rounded-md"
-                        title="Delete User"
-                        onClick={() => openDeleteDialog(row)}
-                    >
-                        <FiTrash2 className="w-5 h-5"/>
+                    <div className="w-2" />
+                    <button className="text-red-600 p-2 bg-gray-200 rounded-md" onClick={() => openDeleteDialog(row)}>
+                        <FiTrash2 className="w-5 h-5" />
                     </button>
                 </div>
             ),
             ignoreRowClick: true,
             allowOverflow: true,
             button: true,
-            minWidth: "250px"
+            minWidth: "250px",
         },
     ];
 
-    // custom styles for table
-    const customStyles = {
-        headCells: {
-            style: {
-                fontWeight: "bold",
-                fontSize: "13px",
-            },
-        },
-
-    };
-
-    // States for filtering and searching
-    const [filter, setFilter] = useState("All");
-    const [search, setSearch] = useState("");
-    const [filteredData, setFilteredData] = useState(users);
-
-    // Handle Filter Change
-    const handleFilterChange = (e: any) => {
+    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         setFilter(value);
 
         const filtered =
             value === "All"
                 ? users
-                : users.filter((item: any) => {
-                    const status = item.assignment?.status;
-                    return value === "true"
-                        ? status === true
-                        : status === false || status === null || item.assignment === null;
-                });
+                : users.filter((user) =>
+                    value === "true" ? user.assignmentId !== null : user.assignmentId === null
+                );
 
-        setFilteredData(
-            filtered.filter((item: any) =>
-                item.username.toLowerCase().includes(search.toLowerCase())
-            )
-        );
+        setFilteredData(filtered.filter((u) => u.username.toLowerCase().includes(search.toLowerCase())));
     };
 
-    // Handle Search Change
-    const handleSearchChange = (e: any) => {
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearch(value);
 
-        const filtered = users.filter((item: any) =>
-            item.username.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredData(
-            filter === "All"
-                ? filtered
-                : filtered.filter((item: any) => item.status === filter)
-        );
+        const filtered = users.filter((u) => u.username.toLowerCase().includes(value.toLowerCase()));
+        setFilteredData(filter === "All" ? filtered : filtered.filter((u) => u.assignmentId === null));
     };
+
+    const [filter, setFilter] = useState("All");
+    const [search, setSearch] = useState("");
 
     return (
         <>
             <div className="p-4">
-                <div className="flex justify-between items-center mb-4 text-black">
-                    {/* Filter Dropdown */}
-                    <select
-                        value={filter}
-                        onChange={handleFilterChange}
-                        className="border border-gray-300 rounded-md px-2 py-1"
-                    >
+                <div className="flex justify-between mb-4">
+                    <select value={filter} onChange={handleFilterChange} className="border px-2 py-1">
                         <option value="All">All</option>
                         <option value="true">Active</option>
                         <option value="false">Inactive</option>
                     </select>
-
-                    {/* Search Bar */}
                     <input
-                        type="text"
                         value={search}
                         onChange={handleSearchChange}
+                        className="border px-2 py-1"
                         placeholder="Search by name..."
-                        className="border border-gray-300 rounded-md px-2 py-1"
                     />
                 </div>
 
-                {/* DataTable Component */}
-                <DataTable
-                    columns={columns}
-                    data={filteredData}
-                    customStyles={customStyles}
-                    pagination
-                    highlightOnHover
-                    striped
-                />
+                <DataTable columns={columns} data={filteredData} pagination highlightOnHover striped />
             </div>
 
             {ReactDOM.createPortal(
@@ -332,28 +284,28 @@ export default function UsersTable() {
                             <h3 className="text-lg  mb-6 text-center text-black">User Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
-                                    <strong>First name:</strong> {selectedUser.firstName}
+                                    <strong>First name:</strong> {selectedUser?.firstName}
                                 </div>
                                 <div>
-                                    <strong>Last name:</strong> {selectedUser.surname}
+                                    <strong>Last name:</strong> {selectedUser?.surname}
                                 </div>
                                 <div>
-                                    <strong>username:</strong> {selectedUser.username}
+                                    <strong>username:</strong> {selectedUser?.username}
                                 </div>
                                 <div>
-                                    <strong>email:</strong> {selectedUser.email}
+                                    <strong>email:</strong> {selectedUser?.email}
                                 </div>
                                 <div>
-                                    <strong>ID number:</strong> {selectedUser.idNumber}
+                                    <strong>ID number:</strong> {selectedUser?.idNumber}
                                 </div>
                                 <div>
-                                    <strong>Assignment ID:</strong> {selectedUser.assignmentId}
+                                    <strong>Assignment ID:</strong> {selectedUser?.assignmentId}
                                 </div>
                                 <div>
-                                    <strong>Roles:</strong> {selectedUser.roles.map(role => role.name).join(", ")}
+                                    <strong>Roles:</strong> {selectedUser?.roles.map(role => role.name).join(", ")}
                                 </div>
                                 <div>
-                                    <strong>Salary bracket:</strong> {selectedUser?.salary.class}
+                                    <strong>Salary bracket:</strong> {selectedUser?.salary?.class ?? "N/A"}
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end">

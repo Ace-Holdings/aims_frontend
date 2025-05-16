@@ -2,11 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { ApexOptions } from "apexcharts";
 
 const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
+interface Sale {
+    amount: number;
+    timestamp: string;
+}
+
 export default function SalesBarChart() {
-    const [chartData, setChartData] = useState({
+    const [chartData, setChartData] = useState<{
+        series: { name: string; data: number[] }[];
+        options: ApexOptions;
+    }>({
         series: [{ name: "Sales Amount", data: new Array(12).fill(0) }],
         options: {
             chart: {
@@ -49,22 +58,21 @@ export default function SalesBarChart() {
         },
     });
 
-    // Fetch sales data from the API
     useEffect(() => {
         async function fetchSales() {
             try {
                 const response = await fetch("http://localhost:3002/sales", {
                     headers: {
-                        "authorization": `Bearer ${localStorage.getItem("token")}`,
-                    }
+                        authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
                 });
+
                 if (!response.ok) throw new Error("Failed to fetch data");
 
-                const data = await response.json();
-
+                const data: Sale[] = await response.json();
                 const monthlySales = new Array(12).fill(0);
 
-                data.forEach((sale: any) => {
+                data.forEach((sale) => {
                     const date = new Date(sale.timestamp);
                     const monthIndex = date.getMonth();
                     monthlySales[monthIndex] += sale.amount;

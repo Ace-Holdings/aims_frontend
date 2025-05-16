@@ -2,8 +2,15 @@ import {useEffect, useState} from "react";
 import BidTileEmployee from "@/components/tiles/bidTileEmployee";
 import BidTile from "@/components/tiles/bidTile";
 
+interface Bid {
+    bidId: any;
+    description: string;
+    deadline: Date;
+    status: boolean;
+}
+
 export default function PreviousBidsEmployee() {
-    const [previousBids, setPreviousBids] = useState([]);
+    const [previousBids, setPreviousBids] = useState<Bid[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -41,7 +48,15 @@ export default function PreviousBidsEmployee() {
                 </div>
             ) : (
                 previousBids.map((bid) => (
-                    <BidTileEmployee key={bid.id} bid={bid} />
+                    <BidTile
+                        key={bid.bidId}
+                        bid={{
+                            id: bid.bidId,
+                            description: bid.description,
+                            deadline: bid.deadline,
+                            status: bid.status,
+                        }}
+                    />
                 ))
             )}
         </div>

@@ -4,6 +4,27 @@ import DataTable from "react-data-table-component";
 import ReactDOM from "react-dom";
 import DatePicker from "react-datepicker";
 import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
+
+interface DecodedToken {
+    user: {
+        id: string;
+        username: string;
+        roles: string[];
+    };
+    exp?: number;
+    iat?: number;
+}
+
+interface SelectedItem {
+    inventoryId: any;
+    name: string;
+    description: string;
+    quantity: number;
+    pricePerUnit: number;
+    dateAdded: string | Date;
+    location: string;
+}
 
 export default function InventoryTableEmployee() {
     const [stock, setStock] = useState([]);
@@ -12,7 +33,7 @@ export default function InventoryTableEmployee() {
     const [search, setSearch] = useState("");
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
 
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
@@ -32,7 +53,7 @@ export default function InventoryTableEmployee() {
 
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
 
-
+    const router = useRouter();
 
     useEffect(() => {
         fetch('http://localhost:3002/inventory', {
@@ -90,15 +111,23 @@ export default function InventoryTableEmployee() {
     };
 
     const submitSerialsAndUpdateStock = async () => {
-        const user = jwtDecode(localStorage.getItem("token")).user;
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            router.push("/");
+            return null;
+        }
+
+        const decoded = jwtDecode<DecodedToken>(token);
+        const user = decoded.user;
 
         try {
-            const inventoryCheckResponse = await fetch(`http://localhost:3002/unit/serials/${selectedItem.inventoryId}`);
+            const inventoryCheckResponse = await fetch(`http://localhost:3002/unit/serials/${selectedItem?.inventoryId}`);
 
             const inventoryCheckData = await inventoryCheckResponse.json();
 
             if (Array.isArray(inventoryCheckData) && inventoryCheckData.length > 0) {
-                const deleteResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem.inventoryId}`, {
+                const deleteResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem?.inventoryId}`, {
                     method: "DELETE",
                 });
 
@@ -110,7 +139,7 @@ export default function InventoryTableEmployee() {
 
             // 2. Prepare updated inventory payload
             const updatedStock = {
-                inventoryId: selectedItem.inventoryId,
+                inventoryId: selectedItem?.inventoryId,
                 ...(quantity && { quantity }),
                 ...(pricePerUnit && { pricePerUnit }),
                 ...(name && { name }),
@@ -121,7 +150,7 @@ export default function InventoryTableEmployee() {
             };
 
             // 3. UPDATE the inventory record
-            const updateResponse = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
+            const updateResponse = await fetch(`http://localhost:3002/inventory/${selectedItem?.inventoryId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -141,7 +170,7 @@ export default function InventoryTableEmployee() {
             // 4. CREATE new inventory units with updated serial numbers
             const inventoryUnits = serialNumbersUpdate.map((serialNumber) => ({
                 serialNumber,
-                inventoryId: selectedItem.inventoryId,
+                inventoryId: selectedItem?.inventoryId,
             }));
 
             const createUnitsResponse = await fetch("http://localhost:3002/unit", {
@@ -168,12 +197,20 @@ export default function InventoryTableEmployee() {
 
     // handler function to update stock item
     const handleUpdateStock1 = async () => {
-        const user = jwtDecode(localStorage.getItem("token")).user;
+        const token = localStorage.getItem("token");
 
-        if (!quantity || quantity === selectedItem.quantity) {
+        if (!token) {
+            router.push("/");
+            return null;
+        }
+
+        const decoded = jwtDecode<DecodedToken>(token);
+        const user = decoded.user;
+
+        if (!quantity || quantity === selectedItem?.quantity) {
             try {
                 const updatedStock = {
-                    inventoryId: selectedItem.inventoryId,
+                    inventoryId: selectedItem?.inventoryId,
                     ...(quantity && { quantity }),
                     ...(pricePerUnit && { pricePerUnit }),
                     ...(name && { name }),
@@ -183,7 +220,7 @@ export default function InventoryTableEmployee() {
                     ...(status !== "" && { status }),
                 };
 
-                const response = await fetch(`http://localhost:3002/inventory/${selectedItem.inventoryId}`, {
+                const response = await fetch(`http://localhost:3002/inventory/${selectedItem?.inventoryId}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -215,7 +252,7 @@ export default function InventoryTableEmployee() {
     };
 
     // Columns Definition
-    const columns = [
+    const columns: any[] = [
         { name: "ID", selector: (row: any) => row.inventoryId, sortable: true },
         { name: "Item name", selector: (row: any) => row.name, sortable: true },
         { name: "Quantity", selector: (row: any) => row.quantity, sortable: true },
@@ -360,36 +397,43 @@ export default function InventoryTableEmployee() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg  mb-6 text-center ">Stock Item Details</h3>
+                            <h3 className="text-lg  mb-6 text-center text-black">Stock Item Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
-                                    <strong>Item name:</strong> {selectedItem.name}
+                                    <strong>Item name:</strong> {selectedItem?.name}
                                 </div>
                                 <div>
-                                    <strong>Description:</strong> {selectedItem.description}
+                                    <strong>Description:</strong> {selectedItem?.description}
                                 </div>
                                 <div>
-                                    <strong>Quantity:</strong> {selectedItem.quantity}
+                                    <strong>Quantity:</strong> {selectedItem?.quantity}
                                 </div>
                                 <div>
-                                    <strong>Unit price:</strong> {new Intl.NumberFormat("en-US", {
-                                    style: "currency",
-                                    currency: "MWK",
-                                }).format(selectedItem.pricePerUnit)}
+                                    <strong>Unit price:</strong>{" "}
+                                    {selectedItem?.pricePerUnit !== undefined
+                                        ? new Intl.NumberFormat("en-US", {
+                                            style: "currency",
+                                            currency: "MWK",
+                                        }).format(selectedItem.pricePerUnit)
+                                        : "N/A"}
+                                </div>
+
+                                <div>
+                                    <strong>Date added:</strong>{" "}
+                                    {selectedItem?.dateAdded
+                                        ? new Date(selectedItem.dateAdded).toLocaleString("en-US", {
+                                            weekday: "short",
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                        })
+                                        : "N/A"}
                                 </div>
                                 <div>
-                                    <strong>Date added:</strong> {new Date(selectedItem.dateAdded).toLocaleString("en-US", {
-                                    weekday: "short",
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                })}
-                                </div>
-                                <div>
-                                    <strong>Location:</strong> {selectedItem.location}
+                                    <strong>Location:</strong> {selectedItem?.location}
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end">
@@ -421,21 +465,34 @@ export default function InventoryTableEmployee() {
                         <h3 className="text-lg  mb-4 text-center ">Update Stock Item</h3>
                         <form>
                             <div className="mb-4">
-                                <label>Quantity</label>
+                                <label className="block mb-2">Quantity</label>
                                 <input
                                     type="number"
-                                    className="border p-2 w-full bg-white"
                                     value={quantity}
-                                    onChange={(e) => setQuantity(e.target.value)}
+                                    onChange={(e) => {
+                                        const newQty = parseInt(e.target.value, 10);
+                                        if (!isNaN(newQty)) {
+                                            setQuantity(newQty);
+                                        }
+                                    }}
+                                    className="p-2 border border-gray-300 rounded-lg w-full"
                                 />
                             </div>
                             <div className="mb-4">
-                                <label>Price per unit</label>
+                                <label htmlFor="pricePerUnit" className="block text-gray-700 font-medium mb-2">Price Per Unit</label>
                                 <input
-                                    type="number"
-                                    className="border p-2 w-full bg-white"
-                                    value={pricePerUnit}
-                                    onChange={(e) => setPricePerUnit(e.target.value)}
+                                    type="text"
+                                    id="pricePerUnit"
+                                    value={pricePerUnit.toLocaleString("en-US")}
+                                    onChange={(e) => {
+                                        const rawValue = e.target.value.replace(/,/g, "");
+                                        if (!isNaN(Number(rawValue))) {
+                                            setPricePerUnit(Number(rawValue));
+                                        }
+                                    }}
+                                    className="w-full p-2 border border-gray-300 rounded-lg"
+                                    placeholder="Price per item"
+                                    inputMode="numeric"
                                 />
                             </div>
                             <div className="mb-4">

@@ -5,12 +5,21 @@ import React, {useEffect, useState} from "react";
 import {FiEdit, FiEye, FiTrash2} from "react-icons/fi";
 import ReactDOM from "react-dom";
 
+interface LogEntry {
+    id: number;
+    username: string;
+    level: string;
+    message: string;
+    timestamp: string;
+}
+
 export default function LogTable() {
-    const [filteredData, setFilteredData] = useState();
-    const [selectedLog, setSelectedLog] = useState(null);
+    const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
+    const [logs, setLogs] = useState<LogEntry[]>([]);
+    const [filteredData, setFilteredData] = useState<LogEntry[]>([]);
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const [logs, setLogs] = useState([]);
+
 
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
@@ -64,7 +73,7 @@ export default function LogTable() {
 
     const handleDeleteLog = async () => {
         try {
-            const response = await fetch(`http://localhost:3002/logs/${selectedLog.id}`, {
+            const response = await fetch(`http://localhost:3002/logs/${selectedLog?.id}`, {
                 method: "DELETE",
                 headers: {
                     "authorization": "Bearer " + localStorage.getItem("token"),
@@ -101,7 +110,7 @@ export default function LogTable() {
         fetchLogs();
     }, [])
 
-    const columns = [
+    const columns: any[] = [
         {
             name: "ID",
             selector: (row: any) => row.id,
@@ -214,16 +223,16 @@ export default function LogTable() {
                             <h3 className="text-lg mb-6 text-center text-black">Log Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
-                                    <strong>ID:</strong> {selectedLog.id}
+                                    <strong>ID:</strong> {selectedLog?.id}
                                 </div>
                                 <div>
-                                    <strong>Initiator:</strong> {selectedLog.username}
+                                    <strong>Initiator:</strong> {selectedLog?.username}
                                 </div>
                                 <div>
-                                    <strong>Action:</strong> {selectedLog.message}
+                                    <strong>Action:</strong> {selectedLog?.message}
                                 </div>
                                 <div>
-                                    <strong>Level:</strong> {selectedLog.level}
+                                    <strong>Level:</strong> {selectedLog?.level}
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end">
