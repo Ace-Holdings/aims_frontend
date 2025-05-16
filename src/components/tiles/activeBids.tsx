@@ -1,8 +1,15 @@
 import BidTile from "./bidTile"
 import { useEffect, useState } from "react";
 
+interface Bid {
+    bidId: any;
+    description: string;
+    deadline: Date;
+    status: boolean;
+}
+
 export default function ActiveBids() {
-    const [activeBids, setActiveBids] = useState([]);
+    const [activeBids, setActiveBids] = useState<Bid[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -42,7 +49,15 @@ export default function ActiveBids() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {activeBids.map((bid) => (
-                        <BidTile key={bid.bidId} bid={bid} />
+                        <BidTile
+                            key={bid.bidId}
+                            bid={{
+                                id: bid.bidId,
+                                description: bid.description,
+                                deadline: bid.deadline,
+                                status: bid.status,
+                            }}
+                        />
                     ))}
                 </div>
             )}

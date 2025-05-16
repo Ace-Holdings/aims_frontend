@@ -103,7 +103,6 @@ export default function AdminInventory() {
         const decoded = jwtDecode<DecodedToken>(token);
         const user = decoded.user;
 
-        // 🚨 Validate all serial numbers are filled
         if (serialNumbers.some(sn => !sn.trim())) {
             alert("Please fill out all serial number fields before submitting.");
             return;

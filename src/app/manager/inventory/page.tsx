@@ -12,6 +12,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/navigation";
 
+interface DecodedToken {
+    user: {
+        id: string;
+        username: string;
+        roles: string[];
+    };
+    exp?: number;
+    iat?: number;
+}
+
 export default function ManagerInventory() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -83,9 +93,16 @@ export default function ManagerInventory() {
 
     // handler function to submit inventory item creation form
     const handleFinalSubmit = async () => {
-        const user = jwtDecode(localStorage.getItem('token')).user;
+        const token = localStorage.getItem("token");
 
-        // 🚨 Validate all serial numbers are filled
+        if (!token) {
+            // handle missing token, e.g. redirect or throw error
+            throw new Error("Token not found");
+        }
+
+        const decoded = jwtDecode<DecodedToken>(token);
+        const user = decoded.user;
+
         if (serialNumbers.some(sn => !sn.trim())) {
             alert("Please fill out all serial number fields before submitting.");
             return;

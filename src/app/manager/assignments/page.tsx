@@ -47,7 +47,7 @@ export default function AssignmentsManager() {
         setIsObjectivePromptOpen(true);
     }
 
-    const handleObjectivesListOpen = (e) => {
+    const handleObjectivesListOpen = (e: any) => {
         e.preventDefault();
         setIsObjectivePromptOpen(false);
         setIsObjectiveListPromptOpen(true);

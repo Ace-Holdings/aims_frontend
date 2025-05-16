@@ -11,6 +11,16 @@ import DatePicker from "react-datepicker";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/navigation";
 
+interface DecodedToken {
+    user: {
+        id: string;
+        username: string;
+        roles: string[];
+    };
+    exp?: number;
+    iat?: number;
+}
+
 export default function ManagerBids() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -22,7 +32,15 @@ export default function ManagerBids() {
     const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
     const router = useRouter();
 
-    const user = jwtDecode(localStorage.getItem("token")).user;
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        router.push("/");
+        return null;
+    }
+
+    const decoded = jwtDecode<DecodedToken>(token);
+    const user = decoded.user;
 
     const openDialog = () => {
         setIsDialogOpen(true);
@@ -83,11 +101,18 @@ export default function ManagerBids() {
         }
 
         const formData = new FormData();
+
+        if (!(deadline instanceof Date) || isNaN(deadline.getTime())) {
+            console.error("Invalid or missing deadline.");
+            return;
+        }
+
         formData.append("description", description);
         formData.append("deadline", deadline.toISOString());
         formData.append("bidDocumentFile", bidFile);
         formData.append("editableFileForBid", editFile);
-        formData.append("lastModifiedBy", user);
+        formData.append("lastModifiedBy", user.username);
+
 
 
         try {

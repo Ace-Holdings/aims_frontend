@@ -1,15 +1,20 @@
 import BidTile from "./bidTile";
 import {useEffect, useState} from "react";
 
-
+interface Bid {
+    bidId: any;
+    description: string;
+    deadline: Date;
+    status: boolean;
+}
 
 export default function PreviousBids() {
-    const [previousBids, setPreviousBids] = useState([]);
+    const [previousBids, setPreviousBids] = useState<Bid[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchBids = async () => {
-            setLoading(true);  // Set loading to true before fetching
+            setLoading(true);
             try {
                 const response = await fetch('http://localhost:3002/bids', {
                     method: 'GET',
@@ -27,7 +32,7 @@ export default function PreviousBids() {
             } catch (e) {
                 console.log(e);
             } finally {
-                setLoading(false);  // Set loading to false once data is fetched
+                setLoading(false);
             }
         }
         fetchBids();
@@ -37,12 +42,19 @@ export default function PreviousBids() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 font-custom mb-5">
             {loading ? (
                 <div className="w-full h-48 flex justify-center items-center">
-                    {/* Tailwind CSS Spinner with longer blue line and transparent outline */}
                     <div className="w-20 h-20 border-8 border-t-8 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
                 </div>
             ) : (
-                previousBids.map((bid) => (
-                    <BidTile key={bid.id} bid={bid} />
+                previousBids.map((bid: any) => (
+                    <BidTile
+                        key={bid.bidId}
+                        bid={{
+                            id: bid.bidId,
+                            description: bid.description,
+                            deadline: bid.deadline,
+                            status: bid.status,
+                        }}
+                    />
                 ))
             )}
         </div>

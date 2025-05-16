@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
+import { useEffect, useState, ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import {jwtDecode} from "jwt-decode";
 import Navbar from "@/components/layout/navbar";
 import InventoryShop from "@/components/tiles/inventoryShop";
@@ -11,36 +11,32 @@ import "react-datepicker/dist/react-datepicker.css";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
 import InventoryTableEmployee from "@/components/tables/inventoryTableEmployee";
 
+interface DecodedToken {
+    user: string;
+}
+
 export default function EmployeeInventory() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-    const [itemQuantity, setItemQuantity] = useState(0);
-    const [itemPrice, setItemPrice] = useState(0);
-    const [itemName, setItemName] = useState("");
-    const [itemDescription, setItemDescription] = useState("");
-    const [location, setLocation] = useState("");
+    const [itemQuantity, setItemQuantity] = useState<number>(0);
+    const [itemPrice, setItemPrice] = useState<number>(0);
+    const [itemName, setItemName] = useState<string>("");
+    const [itemDescription, setItemDescription] = useState<string>("");
+    const [location, setLocation] = useState<string>("");
     const router = useRouter();
 
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
     const [serialNumbers, setSerialNumbers] = useState<string[]>([]);
 
-    const openDialog = () => {
-        setIsDialogOpen(true);
-    };
+    const openDialog = () => setIsDialogOpen(true);
+    const closeDialog = () => setIsDialogOpen(false);
 
-    const closeDialog = () => {
-        setIsDialogOpen(false);
-    };
-
-
-    const handleInitialSubmit = (e: any) => {
+    const handleInitialSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Prepare empty serial fields based on quantity
-        const quantityNum = Number(itemQuantity);
-        if (quantityNum > 0) {
-            setSerialNumbers(Array(quantityNum).fill(""));
+        if (itemQuantity > 0) {
+            setSerialNumbers(Array(itemQuantity).fill(""));
             setIsDialogOpen(false);
             setIsSerialDialogOpen(true);
         }
@@ -60,34 +56,35 @@ export default function EmployeeInventory() {
     };
 
     const handleFinalSubmit = async () => {
-        const user = jwtDecode(localStorage.getItem('token')).user;
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const decoded = jwtDecode<DecodedToken>(token);
+        const user = decoded.user;
 
-        // 🚨 Validate all serial numbers are filled
         if (serialNumbers.some(sn => !sn.trim())) {
             alert("Please fill out all serial number fields before submitting.");
             return;
         }
 
         try {
-            // Step 1: Create the inventory record
-            const inventoryResponse = await fetch('http://localhost:3002/inventory', {
-                method: 'POST',
+            const inventoryResponse = await fetch("http://localhost:3002/inventory", {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "authorization": `Bearer ${localStorage.getItem("token")}`,
+                    authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     quantity: itemQuantity,
                     pricePerUnit: itemPrice,
                     description: itemDescription,
                     name: itemName,
-                    location: location,
+                    location,
                     lastModifiedBy: user,
-                })
+                }),
             });
 
             if (!inventoryResponse.ok) {
-                console.error('Failed to create inventory');
+                console.error("Failed to create inventory");
                 return;
             }
 
@@ -95,22 +92,21 @@ export default function EmployeeInventory() {
             const inventoryId = inventoryData.inventoryId || inventoryData.id || inventoryData._id;
 
             if (!inventoryId) {
-                console.error('No inventory ID returned');
+                console.error("No inventory ID returned");
                 return;
             }
 
-            // Step 2: Submit units with valid serials
-            const inventoryUnits = serialNumbers.map((serialNumber) => ({
+            const inventoryUnits = serialNumbers.map(serialNumber => ({
                 serialNumber: serialNumber.trim(),
-                inventoryId
+                inventoryId,
             }));
 
-            const inventoryUnitResponse = await fetch('http://localhost:3002/unit', {
-                method: 'POST',
+            const inventoryUnitResponse = await fetch("http://localhost:3002/unit", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(inventoryUnits)
+                body: JSON.stringify(inventoryUnits),
             });
 
             if (!inventoryUnitResponse.ok) {
@@ -119,7 +115,6 @@ export default function EmployeeInventory() {
             }
 
             window.location.reload();
-
         } catch (e) {
             console.error("Submission error:", e);
         }
@@ -135,7 +130,7 @@ export default function EmployeeInventory() {
 
         try {
             const decodedToken = jwtDecode(token) as { roles?: string[] };
-            const roles: string[] = decodedToken.roles || [];
+            const roles = decodedToken.roles || [];
 
             if (!roles.includes("ROLE_EMPLOYEE")) {
                 router.push("/");
@@ -144,20 +139,19 @@ export default function EmployeeInventory() {
             console.log(e);
             router.push("/");
         }
-    }, [router])
+    }, [router]);
 
-    return(
+    return (
         <>
             <div className={`h-screen flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
                 <div
-                    className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
-                    <EmployeeSidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
+                    className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? "w-16" : "w-64"} z-10 shadow-md transition-all duration-300`}
+                >
+                    <EmployeeSidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} />
                 </div>
 
-                <div
-                    className={`flex-1 flex flex-col ${isSidebarCollapsed ? "ml-16" : "ml-64"} transition-all duration-300`}>
-
-                    <div className="bg-white  p-4 sticky top-0 z-10">
+                <div className={`flex-1 flex flex-col ${isSidebarCollapsed ? "ml-16" : "ml-64"} transition-all duration-300`}>
+                    <div className="bg-white p-4 sticky top-0 z-10">
                         <header className="flex gap-2 items-center text-gray-600">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -175,19 +169,18 @@ export default function EmployeeInventory() {
                             </svg>
                             <span>Inventory</span>
                             <div className="ml-auto">
-                                <Navbar/>
+                                <Navbar />
                             </div>
-
                         </header>
                     </div>
 
                     <div className="ml-6 mt-10 font-custom">
                         <div className="flex-row gap-4 flex">
-                            <InventoryShop/>
-                            <div className="w-10"/>
-                            <InventoryWarehouse/>
+                            <InventoryShop />
+                            <div className="w-10" />
+                            <InventoryWarehouse />
                         </div>
-                        <div className="h-7"/>
+                        <div className="h-7" />
                         <button
                             className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
                             onClick={openDialog}
@@ -200,102 +193,113 @@ export default function EmployeeInventory() {
                                 stroke="currentColor"
                                 className="w-5 h-5"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 4.5v15m7.5-7.5h-15"
-                                />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                             Add stock item
                         </button>
                     </div>
-                    <div className="h-7"/>
-                    <InventoryTableEmployee/>
+                    <div className="h-7" />
+                    <InventoryTableEmployee />
                 </div>
             </div>
 
-            {/* modal for creating inventory item */}
             <div
                 className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
-                    isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    isDialogOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 }`}
             >
                 <div
                     className={`bg-white p-6 rounded-lg shadow-lg w-1/3 transform transition-all duration-300 ${
-                        isDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        isDialogOpen ? "scale-100 translate-y-0 opacity-100" : "scale-95 -translate-y-4 opacity-0"
                     }`}
                 >
-                    <h2 className="text-lg font-medium mb-4 text-center text-bold">Add stock item</h2>
+                    <h2 className="text-lg font-medium mb-4 text-center font-bold">Add stock item</h2>
                     <div className="h-2" />
-                    <form>
+                    <form onSubmit={handleInitialSubmit}>
                         <div className="mb-4">
-                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Quantity</label>
+                            <label htmlFor="quantity" className="block text-gray-700 font-medium mb-2">
+                                Quantity
+                            </label>
                             <input
                                 value={itemQuantity}
-                                onChange={(e: any) => setItemQuantity(e.target.value)}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setItemQuantity(Number(e.target.value))}
                                 type="number"
-                                id="title"
+                                id="quantity"
                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                 placeholder="Item quantity"
+                                min={1}
+                                required
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Price Per Unit</label>
+                            <label htmlFor="price" className="block text-gray-700 font-medium mb-2">
+                                Price Per Unit
+                            </label>
                             <input
                                 value={itemPrice.toLocaleString("en-US")}
-                                onChange={(e: any) => {
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                     const rawValue = e.target.value.replace(/,/g, "");
                                     if (!isNaN(Number(rawValue))) {
                                         setItemPrice(Number(rawValue));
                                     }
                                 }}
                                 type="text"
-                                id="title"
+                                id="price"
                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                 placeholder="Price per item"
+                                required
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Item Name</label>
+                            <label htmlFor="itemName" className="block text-gray-700 font-medium mb-2">
+                                Item Name
+                            </label>
                             <input
                                 value={itemName}
-                                onChange={(e: any) => setItemName(e.target.value)}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setItemName(e.target.value)}
                                 type="text"
-                                id="title"
+                                id="itemName"
                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                 placeholder="Name of item"
+                                required
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label htmlFor="title" className="block text-gray-700 font-medium mb-2">Description</label>
+                            <label htmlFor="itemDescription" className="block text-gray-700 font-medium mb-2">
+                                Description
+                            </label>
                             <input
                                 value={itemDescription}
-                                onChange={(e: any) => setItemDescription(e.target.value)}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setItemDescription(e.target.value)}
                                 type="text"
-                                id="title"
+                                id="itemDescription"
                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                 placeholder="Item description"
+                                required
                             />
                         </div>
 
                         <div className="mb-4">
-                            <label htmlFor="role" className="block text-gray-700 font-medium mb-2">Location</label>
+                            <label htmlFor="location" className="block text-gray-700 font-medium mb-2">
+                                Location
+                            </label>
                             <select
-                                id="role"
+                                id="location"
                                 className="w-full p-2 border border-gray-300 rounded-lg"
-                                defaultValue=""
                                 value={location}
-                                onChange={(e: any) => setLocation(e.target.value)}
+                                onChange={(e: ChangeEvent<HTMLSelectElement>) => setLocation(e.target.value)}
+                                required
                             >
-                                <option value="" disabled>Select location</option>
+                                <option value="" disabled>
+                                    Select location
+                                </option>
                                 <option value="shop">Shop</option>
                                 <option value="warehouse">Warehouse</option>
                             </select>
                         </div>
-
 
                         <div className="flex justify-end gap-4">
                             <button
@@ -308,7 +312,6 @@ export default function EmployeeInventory() {
                             <button
                                 type="submit"
                                 className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                onClick={handleInitialSubmit}
                             >
                                 Save
                             </button>
@@ -317,15 +320,14 @@ export default function EmployeeInventory() {
                 </div>
             </div>
 
-            {/* modal for inserting serial numbers of inventory items */}
             <div
                 className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
-                    isSerialDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    isSerialDialogOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 }`}
             >
                 <div
                     className={`bg-white p-6 rounded-lg shadow-lg w-1/4 transform transition-all duration-300 ${
-                        isSerialDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        isSerialDialogOpen ? "scale-100 translate-y-0 opacity-100" : "scale-95 -translate-y-4 opacity-0"
                     }`}
                 >
                     <h2 className="text-lg font-medium mb-4 text-center">Enter Serial Numbers</h2>
@@ -334,8 +336,8 @@ export default function EmployeeInventory() {
                             <input
                                 key={idx}
                                 type="text"
-                                value={serialNumbers[idx] || ''}
-                                onChange={(e) => {
+                                value={serialNumbers[idx] || ""}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                     const updated = [...serialNumbers];
                                     updated[idx] = e.target.value;
                                     setSerialNumbers(updated);
@@ -364,7 +366,6 @@ export default function EmployeeInventory() {
                     </div>
                 </div>
             </div>
-
         </>
-    )
+    );
 }

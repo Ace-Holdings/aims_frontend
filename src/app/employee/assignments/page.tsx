@@ -9,22 +9,45 @@ import ActiveAssignments from "@/components/tiles/activeAssignments";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
 import AssignmentsTableEmployee from "@/components/tables/assignmentsTableEmployee";
 
+interface DecodedToken {
+    user: string;
+    roles: string[];
+    exp?: number;
+    iat?: number;
+}
+
+interface Objective {
+    objectiveId: string;
+    objectiveText: string;
+    isComplete?: boolean;
+}
+
+interface Assignment {
+    assignmentId: number;
+    assignmentName: string;
+    location: string;
+    description: string;
+    startsAt: string;
+    endsAt: string;
+    status: boolean;
+    users?: { username: string }[];
+}
+
 export default function EmployeeAssignments() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDialogVisible, setDialogVisible] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const router = useRouter();
 
-    const [hasActiveAssignment, setHasActiveAssignment] = useState(false);
-
-    const [objectives, setObjectives] = useState([]);
+    const [objectives, setObjectives] = useState<Objective[]>([]);
     const [completedObjectives, setCompletedObjectives] = useState<string[]>([]);
+    const [hasActiveAssignment, setHasActiveAssignment] = useState<Assignment | null>(null);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const decodedToken = jwtDecode(token);
+        const decodedToken = jwtDecode<DecodedToken>(token);
         const user = decodedToken.user;
 
         const fetchAssignments = async () => {
@@ -36,14 +59,14 @@ export default function EmployeeAssignments() {
                 });
                 if (!response.ok) throw new Error("Failed to fetch assignments");
 
-                const data = await response.json();
+                const data: Assignment[] = await response.json();
 
                 const activeAssignment = data.find((assignment) =>
                     assignment.status === true &&
-                    assignment.users?.some(u => u.username === user)
+                    assignment.users?.some((u) => u.username === user)
                 );
 
-                setHasActiveAssignment(activeAssignment);
+                setHasActiveAssignment(activeAssignment || null);
             } catch (error) {
                 console.error("Error fetching assignments:", error);
             }
@@ -51,7 +74,6 @@ export default function EmployeeAssignments() {
 
         fetchAssignments();
         const interval = setInterval(fetchAssignments, 10000);
-
         return () => clearInterval(interval);
     }, []);
 
@@ -91,7 +113,7 @@ export default function EmployeeAssignments() {
         }
 
         try {
-            const decodedToken = jwtDecode(token) as { roles?: string[] };
+            const decodedToken = jwtDecode<DecodedToken>(token);
             const roles: string[] = decodedToken.roles || [];
 
             if (!roles.includes("ROLE_EMPLOYEE")) {
@@ -101,7 +123,7 @@ export default function EmployeeAssignments() {
             console.log(e);
             router.push("/");
         }
-    }, [router])
+    }, [router]);
 
     const handleSaveObjectives = async () => {
 
@@ -129,17 +151,13 @@ export default function EmployeeAssignments() {
     };
 
     const openDialog = async () => {
+        if (!hasActiveAssignment) return;
         try {
             const response = await fetch(`http://localhost:3002/objectives/assignment/${hasActiveAssignment.assignmentId}`);
-
-            console.log(hasActiveAssignment.assignmentId);
-
             if (!response.ok) throw new Error("Failed to fetch objectives");
 
-            const data = await response.json();
-            const completed = data
-                .filter((obj: any) => obj.isComplete === true)
-                .map((obj: any) => obj.objectiveId);
+            const data: Objective[] = await response.json();
+            const completed = data.filter(obj => obj.isComplete).map(obj => obj.objectiveId);
             setObjectives(data);
             setCompletedObjectives(completed);
             setIsDialogOpen(true);
@@ -216,11 +234,21 @@ export default function EmployeeAssignments() {
 
                         {/* Assignment Info */}
                         <div className="space-y-2 text-sm sm:text-base text-gray-700 mb-8">
-                            <p><span className="font-medium text-gray-900">Name:</span> {hasActiveAssignment.assignmentName}</p>
-                            <p><span className="font-medium text-gray-900">Location:</span> {hasActiveAssignment.location}</p>
-                            <p><span className="font-medium text-gray-900">Description:</span> {hasActiveAssignment.description}</p>
-                            <p><span className="font-medium text-gray-900">Start:</span> {new Date(hasActiveAssignment.startsAt).toLocaleString()}</p>
-                            <p><span className="font-medium text-gray-900">End:</span> {new Date(hasActiveAssignment.endsAt).toLocaleString()}</p>
+                            <p><span className="font-medium text-gray-900">Name:</span> {hasActiveAssignment?.assignmentName}</p>
+                            <p><span className="font-medium text-gray-900">Location:</span> {hasActiveAssignment?.location}</p>
+                            <p><span className="font-medium text-gray-900">Description:</span> {hasActiveAssignment?.description}</p>
+                            <p>
+                                <span className="font-medium text-gray-900">Start:</span>{" "}
+                                {hasActiveAssignment?.startsAt
+                                    ? new Date(hasActiveAssignment.startsAt).toLocaleString()
+                                    : "N/A"}
+                            </p>
+                            <p>
+                                <span className="font-medium text-gray-900">End:</span>{" "}
+                                {hasActiveAssignment?.endsAt
+                                    ? new Date(hasActiveAssignment.endsAt).toLocaleString()
+                                    : "N/A"}
+                            </p>
                         </div>
 
                         <hr className="mb-6 border-gray-300" />

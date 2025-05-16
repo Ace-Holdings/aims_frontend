@@ -1,15 +1,17 @@
-"use client"
+"use client";
 
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
 import Navbar from "@/components/layout/navbar";
-import InventoryShop from "@/components/tiles/inventoryShop";
-import InventoryWarehouse from "@/components/tiles/inventoryWarehouse";
-import InventoryTableEmployee from "@/components/tables/inventoryTableEmployee";
-import {useEffect, useState} from "react";
+import { useEffect, useState, FormEvent } from "react";
 import LoanTile from "@/components/tiles/loan";
 import LoanTable from "@/components/tables/loanTable";
 import {jwtDecode} from "jwt-decode";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+
+interface DecodedToken {
+    id: number;
+    roles?: string[];
+}
 
 export default function Loans() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -34,8 +36,8 @@ export default function Loans() {
         }
 
         try {
-            const decodedToken = jwtDecode(token) as { roles?: string[] };
-            const roles: string[] = decodedToken.roles || [];
+            const decodedToken = jwtDecode<DecodedToken>(token);
+            const roles = decodedToken.roles || [];
 
             if (!roles.includes("ROLE_EMPLOYEE")) {
                 router.push("/");
@@ -44,7 +46,7 @@ export default function Loans() {
             console.log(e);
             router.push("/");
         }
-    }, [router])
+    }, [router]);
 
     useEffect(() => {
         const storedState = localStorage.getItem("adminSidebarCollapsed");
@@ -55,25 +57,29 @@ export default function Loans() {
 
     const openDialog = () => {
         setIsDialogOpen(true);
-    }
+    };
 
-    const applicantId = jwtDecode(localStorage.getItem('token')).id
+    const token = localStorage.getItem("token");
+    const applicantId = token ? jwtDecode<DecodedToken>(token).id : null;
 
-    // handler to submit a loan request
-    const handleSubmitLoanRequest = async (e: any) => {
+    const handleSubmitLoanRequest = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (applicantId === null) {
+            console.error("User not authenticated");
+            return;
+        }
         try {
-            const response = await fetch('http://localhost:3002/loanRequests', {
+            const response = await fetch("http://localhost:3002/loanRequests", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    applicantId: applicantId,
+                    applicantId,
                     amountRequested: loanAmount,
                     purpose: loanPurpose,
-                })
+                }),
             });
             if (!response.ok) {
-                console.log('Error submitting request');
+                console.log("Error submitting request");
                 return;
             }
             setIsDialogOpen(false);
@@ -91,14 +97,13 @@ export default function Loans() {
         <>
             <div className={`h-screen flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""}`}>
                 <div
-                    className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
-                    <EmployeeSidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>
+                    className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? "w-16" : "w-64"} z-10 shadow-md transition-all duration-300`}
+                >
+                    <EmployeeSidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} />
                 </div>
 
-                <div
-                    className={`flex-1 flex flex-col ${isSidebarCollapsed ? "ml-16" : "ml-64"} transition-all duration-300`}>
-
-                    <div className="bg-white  p-4 sticky top-0 z-10">
+                <div className={`flex-1 flex flex-col ${isSidebarCollapsed ? "ml-16" : "ml-64"} transition-all duration-300`}>
+                    <div className="bg-white p-4 sticky top-0 z-10">
                         <header className="flex gap-2 items-center text-gray-600">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -116,17 +121,16 @@ export default function Loans() {
                             </svg>
                             <span>Loans</span>
                             <div className="ml-auto">
-                                <Navbar/>
+                                <Navbar />
                             </div>
-
                         </header>
                     </div>
 
                     <div className="ml-6 mt-10 font-custom">
                         <div className="flex-row gap-4 flex">
-                            <LoanTile/>
+                            <LoanTile />
                         </div>
-                        <div className="h-7"/>
+                        <div className="h-7" />
                         <button
                             className="btn bg-blue-500 hover:bg-blue-400 text-white font-medium py-4 px-8 rounded-lg flex items-center gap-2"
                             onClick={openDialog}
@@ -139,43 +143,40 @@ export default function Loans() {
                                 stroke="currentColor"
                                 className="w-5 h-5"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 4.5v15m7.5-7.5h-15"
-                                />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                             Request for loan
                         </button>
                     </div>
-                    <div className="h-7"/>
-                    <LoanTable/>
+                    <div className="h-7" />
+                    <LoanTable />
                 </div>
             </div>
 
-            {/* modal for generating loan request */}
             <div
                 className={`fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
-                    isDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    isDialogOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 }`}
             >
                 <div
                     className={`bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative transform transition-all duration-300 ease-out ${
-                        isDialogOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                        isDialogOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4"
                     }`}
                 >
-                    {/* Loan Conditions Notice */}
                     <div className="bg-blue-100 text-blue-800 p-4 rounded-md mb-6 border border-blue-300">
                         <h2 className="text-lg font-semibold mb-2">Loan Application Conditions</h2>
                         <p className="text-sm">
-                            - You must have been employed for at least 6 months.<br />
-                            - Maximum loan amount is determined by your salary bracket.<br />
-                            - Loan repayment is deducted monthly from your salary.<br />
+                            - You must have been employed for at least 6 months.
+                            <br />
+                            - Maximum loan amount is determined by your salary bracket.
+                            <br />
+                            - Loan repayment is deducted monthly from your salary.
+                            <br />
                             - Loans will be granted upon managerial review and you will be notified
                         </p>
                     </div>
 
-                    <form className="space-y-4">
+                    <form className="space-y-4" onSubmit={handleSubmitLoanRequest}>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Loan Amount (MWK)</label>
                             <input
@@ -201,10 +202,9 @@ export default function Loans() {
                                 required
                                 value={loanPurpose}
                                 onChange={(e) => setLoanPurpose(e.target.value)}
-                            ></textarea>
+                            />
                         </div>
 
-                        {/* Buttons: Submit + Close */}
                         <div className="flex justify-end gap-4 mt-6">
                             <button
                                 type="button"
@@ -216,7 +216,6 @@ export default function Loans() {
                             <button
                                 type="submit"
                                 className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md"
-                                onClick={handleSubmitLoanRequest}
                             >
                                 Submit Application
                             </button>
@@ -225,15 +224,14 @@ export default function Loans() {
                 </div>
             </div>
 
-            {/* modal for loan request success */}
             <div
                 className={`fixed inset-0 flex items-center justify-center font-custom bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
-                    isSuccessVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    isSuccessVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                 }`}
             >
                 <div
                     className={`bg-white p-6 rounded-xl shadow-2xl text-center max-w-md w-full transform transition-all duration-300 ${
-                        isSuccessVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                        isSuccessVisible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4"
                     }`}
                 >
                     <div className="flex justify-center">
@@ -253,7 +251,6 @@ export default function Loans() {
                     <p className="text-sm text-gray-600 mt-2">Your application has been submitted successfully.</p>
                 </div>
             </div>
-
         </>
-    )
+    );
 }

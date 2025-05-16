@@ -4,17 +4,40 @@ import {LiaFileDownloadSolid} from "react-icons/lia";
 import ReactDOM from "react-dom";
 import DatePicker from "react-datepicker";
 import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
 
-export default function BidTileEmployee ({ bid }: { bid: { id: number, description: string, deadline: Date, status: string } }) {
+interface DecodedToken {
+    user: {
+        id: string;
+        username: string;
+        roles: string[];
+    };
+    exp?: number;
+    iat?: number;
+}
+
+interface Bid {
+    bidId: any;
+    description: string;
+    deadline: Date;
+    status: boolean;
+}
+
+interface ChecklistItem {
+    requirement: string;
+    fulfilled: boolean;
+}
+
+export default function BidTileEmployee ({ bid }: { bid: { id: number, description: string, deadline: Date, status: boolean } }) {
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
     const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-    const [selectedBid, setSelectedBid] = useState(null);
+    const [selectedBid, setSelectedBid] = useState<Bid | null>(null);
     const [downloadDialog, setDownloadDialog] = useState(false);
     const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
     const [editablePreviewUrl, setEditablePreviewUrl] = useState<string | null>(null);
     const [showChecklistDialog, setShowChecklistDialog] = useState(false);
     const [showChecklistUnavailableDialog, setShowChecklistUnavailableDialog] = useState(false);
-    const [checklist, setChecklist] = useState([]);
+    const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
 
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
@@ -51,7 +74,17 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
         setShowUpdateDialog(true);
     }
 
-    const user = jwtDecode(localStorage.getItem("token")).user;
+    const router = useRouter();
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        router.push("/");
+        return null;
+    }
+
+    const decoded = jwtDecode<DecodedToken>(token);
+    const user = decoded.user;
 
     const openDownloadDialog = (bid: any ) => {
         setSelectedBid(bid);
@@ -66,7 +99,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
         setShowChecklistDialog(true);
     }
 
-    const fetchForBidChecklist = async (bidId) => {
+    const fetchForBidChecklist = async (bidId: any) => {
         try {
             const response = await fetch(`http://localhost:3002/checklist/${bidId}`, {
                 method: "GET",
@@ -88,25 +121,6 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
         }
     };
 
-    // handler function for deleting bid
-    const handleDelete = async () => {
-        try {
-            const response = await fetch(`http://localhost:3002/bids/${selectedBid.bidId}`, {
-                method: "DELETE",
-                headers: {
-                    "authorization": `Bearer ${localStorage.getItem('token')}`,
-                }
-            });
-
-            if (!response.ok) {
-                console.log('failed to delete bid')
-            }
-            setShowDeleteDialog(false);
-            window.location.reload();
-        } catch (e) {
-            console.error(e);
-        }
-    }
 
     // handler function to update a user
     const handleUpdateBid = async () => {
@@ -114,13 +128,14 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
             const formData = new FormData();
 
             if (description) formData.append("description", description);
-            if (deadline) formData.append("deadline", deadline);
+            if (deadline) formData.append("deadline", deadline.toISOString());
             if (fileSend) formData.append("bidDocumentFile", fileSend);
             if (editableFileSend) formData.append("editableFileForBid", editableFileSend);
             if (fileType) formData.append("fileType", fileType);
-            formData.append("lastModifiedBy", user);
+            formData.append("lastModifiedBy", user.username);
 
-            const response = await fetch(`http://localhost:3002/bids/${selectedBid.bidId}`, {
+
+            const response = await fetch(`http://localhost:3002/bids/${selectedBid?.bidId}`, {
                 method: "PUT",
                 headers: {
                     "authorization": `Bearer ${localStorage.getItem('token')}`,
@@ -345,24 +360,27 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                             <h3 className="text-lg  mb-6 text-center ">Bid Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
-                                    <strong>Bid ID:</strong>{selectedBid.bidId}
+                                    <strong>Bid ID:</strong>{selectedBid?.bidId}
                                 </div>
                                 <div>
-                                    <strong>Description:</strong>{selectedBid.description}
+                                    <strong>Description:</strong>{selectedBid?.description}
                                 </div>
                                 <div>
-                                    <strong>Status:</strong>{selectedBid.status}
+                                    <strong>Status:</strong>{selectedBid?.status}
                                 </div>
                                 <div>
                                     <strong>Deadline:</strong>{' '}
-                                    {new Date(selectedBid.deadline).toLocaleString('en-GB', {
-                                        day: '2-digit',
-                                        month: 'long',
-                                        year: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        hour12: true,
-                                    })}
+                                    {selectedBid?.deadline
+                                        ? new Date(selectedBid.deadline).toLocaleString('en-GB', {
+                                            day: '2-digit',
+                                            month: 'long',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            hour12: true,
+                                        })
+                                        : 'N/A'}
+
                                 </div>
                             </div>
                             <div className="mt-6 flex justify-end">
