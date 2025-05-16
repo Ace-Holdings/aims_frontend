@@ -16,6 +16,51 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {ExclamationCircleIcon} from "@heroicons/react/24/solid";
 
+interface User {
+    firstName: any;
+    userId: string;
+    username: string;
+    jobTitle?: string;
+    category?: string;
+    accountNumber?: string;
+    branchName?: string;
+    salary: {
+        amount: number;
+    };
+    applicant: {
+        amount: number;
+        monthlyDeduction: number;
+        status: string;
+    }[];
+}
+
+interface Loan {
+    loanId: number;
+    applicant?: {
+        username: string;
+    };
+    amount: number;
+    purpose: string;
+    dateGranted: string | Date;
+    monthlyDeduction: number;
+}
+
+interface Salary {
+    salaryId: number;
+    class: string;
+    amount: number;
+}
+
+interface LoanRequest {
+    requestId: number;
+    applicant: {
+        username: string;
+    };
+    amountRequested: number;
+    purpose: string;
+    status?: string;
+}
+
 export default function UsersAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -35,25 +80,25 @@ export default function UsersAdmin() {
     const [salaryId, setSalaryId] = useState("");
     const router = useRouter();
 
-    const [salaries, setSalaries] = useState([]);
+    const [salaries, setSalaries] = useState<Salary[]>([]);
 
     const [updatedSalaries, setUpdatedSalaries] = useState(salaries);
 
     // states for updating salary
     const [salaryClass, setSalaryClass] = useState("A");
-    const [amount, setAmount] = useState("");
+    const [amount, setAmount] = useState(0);
     const [activeTab, setActiveTab] = useState("manage");
 
-    const [loanRequests, setLoansRequests] = useState([]);
+    const [loanRequests, setLoansRequests] = useState<LoanRequest[]>([]);
 
     const [grantedRequests, setGrantedRequests] = useState<Set<number>>(new Set());
     const [rejectedRequests, setRejectedRequests] = useState<Set<number>>(new Set());
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [applicantResults, setApplicantResults] = useState([]);
-    const [selectedApplicant, setSelectedApplicant] = useState(null);
+    const [applicantResults, setApplicantResults] = useState<User[]>([]);
+    const [selectedApplicant, setSelectedApplicant] = useState<User | null>(null);
 
-    const [loans, setLoans] = useState([]);
+    const [loans, setLoans] = useState<Loan[]>([]);
 
     // for direct grant
     const [loanAmount, setLoanAmount] = useState(0);
@@ -77,16 +122,16 @@ export default function UsersAdmin() {
                     setLoansRequests(data);
 
                     const approvedIds = data
-                        .filter((request) => request.status === "approved")
-                        .map((request) => request.requestId);
+                        .filter((request: any) => request.status === "approved")
+                        .map((request: any) => request.requestId);
                     setGrantedRequests(new Set(approvedIds));
 
                     const rejectedIds = data
-                        .filter((request) => request.status === "rejected")
-                        .map((request) => request.requestId);
+                        .filter((request: any) => request.status === "rejected")
+                        .map((request: any) => request.requestId);
                     setRejectedRequests(new Set(rejectedIds));
 
-                    const hasPending = data.some((request) => request.status === "pending");
+                    const hasPending = data.some((request: any) => request.status === "pending");
                     setHasPendingRequests(hasPending);
                 }
             } catch (e) {
@@ -359,7 +404,7 @@ export default function UsersAdmin() {
 
 
 
-    const handleAmountChange = (e) => {
+    const handleAmountChange = (e: any) => {
         let value = e.target.value.replace(/,/g, '');
         if (!isNaN(value) && value !== "") {
             value = Number(value).toLocaleString();

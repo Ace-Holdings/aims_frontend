@@ -32,17 +32,43 @@ Chart.register(
     Legend
 );
 
+interface InventoryItem {
+    name: string;
+    pricePerUnit: number;
+    quantity?: number;
+}
+
+interface Sale {
+    saleId: number;
+    amount: number;
+    quantity: number[];
+    createdAt: string;
+    customer: string;
+    description: string;
+    timestamp: Date;
+    inventories: InventoryItem[];
+    user: {
+        username: string;
+    };
+}
+
+interface Inventory {
+    inventoryId: string;
+    name: string;
+    location: string;
+    pricePerUnit: number;
+}
 
 export default function AdminSales() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [inventories, setInventories] = useState([]);
+    const [inventories, setInventories] = useState<Inventory[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedItems, setSelectedItems] = useState<any[]>([]);
 
     const [username, setUsername] = useState("");
     const [userId, setUserId] = useState<string | null>(null);
-    const [sales, setSales] = useState([]);
+    const [sales, setSales] = useState<Sale[]>([]);
 
     const [quantity, setQuantity] = useState(0);
     const [item, setItem] = useState("");
@@ -619,17 +645,23 @@ export default function AdminSales() {
     const triggerReportGeneration = () => {
         const filteredSales = sales.filter((sale) => {
             const saleDate = new Date(sale.timestamp).getTime();
-            const start = new Date(startDate).getTime();
-            const end = new Date(endDate).getTime();
+            const start = startDate ? new Date(startDate).getTime() : 0;
+            const end = endDate ? new Date(endDate).getTime() : Date.now();
             return saleDate >= start && saleDate <= end;
         });
 
         const totalQuantity = filteredSales.reduce((acc: any, sale: any) => {
             const saleQuantity = Array.isArray(sale.quantity)
-                ? sale.quantity.reduce((sum, q) => sum + q, 0)
+                ? sale.quantity.reduce((sum: any, q: any) => sum + q, 0)
                 : 0;
             return acc + saleQuantity;
         }, 0);
+
+        if (!startDate || !endDate) {
+            alert("Please select a valid start and end date.");
+            return;
+        }
+
 
         const report = {
             startDate: startDate,
@@ -806,7 +838,7 @@ export default function AdminSales() {
                                             customer={sale.customer}
                                             description={sale.description}
                                             pricePerUnit={sale.inventories.length > 0 ? sale.inventories.map(inv => inv.pricePerUnit).join(", ") : "Unknown"}
-                                        />
+                                            inventory={undefined} user={undefined}                                        />
                                     ))
                             ) : (
                                 <p className="text-gray-500">No sales found</p>

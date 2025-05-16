@@ -38,7 +38,7 @@ interface Loan {
     monthlyDeduction: number;
 }
 
-interface SelectedEmployee {
+interface User {
     userId: number;
     username: string;
     jobTitle?: string;
@@ -48,12 +48,11 @@ interface SelectedEmployee {
     salary: {
         amount: number;
     };
-    applicant: Loan[];
-}
-
-interface User {
-    userId: number;
-    username: string;
+    applicant: {
+        amount: number;
+        monthlyDeduction: number;
+        status: string;
+    }[];
 }
 
 export default function Payslips() {
@@ -62,7 +61,7 @@ export default function Payslips() {
     const [searchQuery, setSearchQuery] = useState("");
     const [users, setUsers] = useState<User[]>([]);
     const [additionalEarnings, setAdditionalEarnings] = useState<Earning[]>([]);
-    const [earningValue, setEarningValue] = useState<string>("");
+    const [earningValue, setEarningValue] = useState<number>(0);
     const [isValueDialogOpen, setIsValueDialogOpen] = useState(false);
     const [itemDescription, setItemDescription] = useState("");
     const [deductions, setDeductions] = useState<Deduction[]>([]);
@@ -71,7 +70,7 @@ export default function Payslips() {
     const [deductionItemDescription, setDeductionItemDescription] = useState("");
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-    const [selectedEmployee, setSelectedEmployee] = useState<SelectedEmployee | null>(null);
+    const [selectedEmployee, setSelectedEmployee] = useState<User | null>(null);
     const [payslips, setPayslips] = useState<Payslip[]>([]);
     const [filteredPaySlips, setFilteredPaySlips] = useState<Payslip[]>([]);
     const [period, setPeriod] = useState(1);
@@ -140,7 +139,7 @@ export default function Payslips() {
         setAdditionalEarnings([...additionalEarnings, { description: itemDescription, value: earningValue }]);
         console.log(additionalEarnings);
         setItemDescription("");
-        setEarningValue("");
+        setEarningValue(0);
         setIsValueDialogOpen(false);
     };
 
@@ -149,7 +148,7 @@ export default function Payslips() {
         setDeductions([...deductions, { description: deductionItemDescription, value: deductionValue}]);
         console.log(deductions);
         setDeductionItemDescription("");
-        setDeductionValue("");
+        setDeductionValue(0);
         setIsDeductionValueDialogOpen(false);
     }
 
@@ -340,12 +339,12 @@ export default function Payslips() {
         ];
 
         const totalEarnings = (
-            additionalEarnings.reduce((sum, item) => sum + parseFloat(item.value), 0)
+            additionalEarnings.reduce((sum, item) => sum + item.value, 0)
             + selectedEmployee.salary.amount
         ) * period;
 
         const totalDeductions = updatedDeductions.reduce(
-            (sum, item) => sum + parseFloat(String(item.value)),
+            (sum, item) => sum + item.value,
             0
         ) * period;
 
