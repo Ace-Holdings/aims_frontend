@@ -128,7 +128,9 @@ export default function ManagerBids() {
 
             if (response.ok) {
                 closeDialog();
-                window.location.reload();
+                if (typeof window !== 'undefined') {
+                    window.location.reload();
+                }
             } else {
                 console.log("Could not create bid");
             }

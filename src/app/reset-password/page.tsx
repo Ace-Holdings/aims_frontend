@@ -1,19 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Background from "../../../public/background.jpg";
 
 export default function PasswordResetForm() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const token = searchParams.get("token");
+    
 
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [isSuccessVisible, setIsSuccessVisible] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            const param = url.searchParams.get("token");
+            setToken(param);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
