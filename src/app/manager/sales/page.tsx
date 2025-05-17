@@ -5,11 +5,9 @@ import Navbar from "@/components/layout/navbar";
 import SalesTile from "@/components/tiles/sales";
 import {useEffect, useState} from "react";
 import ManagerSidebar from "@/components/layout/managerSidebar";
-import "react-datepicker/dist/react-datepicker.css";
 import {jwtDecode} from "jwt-decode";
 import {jsPDF} from "jspdf";
 import autoTable from "jspdf-autotable";
-import DatePicker from "react-datepicker";
 import {useRouter} from "next/navigation";
 import {
     Chart,
@@ -1122,31 +1120,29 @@ export default function ManagerSales() {
                     }`}
                 >
                     <h2 className="text-lg mb-4 text-center">Generate Sales Report</h2>
-
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">From:</label>
-                            <DatePicker
-                                selected={startDate}
-                                onChange={(date: Date | null) => setStartDate(date)}
+                            <input
+                                type="date"
+                                value={startDate ? new Date(startDate).toISOString().slice(0, 10) : ""}
+                                onChange={(e) => setStartDate(new Date(e.target.value))}
                                 className="w-[300px] p-2 border border-gray-300 rounded-lg"
-                                dateFormat="yyyy-MM-dd"
-                                placeholderText="Select a date"
+                                placeholder="Select a date"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium mb-1">To:</label>
-                            <DatePicker
-                                selected={endDate}
-                                onChange={(date: Date | null) => setEndDate(date)}
+                            <input
+                                type="date"
+                                value={endDate ? new Date(endDate).toISOString().slice(0, 10) : ""}
+                                onChange={(e) => setEndDate(new Date(e.target.value))}
                                 className="w-[300px] p-2 border border-gray-300 rounded-lg"
-                                dateFormat="yyyy-MM-dd"
-                                placeholderText="Select a date"
+                                placeholder="Select a date"
                             />
                         </div>
                     </div>
-
                     <div className="flex justify-end mt-6">
                         <button
                             className="px-4 py-2 mr-2 bg-gray-300 rounded"

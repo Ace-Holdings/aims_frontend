@@ -2,7 +2,6 @@ import React, {useState, useEffect} from "react";
 import {FiEdit, FiEye, FiMenu, FiTrash2} from "react-icons/fi";
 import {LiaFileDownloadSolid} from "react-icons/lia";
 import ReactDOM from "react-dom";
-import DatePicker from "react-datepicker";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/navigation";
 
@@ -426,17 +425,12 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
                                     Deadline
                                 </label>
                                 <div className="relative overflow-visible">
-                                    <DatePicker
-                                        selected={deadline}
-                                        onChange={(e: any) => setDeadline(e)}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom"
+                                    <input
+                                        type="datetime-local"
+                                        value={deadline ? new Date(deadline).toISOString().slice(0, 16) : ""}
+                                        onChange={(e) => setDeadline(new Date(e.target.value))}
+                                        className="grow p-2 bg-white w-[220px] border border-gray-300 rounded"
+                                        placeholder="Select start date and time"
                                     />
                                 </div>
                             </div>

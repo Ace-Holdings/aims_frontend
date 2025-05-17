@@ -4,8 +4,6 @@ import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
 import {useState, useEffect } from "react";
 import SalesTile from "@/components/tiles/sales";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import PaySlipsTile from "@/components/tiles/payslips";
@@ -726,17 +724,12 @@ export default function Payslips() {
                                 Date generated
                             </label>
                             <div className="relative overflow-visible">
-                                <DatePicker
-                                    selected={selectedDate}
-                                    onChange={(e: Date | null) => setSelectedDate(e)}
-                                    dateFormat="yyyy-MM-dd h:mm aa"
-                                    showTimeSelect
-                                    timeFormat="h:mm aa"
-                                    timeIntervals={15}
+                                <input
+                                    type="datetime-local"
+                                    value={selectedDate ? new Date(selectedDate).toISOString().slice(0, 16) : ""}
+                                    onChange={(e) => setSelectedDate(new Date(e.target.value))}
                                     className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                    placeholderText="Select start date and time"
-                                    popperClassName="z-50"
-                                    popperPlacement="bottom"
+                                    placeholder="Select start date and time"
                                 />
                             </div>
                         </div>

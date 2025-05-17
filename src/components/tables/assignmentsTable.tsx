@@ -4,8 +4,6 @@ import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import {FiEdit, FiMenu, FiTrash2} from "react-icons/fi";
 import { FiEye } from "react-icons/fi";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import ReactDOM from "react-dom";
 
 interface SelectedAssignment {
@@ -495,42 +493,29 @@ export default function AssignmentsTable() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                <label htmlFor="startsAt" className="block text-gray-700 font-medium mb-2">
                                     Starts at
                                 </label>
-                                <div className="relative overflow-visible">
-                                    <DatePicker
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white w-[180px] border border-gray-300"
-                                        popperClassName="z-50"
-                                        popperPlacement="top"
-                                        showTimeSelectOnly={false}
-                                        selected={startsAt}
-                                        onChange={(date) => setStartsAt(date as Date)}
-                                    />
-                                </div>
+                                <input
+                                    type="datetime-local"
+                                    id="startsAt"
+                                    value={startsAt ? new Date(startsAt).toISOString().slice(0, 16) : ""}
+                                    onChange={(e) => setStartsAt(new Date(e.target.value))}
+                                    className="grow p-2 bg-white w-[180px] border border-gray-300 rounded"
+                                />
                             </div>
+
                             <div className="mb-4">
-                                <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                                <label htmlFor="endsAt" className="block text-gray-700 font-medium mb-2">
                                     Ends at
                                 </label>
-                                <div className="relative overflow-visible">
-                                    <DatePicker
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white w-[180px] border border-gray-300"
-                                        popperClassName="z-50"
-                                        popperPlacement="top"
-                                        showTimeSelectOnly={false}
-                                        selected={endsAt}
-                                        onChange={(date) => setEndsAt(date as Date)}
-                                    />
-                                </div>
+                                <input
+                                    type="datetime-local"
+                                    id="endsAt"
+                                    value={endsAt ? new Date(endsAt).toISOString().slice(0, 16) : ""}
+                                    onChange={(e) => setEndsAt(new Date(e.target.value))}
+                                    className="grow p-2 bg-white w-[180px] border border-gray-300 rounded"
+                                />
                             </div>
                             <div className="mt-6 flex justify-end space-x-3">
                                 <button

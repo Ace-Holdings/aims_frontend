@@ -7,8 +7,6 @@ import {useEffect, useState} from "react";
 import ManagerSidebar from "@/components/layout/managerSidebar";
 import {jsPDF} from "jspdf";
 import autoTable from "jspdf-autotable";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/navigation";
 
@@ -728,17 +726,12 @@ export default function ManagerPayslips() {
                                 Date generated
                             </label>
                             <div className="relative overflow-visible">
-                                <DatePicker
-                                    selected={selectedDate}
-                                    onChange={(e: Date | null) => setSelectedDate(e)}
-                                    dateFormat="yyyy-MM-dd h:mm aa"
-                                    showTimeSelect
-                                    timeFormat="h:mm aa"
-                                    timeIntervals={15}
+                                <input
+                                    type="datetime-local"
+                                    value={selectedDate ? new Date(selectedDate).toISOString().slice(0, 16) : ""}
+                                    onChange={(e) => setSelectedDate(new Date(e.target.value))}
                                     className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                    placeholderText="Select start date and time"
-                                    popperClassName="z-50"
-                                    popperPlacement="bottom"
+                                    placeholder="Select start date and time"
                                 />
                             </div>
                         </div>

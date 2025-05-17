@@ -2,8 +2,6 @@ import {FiEye, FiEdit, FiTrash2, FiMenu} from "react-icons/fi";
 import { LiaFileDownloadSolid } from "react-icons/lia"
 import ReactDOM from "react-dom";
 import React, {useEffect, useState} from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/navigation";
 
@@ -442,17 +440,12 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                                     Deadline
                                 </label>
                                 <div className="relative overflow-visible">
-                                    <DatePicker
-                                        selected={deadline}
-                                        onChange={(e: any) => setDeadline(e)}
-                                        dateFormat="yyyy-MM-dd h:mm aa"
-                                        showTimeSelect
-                                        timeFormat="h:mm aa"
-                                        timeIntervals={15}
-                                        className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                        placeholderText="Select start date and time"
-                                        popperClassName="z-50"
-                                        popperPlacement="bottom"
+                                    <input
+                                        type="datetime-local"
+                                        value={deadline ? new Date(deadline).toISOString().slice(0, 16) : ""}
+                                        onChange={(e) => setDeadline(new Date(e.target.value))}
+                                        className="grow p-2 bg-white w-[220px] border border-gray-300 rounded"
+                                        placeholder="Select start date and time"
                                     />
                                 </div>
                             </div>

@@ -4,8 +4,6 @@ import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
 import {useEffect, useState} from "react";
 import SalesTile from "@/components/tiles/sales";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import  {jwtDecode} from "jwt-decode";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
@@ -1118,23 +1116,23 @@ export default function AdminSales() {
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">From:</label>
-                            <DatePicker
-                                selected={startDate}
-                                onChange={(date: Date | null) => setStartDate(date)}
+                            <input
+                                type="date"
+                                value={startDate ? new Date(startDate).toISOString().slice(0, 10) : ""}
+                                onChange={(e) => setStartDate(new Date(e.target.value))}
                                 className="w-[300px] p-2 border border-gray-300 rounded-lg"
-                                dateFormat="yyyy-MM-dd"
-                                placeholderText="Select a date"
+                                placeholder="Select a date"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium mb-1">To:</label>
-                            <DatePicker
-                                selected={endDate}
-                                onChange={(date: Date | null) => setEndDate(date)}
+                            <input
+                                type="date"
+                                value={endDate ? new Date(endDate).toISOString().slice(0, 10) : ""}
+                                onChange={(e) => setEndDate(new Date(e.target.value))}
                                 className="w-[300px] p-2 border border-gray-300 rounded-lg"
-                                dateFormat="yyyy-MM-dd"
-                                placeholderText="Select a date"
+                                placeholder="Select a date"
                             />
                         </div>
                     </div>
