@@ -13,7 +13,6 @@ export default function AssignmentsAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const router = useRouter();
 
-    // form attributes
     const [assignmentName, setAssignmentName] = useState("");
     const [location, setLocation] = useState("");
     const [startDate, setStartDate] = useState<Date | null>(null);

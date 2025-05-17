@@ -7,48 +7,50 @@ import { useRouter } from "next/navigation";
 
 const Navbar = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [username, setUsername] = useState("");
+    const [username, setUsername] = useState("User");
     const router = useRouter();
     const dialogRef = useRef<HTMLDivElement>(null);
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     const toggleDialog = () => {
         setIsDialogOpen((prev) => !prev);
     };
 
-    const handleClickOutside = (e: MouseEvent) => {
-        if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
-            setIsDialogOpen(false);
+    const handleLogout = () => {
+        if (typeof window !== "undefined") {
+            localStorage.removeItem("token");
+            router.push("/");
         }
     };
 
     useEffect(() => {
-        if (token) {
-            try {
-                const decodedToken: any = jwtDecode(token);
-                setUsername(decodedToken.user || "User");
-            } catch (e) {
-                console.error(e);
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
+            if (token) {
+                try {
+                    const decodedToken: any = jwtDecode(token);
+                    setUsername(decodedToken.user || "User");
+                } catch (e) {
+                    console.error("Invalid token:", e);
+                }
             }
         }
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
+                setIsDialogOpen(false);
+            }
+        };
 
         if (isDialogOpen) {
             document.addEventListener("mousedown", handleClickOutside);
-        } else {
-            document.removeEventListener("mousedown", handleClickOutside);
         }
 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [isDialogOpen]);
-
-    const handleLogout = () => {
-        if (typeof window !== "undefined") {
-            localStorage.removeItem("token");
-            router.push('/');
-        }
-    };
 
     return (
         <div className="relative bg-white px-6 py-4 flex items-center justify-between rounded-b-md">
@@ -60,7 +62,6 @@ const Navbar = () => {
                 <FiUser className="text-gray-600" size={20} />
             </button>
 
-            {/* Dropdown menu */}
             <div
                 ref={dialogRef}
                 className={`absolute top-full right-0 mt-4 w-48 rounded-md shadow-lg z-50 transition-all duration-300 transform ${
@@ -72,8 +73,8 @@ const Navbar = () => {
                 <ul className="py-1 bg-white rounded-md">
                     <li>
                         <button
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             onClick={handleLogout}
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
                             <FiLogOut className="mr-2" />
                             Logout
@@ -86,4 +87,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

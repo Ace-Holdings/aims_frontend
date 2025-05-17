@@ -275,7 +275,7 @@ const SalesTile: React.FC<SaleTileProps> = ({
                     document.body
                 )}
 
-            {ReactDOM.createPortal(
+            {showDeleteDialog && ReactDOM.createPortal(
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm font-custom transition-opacity duration-300">
                     <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300">
                         <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
