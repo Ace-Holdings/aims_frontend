@@ -5,8 +5,6 @@ import Navbar from "@/components/layout/navbar";
 import {useEffect, useState} from "react";
 import InventoryShop from "@/components/tiles/inventoryShop";
 import InventoryWarehouse from "@/components/tiles/inventoryWarehouse";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import InventoryTable from "@/components/tables/inventoryTable";
 import {jwtDecode} from "jwt-decode";
 import { useRouter } from "next/navigation";

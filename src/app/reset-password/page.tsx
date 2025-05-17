@@ -6,7 +6,7 @@ import Background from "../../../public/background.jpg";
 
 export default function PasswordResetForm() {
     const router = useRouter();
-    
+
 
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");

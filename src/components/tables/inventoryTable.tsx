@@ -431,287 +431,275 @@ export default function InventoryTable() {
             </div>
 
             {/* modal for deleting an inventory item */}
-            {ReactDOM.createPortal(
+            <div
+                className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                    showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
                 <div
-                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
-                        showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10 transform transition-all duration-300 ${
+                        showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                     }`}
                 >
-                    <div
-                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10 transform transition-all duration-300 ${
-                            showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
-                        }`}
-                    >
-                        <h3 className="text-lg  mb-4 text-black text-center">Confirm Delete</h3>
-                        <p className="text-sm text-gray-700 mb-6">
-                            Are you sure you want to delete this stock item?
-                        </p>
-                        <div className="mt-4 flex justify-end space-x-3">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition-colors duration-200 hover:bg-gray-400"
-                                onClick={() => setShowDeleteDialog(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="bg-red-500 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-600"
-                                onClick={handleDeleteItem}
-                            >
-                                Delete
-                            </button>
-                        </div>
+                    <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
+                    <p className="text-sm text-gray-700 mb-6">
+                        Are you sure you want to delete this stock item?
+                    </p>
+                    <div className="mt-4 flex justify-end space-x-3">
+                        <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition-colors duration-200 hover:bg-gray-400"
+                            onClick={() => setShowDeleteDialog(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="bg-red-500 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-600"
+                            onClick={handleDeleteItem}
+                        >
+                            Delete
+                        </button>
                     </div>
-                </div>,
-                document.body
-            )}
+                </div>
+            </div>
 
             {/* modal for displaying inventory item details */}
-            {shouldRenderDialog &&
-                ReactDOM.createPortal(
-                    <div
-                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
-                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                        }`}
-                    >
-                        <div
-                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
-                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
-                            }`}
-                        >
-                            <h3 className="text-lg  mb-6 text-center text-black">Stock Item Details</h3>
-                            <div className="flex flex-wrap gap-4">
-                                <div>
-                                    <strong>Item name:</strong> {selectedItem?.name}
-                                </div>
-                                <div>
-                                    <strong>Description:</strong> {selectedItem?.description}
-                                </div>
-                                <div>
-                                    <strong>Quantity:</strong> {selectedItem?.quantity}
-                                </div>
-                                <div>
-                                    <strong>Unit price:</strong>{" "}
-                                    {selectedItem?.pricePerUnit !== undefined
-                                        ? new Intl.NumberFormat("en-US", {
-                                            style: "currency",
-                                            currency: "MWK",
-                                        }).format(selectedItem.pricePerUnit)
-                                        : "N/A"}
-                                </div>
-
-                                <div>
-                                    <strong>Date added:</strong>{" "}
-                                    {selectedItem?.dateAdded
-                                        ? new Date(selectedItem.dateAdded).toLocaleString("en-US", {
-                                            weekday: "short",
-                                            year: "numeric",
-                                            month: "long",
-                                            day: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            hour12: true,
-                                        })
-                                        : "N/A"}
-                                </div>
-                                <div>
-                                    <strong>Location:</strong> {selectedItem?.location}
-                                </div>
-                            </div>
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
-                                    onClick={() => setShowDetailsDialog(false)}
-                                >
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>,
-                    document.body
-                )
-            }
-
-            {/* modal for opening update details */}
-            {ReactDOM.createPortal(
+            {shouldRenderDialog && (
                 <div
-                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
-                        showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                        showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                     }`}
                 >
                     <div
-                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300 ${
-                            showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                        className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                            showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                         }`}
                     >
-                        <h3 className="text-lg mb-4 text-center text-black">Update Stock Item</h3>
-                        <form>
-                            <div className="mb-4">
-                                <label className="block mb-2">Quantity</label>
-                                <input
-                                    type="number"
-                                    value={quantity}
-                                    onChange={(e) => {
-                                        const newQty = parseInt(e.target.value, 10);
-                                        if (!isNaN(newQty)) {
-                                            setQuantity(newQty);
-                                        }
-                                    }}
-                                    className="p-2 border border-gray-300 rounded-lg w-full"
-                                />
+                        <h3 className="text-lg mb-6 text-center text-black">Stock Item Details</h3>
+                        <div className="flex flex-wrap gap-4">
+                            <div>
+                                <strong>Item name:</strong> {selectedItem?.name}
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="pricePerUnit" className="block text-gray-700 font-medium mb-2">Price Per Unit</label>
-                                <input
-                                    type="text"
-                                    id="pricePerUnit"
-                                    value={pricePerUnit.toLocaleString("en-US")}
-                                    onChange={(e) => {
-                                        const rawValue = e.target.value.replace(/,/g, "");
-                                        if (!isNaN(Number(rawValue))) {
-                                            setPricePerUnit(Number(rawValue));
-                                        }
-                                    }}
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder="Price per item"
-                                    inputMode="numeric"
-                                />
+                            <div>
+                                <strong>Description:</strong> {selectedItem?.description}
                             </div>
-                            <div className="mb-4">
-                                <label className="block mb-2">Description</label>
-                                <input
-                                    type="text"
-                                    name="contact"
-                                    className="border p-2 w-full bg-white"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                />
+                            <div>
+                                <strong>Quantity:</strong> {selectedItem?.quantity}
                             </div>
-                            <div className="mb-4">
-                                <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
-                                    Location
-                                </label>
-                                <select
-                                    id="role"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    defaultValue=""
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                >
-                                    <option value="" disabled>
-                                        Select location
-                                    </option>
-                                    <option value="shop">Shop</option>
-                                    <option value="warehouse">Warehouse</option>
-                                </select>
+                            <div>
+                                <strong>Unit price:</strong>{" "}
+                                {selectedItem?.pricePerUnit !== undefined
+                                    ? new Intl.NumberFormat("en-US", {
+                                        style: "currency",
+                                        currency: "MWK",
+                                    }).format(selectedItem.pricePerUnit)
+                                    : "N/A"}
                             </div>
-                            <div className="mt-6 flex justify-end space-x-3">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                    onClick={() => setShowUpdateDialog(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                                    onClick={handleUpdateStock1}
-                                >
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>,
-                document.body
-            )}
 
-            {/* modal for showing serial numbers of the selected inventory item */}
-            {ReactDOM.createPortal(
-                <div
-                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
-                        showSerialDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                    }`}
-                >
-                    <div
-                        className={`bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-[80vh] overflow-y-auto transform transition-all duration-300 ${
-                            showSerialDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
-                        }`}
-                    >
-                        <h3 className="text-lg  mb-4 text-center text-black">
-                            Serial numbers of items in stock for {selectedItem?.name} {selectedItem?.description}
-                        </h3>
-                        <div className="border border-gray-300 rounded-md max-h-60 overflow-y-auto p-2 max-h-[9.5rem]">
-                            {serialNumbers.map((serial: any, idx: number) => (
-                                <div key={idx} className="border-b py-2 px-1">
-                        <span className="font-medium text-sm text-gray-700">
-                            {serial.serialNumber || 'N/A'}
-                        </span>
-                                </div>
-                            ))}
+                            <div>
+                                <strong>Date added:</strong>{" "}
+                                {selectedItem?.dateAdded
+                                    ? new Date(selectedItem.dateAdded).toLocaleString("en-US", {
+                                        weekday: "short",
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                    })
+                                    : "N/A"}
+                            </div>
+                            <div>
+                                <strong>Location:</strong> {selectedItem?.location}
+                            </div>
                         </div>
-                        <div className="mt-4 flex justify-end">
+                        <div className="mt-6 flex justify-end">
                             <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowSerialDialog(false)}
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                onClick={() => setShowDetailsDialog(false)}
                             >
                                 Close
                             </button>
                         </div>
                     </div>
-                </div>,
-                document.body
-            )}
-
-            {/* modal for entering serial numbers upon modifying quantity of inventory item */}
-            {isSerialDialogOpen && (
-                <div
-                    className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
-                        isSerialDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                    }`}
-                >
-                    <div
-                        className={`bg-white p-6 rounded-lg shadow-lg w-1/4 transform transition-all duration-300 ${
-                            isSerialDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
-                        }`}
-                    >
-                        <h2 className="text-lg font-medium mb-4 text-center">Enter Serial Numbers</h2>
-                        <div className="space-y-3 max-h-[300px] overflow-y-auto">
-                            {Array.from({ length: quantity }).map((_, idx) => (
-                                <input
-                                    key={idx}
-                                    type="text"
-                                    value={serialNumbersUpdate[idx] || ''}
-                                    onChange={(e) => {
-                                        const updated = [...serialNumbersUpdate];
-                                        updated[idx] = e.target.value;
-                                        setSerialNumbersUpdate(updated);
-                                    }}
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                    placeholder={`Serial #${idx + 1}`}
-                                />
-                            ))}
-                        </div>
-                        <div className="flex justify-end gap-4 mt-6">
-                            <button
-                                onClick={() => {
-                                    setIsSerialDialogOpen(false);
-                                    setShowUpdateDialog(true);
-                                }}
-                                className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
-                            >
-                                Back
-                            </button>
-                            <button
-                                className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                onClick={submitSerialsAndUpdateStock}
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </div>
                 </div>
             )}
+
+            {/* modal for opening update details */}
+            <div
+                className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
+                    showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300 ${
+                        showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h3 className="text-lg mb-4 text-center text-black">Update Stock Item</h3>
+                    <form>
+                        <div className="mb-4">
+                            <label className="block mb-2">Quantity</label>
+                            <input
+                                type="number"
+                                value={quantity}
+                                onChange={(e) => {
+                                    const newQty = parseInt(e.target.value, 10);
+                                    if (!isNaN(newQty)) {
+                                        setQuantity(newQty);
+                                    }
+                                }}
+                                className="p-2 border border-gray-300 rounded-lg w-full"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="pricePerUnit" className="block text-gray-700 font-medium mb-2">
+                                Price Per Unit
+                            </label>
+                            <input
+                                type="text"
+                                id="pricePerUnit"
+                                value={pricePerUnit.toLocaleString('en-US')}
+                                onChange={(e) => {
+                                    const rawValue = e.target.value.replace(/,/g, '');
+                                    if (!isNaN(Number(rawValue))) {
+                                        setPricePerUnit(Number(rawValue));
+                                    }
+                                }}
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder="Price per item"
+                                inputMode="numeric"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label className="block mb-2">Description</label>
+                            <input
+                                type="text"
+                                name="contact"
+                                className="border p-2 w-full bg-white"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
+                                Location
+                            </label>
+                            <select
+                                id="role"
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                defaultValue=""
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                            >
+                                <option value="" disabled>
+                                    Select location
+                                </option>
+                                <option value="shop">Shop</option>
+                                <option value="warehouse">Warehouse</option>
+                            </select>
+                        </div>
+                        <div className="mt-6 flex justify-end space-x-3">
+                            <button
+                                type="button"
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                onClick={() => setShowUpdateDialog(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                                onClick={handleUpdateStock1}
+                            >
+                                Update
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* modal for showing serial numbers of the selected inventory item */}
+            <div
+                className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
+                    showSerialDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-full max-w-xl max-h-[80vh] overflow-y-auto transform transition-all duration-300 ${
+                        showSerialDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h3 className="text-lg mb-4 text-center text-black">
+                        Serial numbers of items in stock for {selectedItem?.name} {selectedItem?.description}
+                    </h3>
+                    <div className="border border-gray-300 rounded-md max-h-60 overflow-y-auto p-2 max-h-[9.5rem]">
+                        {serialNumbers.map((serial: any, idx: number) => (
+                            <div key={idx} className="border-b py-2 px-1">
+          <span className="font-medium text-sm text-gray-700">
+            {serial.serialNumber || 'N/A'}
+          </span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                            onClick={() => setShowSerialDialog(false)}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* modal for entering serial numbers upon modifying quantity of inventory item */}
+            <div
+                className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
+                    isSerialDialogOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg w-1/4 transform transition-all duration-300 ${
+                        isSerialDialogOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
+                    }`}
+                >
+                    <h2 className="text-lg font-medium mb-4 text-center">Enter Serial Numbers</h2>
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                        {Array.from({ length: quantity }).map((_, idx) => (
+                            <input
+                                key={idx}
+                                type="text"
+                                value={serialNumbersUpdate[idx] || ''}
+                                onChange={(e) => {
+                                    const updated = [...serialNumbersUpdate];
+                                    updated[idx] = e.target.value;
+                                    setSerialNumbersUpdate(updated);
+                                }}
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                placeholder={`Serial #${idx + 1}`}
+                            />
+                        ))}
+                    </div>
+                    <div className="flex justify-end gap-4 mt-6">
+                        <button
+                            onClick={() => {
+                                setIsSerialDialogOpen(false);
+                                setShowUpdateDialog(true);
+                            }}
+                            className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg"
+                        >
+                            Back
+                        </button>
+                        <button
+                            className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
+                            onClick={submitSerialsAndUpdateStock}
+                        >
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
         </>
     );
 }

@@ -345,244 +345,228 @@ export default function AssignmentsTable() {
             </div>
 
             {/* modal for deleting an assignment */}
-            {ReactDOM.createPortal(
+            <div
+                className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                    showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
                 <div
-                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
-                        showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10 transition-all transform duration-300 ${
+                        showDeleteDialog
+                            ? 'opacity-100 scale-100 translate-y-0'
+                            : 'opacity-0 scale-95 -translate-y-4'
                     }`}
                 >
-                    <div
-                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10 transition-all transform duration-300 ${
-                            showDeleteDialog
-                                ? 'opacity-100 scale-100 translate-y-0'
-                                : 'opacity-0 scale-95 -translate-y-4'
-                        }`}
-                    >
-                        <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
-                        <p className="text-sm text-gray-700 mb-6">
-                            Are you sure you want to delete this assignment?
-                        </p>
-                        <div className="mt-4 flex justify-end space-x-3">
+                    <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
+                    <p className="text-sm text-gray-700 mb-6">
+                        Are you sure you want to delete this assignment?
+                    </p>
+                    <div className="mt-4 flex justify-end space-x-3">
+                        <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition-colors duration-200 hover:bg-gray-400"
+                            onClick={() => setShowDeleteDialog(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="bg-red-500 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-600"
+                            onClick={handleDeleteAssignment}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* modal for assignment details */}
+            <div
+                className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                    showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                        showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
+                    }`}
+                >
+                    <h3 className="text-lg mb-6 text-center text-black">Assignment Details</h3>
+                    <div className="flex flex-wrap gap-4">
+                        <div><strong>Assignment:</strong> {selectedAssignment?.assignmentName}</div>
+                        <div><strong>Location:</strong> {selectedAssignment?.location}</div>
+                        <div><strong>Description:</strong> {selectedAssignment?.description}</div>
+                        <div>
+                            <strong>Employees to attend:</strong> {selectedAssignment?.users.map(user => user.username).join(", ")}
+                        </div>
+                        <div><strong>Status:</strong> {selectedAssignment?.status}</div>
+                        <div>
+                            <strong>Start At:</strong>{" "}
+                            {selectedAssignment?.startsAt
+                                ? new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
+                                    weekday: "short",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                })
+                                : "N/A"}
+                        </div>
+                        <div>
+                            <strong>Ends At:</strong>{" "}
+                            {selectedAssignment?.endsAt
+                                ? new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
+                                    weekday: "short",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                })
+                                : "N/A"}
+                        </div>
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                        <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                            onClick={() => setShowDetailsDialog(false)}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* modal for updating an assignment */}
+            <div
+                className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                    showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transition-all transform duration-300 ${
+                        showUpdateDialog
+                            ? 'opacity-100 scale-100 translate-y-0'
+                            : 'opacity-0 scale-95 -translate-y-4'
+                    }`}
+                >
+                    <h3 className="text-lg mb-4 text-center text-black">Update Assignment</h3>
+                    <form>
+                        <div className="mb-4">
+                            <label>Assignment</label>
+                            <input
+                                type="text"
+                                className="border p-2 w-full bg-white"
+                                value={assignmentName}
+                                onChange={(e) => setAssignmentName(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label>Location</label>
+                            <input
+                                type="text"
+                                name="locationName"
+                                className="border p-2 w-full bg-white"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label>Description</label>
+                            <input
+                                type="text"
+                                name="contact"
+                                className="border p-2 w-full bg-white"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="startsAt" className="block text-gray-700 font-medium mb-2">
+                                Starts at
+                            </label>
+                            <input
+                                type="datetime-local"
+                                id="startsAt"
+                                value={startsAt ? new Date(startsAt).toISOString().slice(0, 16) : ""}
+                                onChange={(e) => setStartsAt(new Date(e.target.value))}
+                                className="grow p-2 bg-white w-[180px] border border-gray-300 rounded"
+                            />
+                        </div>
+
+                        <div className="mb-4">
+                            <label htmlFor="endsAt" className="block text-gray-700 font-medium mb-2">
+                                Ends at
+                            </label>
+                            <input
+                                type="datetime-local"
+                                id="endsAt"
+                                value={endsAt ? new Date(endsAt).toISOString().slice(0, 16) : ""}
+                                onChange={(e) => setEndsAt(new Date(e.target.value))}
+                                className="grow p-2 bg-white w-[180px] border border-gray-300 rounded"
+                            />
+                        </div>
+                        <div className="mt-6 flex justify-end space-x-3">
                             <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition-colors duration-200 hover:bg-gray-400"
-                                onClick={() => setShowDeleteDialog(false)}
+                                type="button"
+                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                                onClick={() => setShowUpdateDialog(false)}
                             >
                                 Cancel
                             </button>
                             <button
-                                className="bg-red-500 text-white px-4 py-2 rounded-md transition-colors duration-200 hover:bg-red-600"
-                                onClick={handleDeleteAssignment}
+                                type="submit"
+                                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
+                                onClick={handleUpdateAssignment}
                             >
-                                Delete
+                                Update
                             </button>
                         </div>
-                    </div>
-                </div>,
-                document.body
-            )}
-
-            {/* modal for assignment details */}
-            {shouldRenderDialog &&
-                ReactDOM.createPortal(
-                    <div
-                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
-                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                        }`}
-                    >
-                        <div
-                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
-                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
-                            }`}
-                        >
-                            <h3 className="text-lg  mb-6 text-center text-black">Assignment Details</h3>
-                            <div className="flex flex-wrap gap-4">
-                                <div><strong>Assignment:</strong> {selectedAssignment?.assignmentName}</div>
-                                <div><strong>Location:</strong> {selectedAssignment?.location}</div>
-                                <div><strong>Description:</strong> {selectedAssignment?.description}</div>
-                                <div>
-                                    <strong>Employees to attend:</strong> {selectedAssignment?.users.map(user => user.username).join(", ")}
-                                </div>
-                                <div><strong>Status:</strong> {selectedAssignment?.status}</div>
-                                <div>
-                                    <strong>Start At:</strong>{" "}
-                                    {selectedAssignment?.startsAt
-                                        ? new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
-                                            weekday: "short",
-                                            year: "numeric",
-                                            month: "long",
-                                            day: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            hour12: true,
-                                        })
-                                        : "N/A"}
-                                </div>
-
-                                <div>
-                                    <strong>Ends At:</strong>{" "}
-                                    {selectedAssignment?.endsAt
-                                        ? new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
-                                            weekday: "short",
-                                            year: "numeric",
-                                            month: "long",
-                                            day: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            hour12: true,
-                                        })
-                                        : "N/A"}
-                                </div>
-                            </div>
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
-                                    onClick={() => setShowDetailsDialog(false)}
-                                >
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>,
-                    document.body
-                )
-            }
-
-            {/* modal for updating an assignment */}
-            {ReactDOM.createPortal(
-                <div
-                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
-                        showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                    }`}
-                >
-                    <div
-                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transition-all transform duration-300 ${
-                            showUpdateDialog
-                                ? 'opacity-100 scale-100 translate-y-0'
-                                : 'opacity-0 scale-95 -translate-y-4'
-                        }`}
-                    >
-                        <h3 className="text-lg  mb-4 text-center text-black">Update Assignment</h3>
-                        <form>
-                            <div className="mb-4">
-                                <label>Assignment</label>
-                                <input
-                                    type="text"
-                                    className="border p-2 w-full bg-white"
-                                    value={assignmentName}
-                                    onChange={(e) => setAssignmentName(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label>Location</label>
-                                <input
-                                    type="text"
-                                    name="locationName"
-                                    className="border p-2 w-full bg-white"
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label>Description</label>
-                                <input
-                                    type="text"
-                                    name="contact"
-                                    className="border p-2 w-full bg-white"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <label htmlFor="startsAt" className="block text-gray-700 font-medium mb-2">
-                                    Starts at
-                                </label>
-                                <input
-                                    type="datetime-local"
-                                    id="startsAt"
-                                    value={startsAt ? new Date(startsAt).toISOString().slice(0, 16) : ""}
-                                    onChange={(e) => setStartsAt(new Date(e.target.value))}
-                                    className="grow p-2 bg-white w-[180px] border border-gray-300 rounded"
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="endsAt" className="block text-gray-700 font-medium mb-2">
-                                    Ends at
-                                </label>
-                                <input
-                                    type="datetime-local"
-                                    id="endsAt"
-                                    value={endsAt ? new Date(endsAt).toISOString().slice(0, 16) : ""}
-                                    onChange={(e) => setEndsAt(new Date(e.target.value))}
-                                    className="grow p-2 bg-white w-[180px] border border-gray-300 rounded"
-                                />
-                            </div>
-                            <div className="mt-6 flex justify-end space-x-3">
-                                <button
-                                    type="button"
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
-                                    onClick={() => setShowUpdateDialog(false)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
-                                    onClick={handleUpdateAssignment}
-                                >
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>,
-                document.body
-            )}
+                    </form>
+                </div>
+            </div>
 
             {/* modal for assignment objectives checklist */}
-            {ReactDOM.createPortal(
+            <div
+                className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                    showObjectivesDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+            >
                 <div
-                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-15 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
-                        showObjectivesDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transition-all transform duration-300 ${
+                        showObjectivesDialog
+                            ? 'opacity-100 scale-100 translate-y-0'
+                            : 'opacity-0 scale-95 -translate-y-4'
                     }`}
                 >
-                    <div
-                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transition-all transform duration-300 ${
-                            showObjectivesDialog
-                                ? 'opacity-100 scale-100 translate-y-0'
-                                : 'opacity-0 scale-95 -translate-y-4'
-                        }`}
-                    >
-                        <h3 className="text-lg mb-4 text-center">Assignment Objectives</h3>
-                        <div className="mb-4 max-h-80 overflow-y-auto">
-                            {objectives.length === 0 ? (
-                                <p className="text-center text-black">No objectives for this assignment.</p>
-                            ) : (
-                                <ul className="space-y-2">
-                                    {objectives
-                                        .filter(obj => obj.assignmentId === selectedAssignment?.assignmentId)
-                                        .map((obj, index) => (
-                                            <li key={index} className="flex items-center justify-between border-b pb-1">
-                                                <span className="text-gray-700">{obj.objectiveText}</span>
-                                                <span className="text-xl">{obj.isComplete ? '✅' : '❌'}</span>
-                                            </li>
-                                        ))}
-                                </ul>
-                            )}
-                        </div>
-                        <div className="mt-6 flex justify-end">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
-                                onClick={closeObjectivesDialog}
-                            >
-                                Close
-                            </button>
-                        </div>
+                    <h3 className="text-lg mb-4 text-center">Assignment Objectives</h3>
+                    <div className="mb-4 max-h-80 overflow-y-auto">
+                        {objectives.length === 0 ? (
+                            <p className="text-center text-black">No objectives for this assignment.</p>
+                        ) : (
+                            <ul className="space-y-2">
+                                {objectives
+                                    .filter(obj => obj.assignmentId === selectedAssignment?.assignmentId)
+                                    .map((obj, index) => (
+                                        <li key={index} className="flex items-center justify-between border-b pb-1">
+                                            <span className="text-gray-700">{obj.objectiveText}</span>
+                                            <span className="text-xl">{obj.isComplete ? '✅' : '❌'}</span>
+                                        </li>
+                                    ))}
+                            </ul>
+                        )}
                     </div>
-                </div>,
-                document.body
-            )}
-
+                    <div className="mt-6 flex justify-end">
+                        <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                            onClick={closeObjectivesDialog}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
         </>
 
     )
