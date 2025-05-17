@@ -66,7 +66,6 @@ export default function AssignmentsAdmin() {
     //     setIsSidebarCollapsed(!isSidebarCollapsed);
     // };
     useEffect(() => {
-
         if (!token) {
             router.push("/");
             return;
@@ -165,7 +164,9 @@ export default function AssignmentsAdmin() {
 
         setIsObjectivePromptOpen(false);
         setIsDialogOpen(false);
-        window.location.reload();
+        if (typeof window !== 'undefined') {
+            window.location.reload();
+        }
     }
 
 
@@ -232,7 +233,9 @@ export default function AssignmentsAdmin() {
             }
 
             setIsDialogOpen(false);
-            window.location.reload();
+            if (typeof window !== 'undefined') {
+                window.location.reload();
+            }
             setAssignmentName("");
             setLocation("");
             setStartDate(null);
