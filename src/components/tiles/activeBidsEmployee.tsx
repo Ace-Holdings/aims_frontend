@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import BidTileEmployee from "@/components/tiles/bidTileEmployee";
-import BidTile from "@/components/tiles/bidTile";
+
 
 interface Bid {
     bidId: any;
@@ -51,7 +51,7 @@ export default function ActiveBidsEmployee() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {activeBids.map((bid) => (
-                        <BidTile
+                        <BidTileEmployee
                             key={bid.bidId}
                             bid={{
                                 id: bid.bidId,

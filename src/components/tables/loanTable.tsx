@@ -156,8 +156,7 @@ export default function LoanTable() {
                 />
             </div>
 
-            {shouldRenderDialog &&
-                selectedLoan &&
+            {typeof window !== "undefined" && shouldRenderDialog && selectedLoan &&
                 ReactDOM.createPortal(
                     <div
                         className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
@@ -213,7 +212,8 @@ export default function LoanTable() {
                         </div>
                     </div>,
                     document.body
-                )}
+                )
+            }
         </>
     );
 }

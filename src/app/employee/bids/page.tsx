@@ -9,15 +9,18 @@ import ActiveBidsEmployee from "@/components/tiles/activeBidsEmployee";
 import PreviousBidsEmployee from "@/components/tiles/previousBidsEmployee";
 
 interface DecodedToken {
-    user: {
-        id: string;
-        username: string;
-        roles: string[];
-    };
-    exp?: number;
+    id: number;
+    user: string;
+    roles: string[];
     iat?: number;
+    exp?: number;
 }
 
+interface User {
+    id: number;
+    username: string;
+    roles: string[];
+}
 
 export default function EmployeeBids() {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -27,20 +30,9 @@ export default function EmployeeBids() {
     const [bidFile, setBidFile] = useState<File | null>(null);
     const [editFile, setEditFile] = useState<File | null>(null);
     const router = useRouter();
-
+    const [user, setUser] = useState<User | null>(null);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-
-    let user: DecodedToken["user"] | null = null;
-    if (token) {
-        try {
-            const decoded = jwtDecode<DecodedToken>(token);
-            user = decoded.user;
-        } catch {
-            user = null;
-        }
-    }
 
     const openDialog = () => setIsDialogOpen(true);
     const closeDialog = () => setIsDialogOpen(false);
@@ -83,17 +75,23 @@ export default function EmployeeBids() {
         }
 
         try {
-            const decodedToken = jwtDecode(token) as { roles?: string[] };
-            const roles = decodedToken.roles || [];
+            const decodedToken = jwtDecode<DecodedToken>(token);
 
-            if (!roles.includes("ROLE_EMPLOYEE")) {
+            if (!decodedToken.roles?.includes("ROLE_EMPLOYEE")) {
                 router.push("/");
+                return;
             }
-        } catch (e) {
-            console.error(e);
+
+            setUser({
+                id: decodedToken.id,
+                username: decodedToken.user,
+                roles: decodedToken.roles,
+            });
+        } catch (error) {
+            console.error("Invalid token", error);
             router.push("/");
         }
-    }, [router, token]);
+    }, [router]);
 
     const handleBidSubmit = async (event: FormEvent) => {
         event.preventDefault();
@@ -118,7 +116,7 @@ export default function EmployeeBids() {
         if (editFile) {
             formData.append("editableFileForBid", editFile);
         }
-        formData.append("lastModifiedBy", user.username);
+        formData.append("lastModifiedBy", user?.username || " ");
 
         try {
             const response = await fetch("http://localhost:3002/bids", {

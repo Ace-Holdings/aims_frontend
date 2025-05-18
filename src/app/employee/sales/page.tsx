@@ -466,8 +466,9 @@ export default function EmployeeSales() {
             setInputQuantity(1);
 
             closeDialog();
-            window.location.reload();
-
+            if (typeof window !== "undefined") {
+                window.location.reload();
+            }
 
         } catch (err) {
             console.error("Sales submission error:", err);
@@ -617,10 +618,15 @@ export default function EmployeeSales() {
         });
 
         // Chart creation
-        const canvas = document.createElement("canvas");
-        canvas.width = 600;
-        canvas.height = 300;
-        const ctx = canvas.getContext("2d");
+        let canvas: HTMLCanvasElement | null = null;
+        let ctx: CanvasRenderingContext2D | null = null;
+
+        if (typeof window !== "undefined" && typeof document !== "undefined") {
+            canvas = document.createElement("canvas");
+            canvas.width = 600;
+            canvas.height = 300;
+            ctx = canvas.getContext("2d");
+        }
 
         const salesByDate = report.salesData.reduce((acc: any, sale) => {
             const date = new Date(sale.timestamp).toLocaleDateString();
@@ -658,11 +664,13 @@ export default function EmployeeSales() {
 
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        const chartBase64 = canvas.toDataURL("image/png");
-        doc.addPage();
-        doc.setFontSize(16);
-        doc.text("Sales Overview Chart", 14, 20);
-        doc.addImage(chartBase64, "PNG", 10, 30, 190, 100);
+        const chartBase64 = canvas?.toDataURL("image/png");
+        if (chartBase64) {
+            doc.addPage();
+            doc.setFontSize(16);
+            doc.text("Sales Overview Chart", 14, 20);
+            doc.addImage(chartBase64, "PNG", 10, 30, 190, 100);
+        }
 
         // Save PDF
         doc.save("sales_report.pdf");

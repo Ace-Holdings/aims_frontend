@@ -149,7 +149,9 @@ export default function EmployeeAssignments() {
             }
 
             setIsDialogOpen(false);
-            window.location.reload();
+            if (typeof window !== "undefined") {
+                window.location.reload();
+            }
         } catch (error) {
             console.error("Error updating objectives:", error);
         }

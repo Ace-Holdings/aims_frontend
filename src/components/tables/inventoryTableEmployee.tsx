@@ -385,7 +385,7 @@ export default function InventoryTableEmployee() {
             </div>
 
             {/* modal for inventory details */}
-            {shouldRenderDialog &&
+            {typeof window !== "undefined" && shouldRenderDialog &&
                 ReactDOM.createPortal(
                     <div
                         className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
@@ -397,17 +397,11 @@ export default function InventoryTableEmployee() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg  mb-6 text-center text-black">Stock Item Details</h3>
+                            <h3 className="text-lg mb-6 text-center text-black">Stock Item Details</h3>
                             <div className="flex flex-wrap gap-4">
-                                <div>
-                                    <strong>Item name:</strong> {selectedItem?.name}
-                                </div>
-                                <div>
-                                    <strong>Description:</strong> {selectedItem?.description}
-                                </div>
-                                <div>
-                                    <strong>Quantity:</strong> {selectedItem?.quantity}
-                                </div>
+                                <div><strong>Item name:</strong> {selectedItem?.name}</div>
+                                <div><strong>Description:</strong> {selectedItem?.description}</div>
+                                <div><strong>Quantity:</strong> {selectedItem?.quantity}</div>
                                 <div>
                                     <strong>Unit price:</strong>{" "}
                                     {selectedItem?.pricePerUnit !== undefined
@@ -417,7 +411,6 @@ export default function InventoryTableEmployee() {
                                         }).format(selectedItem.pricePerUnit)
                                         : "N/A"}
                                 </div>
-
                                 <div>
                                     <strong>Date added:</strong>{" "}
                                     {selectedItem?.dateAdded
@@ -432,9 +425,7 @@ export default function InventoryTableEmployee() {
                                         })
                                         : "N/A"}
                                 </div>
-                                <div>
-                                    <strong>Location:</strong> {selectedItem?.location}
-                                </div>
+                                <div><strong>Location:</strong> {selectedItem?.location}</div>
                             </div>
                             <div className="mt-6 flex justify-end">
                                 <button
@@ -451,7 +442,7 @@ export default function InventoryTableEmployee() {
             }
 
             {/* update inventory modal */}
-            {ReactDOM.createPortal(
+            {typeof window !== "undefined" && ReactDOM.createPortal(
                 <div
                     className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
                         showUpdateDialog ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
@@ -462,7 +453,7 @@ export default function InventoryTableEmployee() {
                             showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-lg  mb-4 text-center ">Update Stock Item</h3>
+                        <h3 className="text-lg mb-4 text-center">Update Stock Item</h3>
                         <form>
                             <div className="mb-4">
                                 <label className="block mb-2">Quantity</label>
@@ -539,7 +530,7 @@ export default function InventoryTableEmployee() {
             )}
 
             {/* modal for showing inventory item serials */}
-            {ReactDOM.createPortal(
+            {typeof window !== "undefined" && ReactDOM.createPortal(
                 <div
                     className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
                         showSerialDialog ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
@@ -568,7 +559,7 @@ export default function InventoryTableEmployee() {
 
                         <div className="mt-4 flex justify-end">
                             <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                className="bg-gray-300 text-black px-4 py-2 rounded-md"
                                 onClick={() => setShowSerialDialog(false)}
                             >
                                 Close
@@ -580,7 +571,7 @@ export default function InventoryTableEmployee() {
             )}
 
             {/* modal for entering inventory item serial numbers */}
-            {ReactDOM.createPortal(
+            {typeof window !== "undefined" && ReactDOM.createPortal(
                 <div
                     className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
                         isSerialDialogOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'

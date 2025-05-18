@@ -209,7 +209,7 @@ export default function AssignmentsTableEmployee() {
                 />
             </div>
 
-            {shouldRenderDialog &&
+            {typeof window !== "undefined" && shouldRenderDialog && document?.body && selectedAssignment &&
                 ReactDOM.createPortal(
                     <div
                         className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
@@ -221,18 +221,19 @@ export default function AssignmentsTableEmployee() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg  mb-6 text-center text-black">Assignment Details</h3>
+                            <h3 className="text-lg mb-6 text-center text-black">Assignment Details</h3>
                             <div className="flex flex-wrap gap-4">
-                                <div><strong>Assignment:</strong> {selectedAssignment?.assignmentName}</div>
-                                <div><strong>Location:</strong> {selectedAssignment?.location}</div>
-                                <div><strong>Description:</strong> {selectedAssignment?.description}</div>
+                                <div><strong>Assignment:</strong> {selectedAssignment.assignmentName}</div>
+                                <div><strong>Location:</strong> {selectedAssignment.location}</div>
+                                <div><strong>Description:</strong> {selectedAssignment.description}</div>
                                 <div>
-                                    <strong>Employees to attend:</strong> {selectedAssignment?.users.map(user => user.username).join(", ")}
+                                    <strong>Employees to attend:</strong>{" "}
+                                    {selectedAssignment.users.map(user => user.username).join(", ")}
                                 </div>
-                                <div><strong>Status:</strong> {selectedAssignment?.status}</div>
+                                <div><strong>Status:</strong> {selectedAssignment.status}</div>
                                 <div>
                                     <strong>Start At:</strong>{" "}
-                                    {selectedAssignment?.startsAt
+                                    {selectedAssignment.startsAt
                                         ? new Date(selectedAssignment.startsAt).toLocaleString("en-US", {
                                             weekday: "short",
                                             year: "numeric",
@@ -244,10 +245,9 @@ export default function AssignmentsTableEmployee() {
                                         })
                                         : "N/A"}
                                 </div>
-
                                 <div>
                                     <strong>Ends At:</strong>{" "}
-                                    {selectedAssignment?.endsAt
+                                    {selectedAssignment.endsAt
                                         ? new Date(selectedAssignment.endsAt).toLocaleString("en-US", {
                                             weekday: "short",
                                             year: "numeric",

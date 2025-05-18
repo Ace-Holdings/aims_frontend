@@ -59,9 +59,6 @@ export default function AssignmentsAdmin() {
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-    // const toggleSidebar = () => {
-    //     setIsSidebarCollapsed(!isSidebarCollapsed);
-    // };
     useEffect(() => {
         if (!token) {
             router.push("/");

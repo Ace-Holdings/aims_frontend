@@ -3,19 +3,26 @@
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
 import {useEffect, useState} from "react";
+import TotalAssignments from "@/components/tiles/totalAssignments";
+import ActiveAssignments from "@/components/tiles/activeAssignments";
+import AssignmentsTable from "@/components/tables/assignmentsTable";
 import ActiveBids from "@/components/tiles/activeBids";
 import PreviousBids from "@/components/tiles/previousBids";
 import { useRouter } from "next/navigation";
 import {jwtDecode} from "jwt-decode";
 
 interface DecodedToken {
-    user: {
-        id: string;
-        username: string;
-        roles: string[];
-    };
-    exp?: number;
+    id: number;
+    user: string;
+    roles: string[];
     iat?: number;
+    exp?: number;
+}
+
+interface User {
+    id: number;
+    username: string;
+    roles: string[];
 }
 
 export default function AdminBids() {
@@ -26,16 +33,9 @@ export default function AdminBids() {
     const [bidFile, setBidFile] = useState("");
     const [editFile, setEditFile] = useState("");
     const router = useRouter();
+    const [user, setUser] = useState<User | null>(null);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-    if (!token) {
-        router.push("/");
-        return null;
-    }
-
-    const decoded = jwtDecode<DecodedToken>(token);
-    const user = decoded.user;
 
     const openDialog = () => {
         setIsDialogOpen(true);
@@ -73,21 +73,26 @@ export default function AdminBids() {
     };
 
     useEffect(() => {
-
         if (!token) {
             router.push("/");
             return;
         }
 
         try {
-            const decodedToken = jwtDecode(token) as { roles?: string[] };
-            const roles: string[] = decodedToken.roles || [];
+            const decodedToken = jwtDecode<DecodedToken>(token);
 
-            if (!roles.includes("ROLE_ADMIN")) {
+            if (!decodedToken.roles?.includes("ROLE_ADMIN")) {
                 router.push("/");
+                return;
             }
-        } catch (e) {
-            console.log(e);
+
+            setUser({
+                id: decodedToken.id,
+                username: decodedToken.user,
+                roles: decodedToken.roles,
+            });
+        } catch (error) {
+            console.error("Invalid token", error);
             router.push("/");
         }
     }, [router]);
@@ -111,7 +116,7 @@ export default function AdminBids() {
         formData.append("deadline", deadline.toISOString());
         formData.append("bidDocumentFile", bidFile);
         formData.append("editableFileForBid", editFile);
-        formData.append("lastModifiedBy", user.username);
+        formData.append("lastModifiedBy", user?.username || "");
 
 
         try {

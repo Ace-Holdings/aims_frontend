@@ -29,16 +29,10 @@ export default function ManagerBids() {
     const [bidFileUrl, setBidFileUrl] = useState<string | null>(null);
     const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
     const router = useRouter();
+    const [user, setUser] = useState<DecodedToken["user"] | null>(null);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-    if (!token) {
-        router.push("/");
-        return null;
-    }
-
-    const decoded = jwtDecode<DecodedToken>(token);
-    const user = decoded.user;
 
     const openDialog = () => {
         setIsDialogOpen(true);
@@ -75,21 +69,26 @@ export default function ManagerBids() {
     };
 
     useEffect(() => {
+        if (typeof window === "undefined") return;
 
+        const token = localStorage.getItem("token");
         if (!token) {
             router.push("/");
             return;
         }
 
         try {
-            const decodedToken = jwtDecode(token) as { roles?: string[] };
-            const roles: string[] = decodedToken.roles || [];
+            const decoded = jwtDecode<DecodedToken>(token);
+            const roles = decoded.user.roles;
 
             if (!roles.includes("ROLE_MANAGER")) {
                 router.push("/");
+                return;
             }
+
+            setUser(decoded.user);
         } catch (e) {
-            console.log(e);
+            console.error("Invalid token", e);
             router.push("/");
         }
     }, [router]);
@@ -113,7 +112,7 @@ export default function ManagerBids() {
         formData.append("deadline", deadline.toISOString());
         formData.append("bidDocumentFile", bidFile);
         formData.append("editableFileForBid", editFile);
-        formData.append("lastModifiedBy", user.username);
+        formData.append("lastModifiedBy", user?.username || "");
 
 
 
