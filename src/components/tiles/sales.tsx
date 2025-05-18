@@ -243,7 +243,7 @@ const SalesTile: React.FC<SaleTileProps> = ({
                 </p>
             </div>
 
-            {shouldRenderDialog && selectedSale &&
+            {typeof window !== "undefined" && shouldRenderDialog && selectedSale &&
                 ReactDOM.createPortal(
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300">
                         <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300">
@@ -273,21 +273,34 @@ const SalesTile: React.FC<SaleTileProps> = ({
                         </div>
                     </div>,
                     document.body
-                )}
+                )
+            }
 
-            {showDeleteDialog && ReactDOM.createPortal(
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm font-custom transition-opacity duration-300">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300">
-                        <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
-                        <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this sale?</p>
-                        <div className="mt-4 flex justify-end space-x-3">
-                            <button className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md" onClick={() => setShowDeleteDialog(false)}>Cancel</button>
-                            <button className="bg-red-600 text-white px-4 py-2 rounded-md" onClick={handleDeleteSale}>Delete</button>
+            {typeof window !== "undefined" && showDeleteDialog &&
+                ReactDOM.createPortal(
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm font-custom transition-opacity duration-300">
+                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300">
+                            <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
+                            <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this sale?</p>
+                            <div className="mt-4 flex justify-end space-x-3">
+                                <button
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                    onClick={() => setShowDeleteDialog(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="bg-red-600 text-white px-4 py-2 rounded-md"
+                                    onClick={handleDeleteSale}
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>,
-                document.body
-            )}
+                    </div>,
+                    document.body
+                )
+            }
         </>
     );
 };

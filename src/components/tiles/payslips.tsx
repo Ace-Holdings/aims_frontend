@@ -143,21 +143,58 @@ const PaySlipsTile: React.FC<PaySlipProps> = ({ id, employee, earnings, deductio
             </div>
 
             {/* Details Modal */}
-            {shouldRenderDialog && selectedSlip &&
+            {typeof window !== "undefined" &&
+                shouldRenderDialog &&
+                selectedSlip &&
                 ReactDOM.createPortal(
-                    <div className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${showDetailsDialog ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
-                        <div className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${showDetailsDialog ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4"}`}>
+                    <div
+                        className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom transition-opacity duration-300 ${
+                            showDetailsDialog ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                        }`}
+                    >
+                        <div
+                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl w-11/12 mx-auto transition-all transform duration-300 ${
+                                showDetailsDialog ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-4"
+                            }`}
+                        >
                             <h3 className="text-lg mb-6 text-center text-black">Payslip Details</h3>
+
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div><strong>ID:</strong> {selectedSlip.id}</div>
                                 <div><strong>Employee:</strong> {selectedSlip.employee}</div>
-                                <div><strong>Total earnings:</strong> {new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(selectedSlip.earnings)}</div>
-                                <div><strong>Total deductions:</strong> {new Intl.NumberFormat('en-MW', { style: 'currency', currency: 'MWK' }).format(selectedSlip.deductions)}</div>
-                                <div><strong>Date:</strong> {new Date(selectedSlip.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+                                <div>
+                                    <strong>Total earnings:</strong>{" "}
+                                    {typeof selectedSlip.earnings === "number"
+                                        ? new Intl.NumberFormat("en-MW", {
+                                            style: "currency",
+                                            currency: "MWK",
+                                        }).format(selectedSlip.earnings)
+                                        : "N/A"}
+                                </div>
+                                <div>
+                                    <strong>Total deductions:</strong>{" "}
+                                    {typeof selectedSlip.deductions === "number"
+                                        ? new Intl.NumberFormat("en-MW", {
+                                            style: "currency",
+                                            currency: "MWK",
+                                        }).format(selectedSlip.deductions)
+                                        : "N/A"}
+                                </div>
+                                <div>
+                                    <strong>Date:</strong>{" "}
+                                    {selectedSlip.date
+                                        ? new Date(selectedSlip.date).toLocaleDateString("en-GB", {
+                                            day: "2-digit",
+                                            month: "long",
+                                            year: "numeric",
+                                        })
+                                        : "N/A"}
+                                </div>
                             </div>
+
                             <div className="mt-6 flex justify-end">
                                 <button
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
                                     onClick={() => setShowDetailsDialog(false)}
                                 >
                                     Close
@@ -169,21 +206,27 @@ const PaySlipsTile: React.FC<PaySlipProps> = ({ id, employee, earnings, deductio
                 )}
 
             {/* Delete Modal */}
-            {showDeleteDialog && selectedSlip &&
+            {typeof window !== "undefined" &&
+                showDeleteDialog &&
+                selectedSlip &&
                 ReactDOM.createPortal(
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm transition-opacity duration-300">
-                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto transform transition-all duration-300">
+                    <div className={`fixed inset-0 z-50 font-custom flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm transition-opacity duration-300 ${
+                        showDeleteDialog ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                    }`}>
+                        <div className={`bg-white p-6 rounded-lg shadow-lg max-w-md w-[90%] mx-auto transform transition-all duration-300 ${
+                            showDeleteDialog ? "scale-100 translate-y-0 opacity-100" : "scale-95 -translate-y-4 opacity-0"
+                        }`}>
                             <h3 className="text-lg mb-4 text-black text-center">Confirm Delete</h3>
                             <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this payslip?</p>
                             <div className="mt-4 flex justify-end space-x-3">
                                 <button
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
                                     onClick={() => setShowDeleteDialog(false)}
                                 >
                                     Cancel
                                 </button>
                                 <button
-                                    className="bg-red-600 text-white px-4 py-2 rounded-md"
+                                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
                                     onClick={handleDeletePaySlip}
                                 >
                                     Delete

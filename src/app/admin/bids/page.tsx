@@ -3,9 +3,6 @@
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
 import {useEffect, useState} from "react";
-import TotalAssignments from "@/components/tiles/totalAssignments";
-import ActiveAssignments from "@/components/tiles/activeAssignments";
-import AssignmentsTable from "@/components/tables/assignmentsTable";
 import ActiveBids from "@/components/tiles/activeBids";
 import PreviousBids from "@/components/tiles/previousBids";
 import { useRouter } from "next/navigation";

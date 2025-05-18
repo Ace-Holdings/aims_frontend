@@ -209,79 +209,75 @@ export default function LogTable() {
             </div>
 
             {/* modal for showing log details */}
-            {shouldRenderDialog &&
-                ReactDOM.createPortal(
-                    <div
-                        className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
-                            showDetailsDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                        }`}
-                    >
-                        <div
-                            className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
-                                showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
-                            }`}
-                        >
-                            <h3 className="text-lg mb-6 text-center text-black">Log Details</h3>
-                            <div className="flex flex-wrap gap-4">
-                                <div>
-                                    <strong>ID:</strong> {selectedLog?.id}
-                                </div>
-                                <div>
-                                    <strong>Initiator:</strong> {selectedLog?.username}
-                                </div>
-                                <div>
-                                    <strong>Action:</strong> {selectedLog?.message}
-                                </div>
-                                <div>
-                                    <strong>Level:</strong> {selectedLog?.level}
-                                </div>
-                            </div>
-                            <div className="mt-6 flex justify-end">
-                                <button
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
-                                    onClick={() => setShowDetailsDialog(false)}
-                                >
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>,
-                    document.body
-                )
-            }
-
-            {/* modal for deleting a log*/}
-            {ReactDOM.createPortal(
+            <div
+                className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
+                    showDetailsDialog ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                }`}
+            >
                 <div
-                    className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-50 transition-opacity duration-300 ${
-                        showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                    className={`bg-white p-6 rounded-lg shadow-lg max-w-3xl mx-auto transition-all transform duration-300 ${
+                        showDetailsDialog
+                            ? "opacity-100 scale-100 translate-y-0"
+                            : "opacity-0 scale-95 -translate-y-4"
                     }`}
                 >
-                    <div
-                        className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10 transform transition-all duration-300 ${
-                            showDeleteDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-2 opacity-0'
-                        }`}
-                    >
-                        <h3 className="text-xl  mb-4 text-black text-center">Confirm Delete</h3>
-                        <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this log?</p>
-                        <div className="mt-4 flex justify-end space-x-3">
-                            <button
-                                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
-                                onClick={() => setShowDeleteDialog(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="bg-red-600 text-white px-4 py-2 rounded-md"
-                                onClick={handleDeleteLog}
-                            >
-                                Delete
-                            </button>
+                    <h3 className="text-lg mb-6 text-center text-black">Log Details</h3>
+                    <div className="flex flex-wrap gap-4">
+                        <div>
+                            <strong>ID:</strong> {selectedLog?.id}
+                        </div>
+                        <div>
+                            <strong>Initiator:</strong> {selectedLog?.username}
+                        </div>
+                        <div>
+                            <strong>Action:</strong> {selectedLog?.message}
+                        </div>
+                        <div>
+                            <strong>Level:</strong> {selectedLog?.level}
                         </div>
                     </div>
-                </div>,
-                document.body
-            )}
+                    <div className="mt-6 flex justify-end">
+                        <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200"
+                            onClick={() => setShowDetailsDialog(false)}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* modal for deleting a log*/}
+            <div
+                className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm z-50 transition-opacity duration-300 ${
+                    showDeleteDialog ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                }`}
+            >
+                <div
+                    className={`bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto z-10 transform transition-all duration-300 ${
+                        showDeleteDialog
+                            ? "scale-100 translate-y-0 opacity-100"
+                            : "scale-95 -translate-y-2 opacity-0"
+                    }`}
+                >
+                    <h3 className="text-xl mb-4 text-black text-center">Confirm Delete</h3>
+                    <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this log?</p>
+                    <div className="mt-4 flex justify-end space-x-3">
+                        <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"
+                            onClick={() => setShowDeleteDialog(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="bg-red-600 text-white px-4 py-2 rounded-md"
+                            onClick={handleDeleteLog}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
         </>
     )
 }

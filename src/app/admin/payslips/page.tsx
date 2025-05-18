@@ -402,7 +402,10 @@ export default function Payslips() {
             }
 
             setIsDialogOpen(false);
-            window.location.reload();
+
+            if (typeof window !== "undefined") {
+                window.location.reload();
+            }
         } catch (e) {
             console.log('could not submit slip to database')
         }
@@ -412,7 +415,7 @@ export default function Payslips() {
 
     return(
         <>
-            <div className={` flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""} font-custom `}>
+            <div className={`min-h-screen flex bg-gray-100 ${isDialogOpen ? "blur-sm" : ""} font-custom`}>
                 <div
                     className={`fixed top-0 left-0 h-screen ${isSidebarCollapsed ? 'w-16' : 'w-64'} z-10 shadow-md transition-all duration-300`}>
                     <SidebarAdmin isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar}/>

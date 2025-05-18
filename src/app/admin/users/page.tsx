@@ -3,8 +3,6 @@
 import SidebarAdmin from "@/components/layout/adminSidebar";
 import Navbar from "@/components/layout/navbar";
 import {useEffect, useState} from "react";
-import TotalAssignments from "@/components/tiles/totalAssignments";
-import ActiveAssignments from "@/components/tiles/activeAssignments";
 import TotalUsers from "@/components/tiles/numberOfUsers";
 import TotalActiveUsers from "@/components/tiles/numberOfActiveUsers";
 import AssignmentsTable from "@/components/tables/assignmentsTable";
@@ -245,7 +243,9 @@ export default function UsersAdmin() {
             }
 
             setGrantedRequests(prev => new Set(prev).add(requestId));
-            window.location.reload();
+            if (typeof window !== "undefined") {
+                window.location.reload();
+            }
         } catch (error) {
             console.error("Error processing loan:", error);
         }
@@ -478,7 +478,9 @@ export default function UsersAdmin() {
 
         const salaryId = selectedSalary.salaryId;
         handleUpdateSalary(salaryId);
-        window.location.reload();
+        if (typeof window !== "undefined") {
+            window.location.reload();
+        }
     };
 
     const handleUpdateSalary = async (id: number) => {
@@ -522,7 +524,9 @@ export default function UsersAdmin() {
             }
 
             setRejectedRequests(prev => new Set(prev).add(requestId));
-            window.location.reload();
+            if (typeof window !== "undefined") {
+                window.location.reload();
+            }
 
         } catch (e) {
             console.error(e);

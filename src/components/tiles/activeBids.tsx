@@ -1,3 +1,5 @@
+"use client"
+
 import BidTile from "./bidTile"
 import { useEffect, useState } from "react";
 

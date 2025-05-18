@@ -87,7 +87,9 @@ export default function UsersTable() {
             if (!res.ok) console.error("Could not delete user");
 
             setShowDeleteDialog(false);
-            window.location.reload();
+            if (typeof window !== "undefined") {
+                window.location.reload();
+            }
         } catch (e) {
             console.error(e);
         }
@@ -135,7 +137,9 @@ export default function UsersTable() {
             if (!res.ok) console.error("Failed to update user");
 
             setShowUpdateDialog(false);
-            window.location.reload();
+            if (typeof window !== "undefined") {
+                window.location.reload();
+            }
         } catch (e) {
             console.error(e);
         }
@@ -239,7 +243,7 @@ export default function UsersTable() {
                 <DataTable columns={columns} data={filteredData} pagination highlightOnHover striped />
             </div>
 
-            {ReactDOM.createPortal(
+            {typeof window !== "undefined" && showDeleteDialog && ReactDOM.createPortal(
                 <div
                     className={`fixed inset-0 flex items-center justify-center bg-black text-black font-custom bg-opacity-30 backdrop-blur-sm z-50 transition-opacity duration-300 ${
                         showDeleteDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -271,7 +275,7 @@ export default function UsersTable() {
                 document.body
             )}
 
-            {shouldRenderDialog &&
+            {typeof window !== "undefined" && shouldRenderDialog &&
                 ReactDOM.createPortal(
                     <div
                         className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 text-black backdrop-blur-sm font-custom z-50 transition-opacity duration-300 ${
@@ -283,32 +287,16 @@ export default function UsersTable() {
                                 showDetailsDialog ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4'
                             }`}
                         >
-                            <h3 className="text-lg  mb-6 text-center text-black">User Details</h3>
+                            <h3 className="text-lg mb-6 text-center text-black">User Details</h3>
                             <div className="flex flex-wrap gap-4">
-                                <div>
-                                    <strong>First name:</strong> {selectedUser?.firstName}
-                                </div>
-                                <div>
-                                    <strong>Last name:</strong> {selectedUser?.surname}
-                                </div>
-                                <div>
-                                    <strong>username:</strong> {selectedUser?.username}
-                                </div>
-                                <div>
-                                    <strong>email:</strong> {selectedUser?.email}
-                                </div>
-                                <div>
-                                    <strong>ID number:</strong> {selectedUser?.idNumber}
-                                </div>
-                                <div>
-                                    <strong>Assignment ID:</strong> {selectedUser?.assignmentId}
-                                </div>
-                                <div>
-                                    <strong>Roles:</strong> {selectedUser?.roles.map(role => role.name).join(", ")}
-                                </div>
-                                <div>
-                                    <strong>Salary bracket:</strong> {selectedUser?.salary?.class ?? "N/A"}
-                                </div>
+                                <div><strong>First name:</strong> {selectedUser?.firstName}</div>
+                                <div><strong>Last name:</strong> {selectedUser?.surname}</div>
+                                <div><strong>username:</strong> {selectedUser?.username}</div>
+                                <div><strong>email:</strong> {selectedUser?.email}</div>
+                                <div><strong>ID number:</strong> {selectedUser?.idNumber}</div>
+                                <div><strong>Assignment ID:</strong> {selectedUser?.assignmentId}</div>
+                                <div><strong>Roles:</strong> {selectedUser?.roles.map(role => role.name).join(", ")}</div>
+                                <div><strong>Salary bracket:</strong> {selectedUser?.salary?.class ?? "N/A"}</div>
                             </div>
                             <div className="mt-6 flex justify-end">
                                 <button
@@ -324,7 +312,7 @@ export default function UsersTable() {
                 )
             }
 
-            {ReactDOM.createPortal(
+            {typeof window !== "undefined" && ReactDOM.createPortal(
                 <div
                     className={`fixed inset-0 flex items-center justify-center bg-black text-black font-custom bg-opacity-30 backdrop-blur-sm z-50 transition-opacity duration-300 ${
                         showUpdateDialog ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -335,7 +323,7 @@ export default function UsersTable() {
                             showUpdateDialog ? 'scale-100 translate-y-0 opacity-100' : 'scale-95 -translate-y-4 opacity-0'
                         }`}
                     >
-                        <h3 className="text-lg  mb-4 text-center text-black">Update user</h3>
+                        <h3 className="text-lg mb-4 text-center text-black">Update user</h3>
                         <form>
                             <div className="mb-4">
                                 <label>First name</label>
