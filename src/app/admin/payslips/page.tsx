@@ -9,6 +9,8 @@ import autoTable from "jspdf-autotable";
 import PaySlipsTile from "@/components/tiles/payslips";
 import {jwtDecode} from "jwt-decode";
 import { useRouter } from "next/navigation";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface Payslip {
     payslipId: number;
@@ -727,12 +729,15 @@ export default function Payslips() {
                                 Date generated
                             </label>
                             <div className="relative overflow-visible">
-                                <input
-                                    type="datetime-local"
-                                    value={selectedDate ? new Date(selectedDate).toISOString().slice(0, 16) : ""}
-                                    onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                                    className="grow p-2 bg-white w-[220px] border border-gray-300"
-                                    placeholder="Select start date and time"
+                                <DatePicker
+                                    selected={selectedDate}
+                                    onChange={(date) => setSelectedDate(date)}
+                                    showTimeSelect
+                                    timeFormat="HH:mm"
+                                    timeIntervals={15}
+                                    dateFormat="yyyy-MM-dd HH:mm"
+                                    placeholderText="Select start date and time"
+                                    className="grow p-2 bg-white w-[220px] border border-gray-300 rounded"
                                 />
                             </div>
                         </div>

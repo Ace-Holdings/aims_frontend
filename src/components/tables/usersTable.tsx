@@ -226,8 +226,8 @@ export default function UsersTable() {
     return (
         <>
             <div className="p-4">
-                <div className="flex justify-between mb-4">
-                    <select value={filter} onChange={handleFilterChange} className="border px-2 py-1">
+                <div className="flex justify-between mb-4 text-black">
+                    <select value={filter} onChange={handleFilterChange} className="border border-gray-300 rounded-md px-2 py-1">
                         <option value="All">All</option>
                         <option value="true">Active</option>
                         <option value="false">Inactive</option>

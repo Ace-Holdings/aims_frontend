@@ -10,6 +10,9 @@ import Navbar from "@/components/layout/navbar";
 import SalesTile from "@/components/tiles/sales";
 import EmployeeSidebar from "@/components/layout/employeeSidebar";
 import SalesTileEmployee from "@/components/tiles/salesTileEmployee";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+
 import {
     Chart,
     BarController,
@@ -1140,23 +1143,23 @@ export default function EmployeeSales() {
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">From:</label>
-                            <input
-                                type="date"
-                                value={startDate ? new Date(startDate).toISOString().slice(0, 10) : ""}
-                                onChange={(e) => setStartDate(new Date(e.target.value))}
-                                className="w-[300px] p-2 border border-gray-300 rounded-lg"
-                                placeholder="Select a date"
+                            <DatePicker
+                                selected={startDate}
+                                onChange={(date) => setStartDate(date)}
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="Select a date"
+                                className="w-[300px] p-2 border border-gray-300 rounded-lg bg-white"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium mb-1">To:</label>
-                            <input
-                                type="date"
-                                value={endDate ? new Date(endDate).toISOString().slice(0, 10) : ""}
-                                onChange={(e) => setEndDate(new Date(e.target.value))}
-                                className="w-[300px] p-2 border border-gray-300 rounded-lg"
-                                placeholder="Select a date"
+                            <DatePicker
+                                selected={endDate}
+                                onChange={(date) => setEndDate(date)}
+                                dateFormat="yyyy-MM-dd"
+                                placeholderText="Select a date"
+                                className="w-[300px] p-2 border border-gray-300 rounded-lg bg-white"
                             />
                         </div>
                     </div>

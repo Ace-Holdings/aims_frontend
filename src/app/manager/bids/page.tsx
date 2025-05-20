@@ -8,15 +8,21 @@ import ManagerSidebar from "@/components/layout/managerSidebar";
 import {useEffect, useState} from "react";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/navigation";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface DecodedToken {
-    user: {
-        id: string;
-        username: string;
-        roles: string[];
-    };
-    exp?: number;
+    id: number;
+    user: string;
+    roles: string[];
     iat?: number;
+    exp?: number;
+}
+
+interface User {
+    id: number;
+    username: string;
+    roles: string[];
 }
 
 export default function ManagerBids() {
@@ -29,7 +35,7 @@ export default function ManagerBids() {
     const [bidFileUrl, setBidFileUrl] = useState<string | null>(null);
     const [editFileUrl, setEditFileUrl] = useState<string | null>(null);
     const router = useRouter();
-    const [user, setUser] = useState<DecodedToken["user"] | null>(null);
+    const [user, setUser] = useState<User | null>(null);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -69,27 +75,28 @@ export default function ManagerBids() {
     };
 
     useEffect(() => {
-        if (typeof window === "undefined") return;
-
-        const token = localStorage.getItem("token");
         if (!token) {
             router.push("/");
             return;
         }
 
         try {
-            const decoded = jwtDecode<DecodedToken>(token);
-            const roles = decoded.user.roles;
+            const decodedToken = jwtDecode<DecodedToken>(token);
+            console.log(decodedToken);
 
-            if (!roles.includes("ROLE_MANAGER")) {
+            if (!decodedToken.roles?.includes("ROLE_MANAGER")) {
                 router.push("/");
                 return;
             }
 
-            setUser(decoded.user);
-        } catch (e) {
-            console.error("Invalid token", e);
-            router.push("/");
+            setUser({
+                id: decodedToken.id,
+                username: decodedToken.user,
+                roles: decodedToken.roles,
+            });
+        } catch (error) {
+            console.error("Invalid token", error);
+            // router.push("/");
         }
     }, [router]);
 
@@ -234,12 +241,15 @@ export default function ManagerBids() {
                         <div className="mb-4">
                             <label htmlFor="deadline" className="block text-gray-700 font-medium mb-2">Deadline</label>
                             <div className="relative overflow-visible">
-                                <input
-                                    type="datetime-local"
-                                    value={deadline ? new Date(deadline).toISOString().slice(0, 16) : ""}
-                                    onChange={(e) => setDeadline(new Date(e.target.value))}
-                                    className="grow p-2 bg-white w-[200px] border border-gray-300"
-                                    placeholder="Select start date and time"
+                                <DatePicker
+                                    selected={deadline}
+                                    onChange={(date) => setDeadline(date)}
+                                    showTimeSelect
+                                    timeFormat="HH:mm"
+                                    timeIntervals={15}
+                                    dateFormat="yyyy-MM-dd HH:mm"
+                                    placeholderText="Select start date and time"
+                                    className="grow p-2 bg-white w-[200px] border border-gray-300 rounded"
                                 />
                             </div>
                         </div>

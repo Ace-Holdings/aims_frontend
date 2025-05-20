@@ -8,6 +8,8 @@ import AssignmentsTable from "@/components/tables/assignmentsTable";
 import {useState, useEffect} from "react";
 import { useRouter } from "next/navigation";
 import {jwtDecode} from "jwt-decode";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function AssignmentsAdmin() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -351,12 +353,15 @@ export default function AssignmentsAdmin() {
                                 Starts at
                             </label>
                             <div className="relative w-[350px]">
-                                <input
-                                    type="datetime-local"
-                                    value={startDate ? new Date(startDate).toISOString().slice(0, 16) : ""}
-                                    onChange={(e) => setStartDate(new Date(e.target.value))}
-                                    className="p-2 bg-white border border-gray-300 rounded-md w-[220px]"
-                                    placeholder="Select start date and time"
+                                <DatePicker
+                                    selected={endDate}
+                                    onChange={(date) => setEndDate(date)}
+                                    showTimeSelect
+                                    timeFormat="HH:mm"
+                                    timeIntervals={15}
+                                    dateFormat="yyyy-MM-dd HH:mm"
+                                    placeholderText="Select end date and time"
+                                    className="grow p-2 bg-white border border-gray-300 w-[220px]"
                                 />
                             </div>
                         </div>
@@ -365,12 +370,15 @@ export default function AssignmentsAdmin() {
                                 Ends at
                             </label>
                             <div className="relative overflow-visible">
-                                <input
-                                    type="datetime-local"
-                                    value={endDate ? new Date(endDate).toISOString().slice(0, 16) : ""}
-                                    onChange={(e) => setEndDate(new Date(e.target.value))}
+                                <DatePicker
+                                    selected={endDate}
+                                    onChange={(date) => setEndDate(date)}
+                                    showTimeSelect
+                                    timeFormat="HH:mm"
+                                    timeIntervals={15}
+                                    dateFormat="yyyy-MM-dd HH:mm"
+                                    placeholderText="Select end date and time"
                                     className="grow p-2 bg-white border border-gray-300 w-[220px]"
-                                    placeholder="Select end date and time"
                                 />
                             </div>
                         </div>

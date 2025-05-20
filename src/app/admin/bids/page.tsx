@@ -10,6 +10,8 @@ import ActiveBids from "@/components/tiles/activeBids";
 import PreviousBids from "@/components/tiles/previousBids";
 import { useRouter } from "next/navigation";
 import {jwtDecode} from "jwt-decode";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface DecodedToken {
     id: number;
@@ -242,12 +244,15 @@ export default function AdminBids() {
                             <div className="mb-4">
                                 <label htmlFor="deadline" className="block text-gray-700 font-medium mb-2">Deadline</label>
                                 <div className="relative overflow-visible">
-                                    <input
-                                        type="datetime-local"
-                                        value={deadline ? new Date(deadline).toISOString().slice(0, 16) : ""}
-                                        onChange={(e) => setDeadline(new Date(e.target.value))}
-                                        className="grow p-2 bg-white w-[200px] border border-gray-300"
-                                        placeholder="Select start date and time"
+                                    <DatePicker
+                                        selected={deadline}
+                                        onChange={(date) => setDeadline(date)}
+                                        showTimeSelect
+                                        timeFormat="HH:mm"
+                                        timeIntervals={15}
+                                        dateFormat="yyyy-MM-dd HH:mm"
+                                        placeholderText="Select start date and time"
+                                        className="grow p-2 bg-white w-[200px] border border-gray-300 rounded"
                                     />
                                 </div>
                             </div>
