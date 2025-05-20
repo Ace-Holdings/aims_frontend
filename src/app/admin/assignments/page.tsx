@@ -88,7 +88,7 @@ export default function AssignmentsAdmin() {
         }
 
         try {
-            const response = await fetch(`http://localhost:3002/users/search?username=${query}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/users/search?username=${query}`, {
                 headers: {
                     "authorization": 'Bearer ' + token,
                 },
@@ -136,7 +136,7 @@ export default function AssignmentsAdmin() {
         e.preventDefault();
 
         try {
-            const assignmentResponse = await fetch('http://localhost:3002/assignments', {
+            const assignmentResponse = await fetch('https://aims-api-latest.onrender.com/assignments', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -172,7 +172,7 @@ export default function AssignmentsAdmin() {
 
         try {
             // Step 1: Create the assignment first
-            const assignmentResponse = await fetch('http://localhost:3002/assignments', {
+            const assignmentResponse = await fetch('https://aims-api-latest.onrender.com/assignments', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -196,7 +196,7 @@ export default function AssignmentsAdmin() {
 
             // Step 2: Assign employees to the created assignment
             if (selectedEmployees.length > 0) {
-                await fetch(`http://localhost:3002/assignments/${assignmentId}/assign-employees`, {
+                await fetch(`https://aims-api-latest.onrender.com/assignments/${assignmentId}/assign-employees`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -214,7 +214,7 @@ export default function AssignmentsAdmin() {
                 for (const text of assignmentObjectives) {
                     const trimmedText = text.trim();
                     if (trimmedText !== "") {
-                        await fetch(`http://localhost:3002/objectives`, {
+                        await fetch(`https://aims-api-latest.onrender.com/objectives`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",

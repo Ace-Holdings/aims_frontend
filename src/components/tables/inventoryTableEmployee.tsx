@@ -58,7 +58,7 @@ export default function InventoryTableEmployee() {
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     useEffect(() => {
-        fetch('http://localhost:3002/inventory', {
+        fetch('https://aims-api-latest.onrender.com/inventory', {
             method: 'GET',
             headers: {
                 "authorization": 'Bearer ' + token,
@@ -94,7 +94,7 @@ export default function InventoryTableEmployee() {
     const openSerialDialog = async (item: any) => {
         setSelectedItem(item);
         try {
-            const response = await fetch(`http://localhost:3002/unit/serials/${item.inventoryId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/unit/serials/${item.inventoryId}`, {
                 method: 'GET',
                 headers: {
                     "authorization": 'Bearer ' + token,
@@ -123,12 +123,12 @@ export default function InventoryTableEmployee() {
         const user = decoded.user;
 
         try {
-            const inventoryCheckResponse = await fetch(`http://localhost:3002/unit/serials/${selectedItem?.inventoryId}`);
+            const inventoryCheckResponse = await fetch(`https://aims-api-latest.onrender.com/unit/serials/${selectedItem?.inventoryId}`);
 
             const inventoryCheckData = await inventoryCheckResponse.json();
 
             if (Array.isArray(inventoryCheckData) && inventoryCheckData.length > 0) {
-                const deleteResponse = await fetch(`http://localhost:3002/unit/inventory/${selectedItem?.inventoryId}`, {
+                const deleteResponse = await fetch(`https://aims-api-latest.onrender.com/unit/inventory/${selectedItem?.inventoryId}`, {
                     method: "DELETE",
                 });
 
@@ -151,7 +151,7 @@ export default function InventoryTableEmployee() {
             };
 
             // 3. UPDATE the inventory record
-            const updateResponse = await fetch(`http://localhost:3002/inventory/${selectedItem?.inventoryId}`, {
+            const updateResponse = await fetch(`https://aims-api-latest.onrender.com/inventory/${selectedItem?.inventoryId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -174,7 +174,7 @@ export default function InventoryTableEmployee() {
                 inventoryId: selectedItem?.inventoryId,
             }));
 
-            const createUnitsResponse = await fetch("http://localhost:3002/unit", {
+            const createUnitsResponse = await fetch("https://aims-api-latest.onrender.com/unit", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -220,7 +220,7 @@ export default function InventoryTableEmployee() {
                     ...(status !== "" && { status }),
                 };
 
-                const response = await fetch(`http://localhost:3002/inventory/${selectedItem?.inventoryId}`, {
+                const response = await fetch(`https://aims-api-latest.onrender.com/inventory/${selectedItem?.inventoryId}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",

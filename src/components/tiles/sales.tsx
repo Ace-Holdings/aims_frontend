@@ -81,7 +81,7 @@ const SalesTile: React.FC<SaleTileProps> = ({
     const handleDeleteSale = async () => {
         if (!selectedSale) return;
         try {
-            const response = await fetch(`http://localhost:3002/sales/${selectedSale.id}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/sales/${selectedSale.id}`, {
                 method: "DELETE",
                 headers: {
                     authorization: `Bearer ` + token,
@@ -102,7 +102,7 @@ const SalesTile: React.FC<SaleTileProps> = ({
     useEffect(() => {
         const fetchInventories = async (query: string) => {
             try {
-                const response = await fetch(`http://localhost:3002/inventory/search?name=${query}`, {
+                const response = await fetch(`https://aims-api-latest.onrender.com/inventory/search?name=${query}`, {
                     method: "GET",
                     headers: {
                         authorization: `Bearer ` + token,
@@ -127,7 +127,7 @@ const SalesTile: React.FC<SaleTileProps> = ({
 
     const downloadInvoice = async (saleId: number) => {
         try {
-            const response = await fetch(`http://localhost:3002/invoices/${saleId}/file`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/invoices/${saleId}/file`, {
                 method: "GET",
                 headers: {
                     authorization: `Bearer ` + token,

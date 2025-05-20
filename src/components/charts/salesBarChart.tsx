@@ -63,7 +63,7 @@ export default function SalesBarChart() {
     useEffect(() => {
         async function fetchSales() {
             try {
-                const response = await fetch("http://localhost:3002/sales", {
+                const response = await fetch("https://aims-api-latest.onrender.com/sales", {
                     headers: {
                         authorization: `Bearer ` + token,
                     },

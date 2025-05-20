@@ -7,7 +7,7 @@ export default function NumberOfSales() {
     useEffect(() => {
        const fetchUsers = async () => {
            try {
-               const response: any = await fetch('http://localhost:3002/sales', {
+               const response: any = await fetch('https://aims-api-latest.onrender.com/sales', {
                    method: 'GET',
                    headers: {
                        "authorization": `Bearer ` + token,

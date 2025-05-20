@@ -29,7 +29,7 @@ export default function AssignmentsTableEmployee() {
 
 
     useEffect(() => {
-        fetch("http://localhost:3002/assignments", {
+        fetch("https://aims-api-latest.onrender.com/assignments", {
             method: "GET",
             headers: {
                 "authorization": `Bearer ` + token,

@@ -9,7 +9,7 @@ export default function TotalAssignments() {
     useEffect(() => {
        try {
           const fetchAssignments = async () => {
-              const response: any = await fetch('http://localhost:3002/assignments', {
+              const response: any = await fetch('https://aims-api-latest.onrender.com/assignments', {
                   method: 'GET',
                   headers: {
                       "authorization": "Bearer " + token,

@@ -82,7 +82,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
     const fetchForBidChecklist = async (bidId: any) => {
         try {
-            const response = await fetch(`http://localhost:3002/checklist/${bidId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/checklist/${bidId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -132,7 +132,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     // handler function for deleting bid
     const handleDelete = async () => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${selectedBid?.bidId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${selectedBid?.bidId}`, {
                 method: "DELETE",
                 headers: {
                     "authorization": `Bearer ` + token,
@@ -162,7 +162,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
             formData.append("lastModifiedBy", user.username);
 
 
-            const response = await fetch(`http://localhost:3002/bids/${selectedBid?.bidId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${selectedBid?.bidId}`, {
                 method: "PUT",
                 headers: {
                     "authorization": `Bearer ` + token,
@@ -185,7 +185,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     // Fetch PDF and preview in iframe
     const previewBidFile = async (bidId: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/filePreview`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${bidId}/filePreview`, {
                 headers: {
                     "authorization": "Bearer " + token,
                 },
@@ -214,7 +214,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     // Fetch Editable File (DOCX)
     const previewEditableFile = async (bidId: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/editablePreview`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${bidId}/editablePreview`, {
                 headers: {
                     "authorization": "Bearer " + token,
                 },
@@ -237,7 +237,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     // handler function to download file
     const handleDownloadFile = async (bidId: number, fileType: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/file`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${bidId}/file`, {
                 headers: {
                     "authorization": `Bearer ` + token,
                 }
@@ -263,7 +263,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
     const handleDownloadEditable = async (bidId: number, fileType: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/editable`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${bidId}/editable`, {
                 headers: {
                     "authorization": `Bearer ${localStorage.getItem('token')}`,
                 }

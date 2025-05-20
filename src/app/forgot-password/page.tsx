@@ -14,7 +14,7 @@ export default function ForgotPassword() {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:3002/password-reset", {
+            const res = await fetch("https://aims-api-latest.onrender.com/password-reset", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),

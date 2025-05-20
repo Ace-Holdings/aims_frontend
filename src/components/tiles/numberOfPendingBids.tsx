@@ -12,7 +12,7 @@ export default function NumberOfBids() {
     useEffect(() => {
         const fetchBids = async () => {
             try {
-                const response = await fetch("http://localhost:3002/bids", {
+                const response = await fetch("https://aims-api-latest.onrender.com/bids", {
                     headers: {
                         authorization: "Bearer " + token,
                     },

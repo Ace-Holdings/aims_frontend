@@ -68,7 +68,7 @@ export default function SalesTileEmployee({
 
     const directFileDownload = async (sale: Sale) => {
         try {
-            const response = await fetch(`http://localhost:3002/invoices/${sale.id}/file`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/invoices/${sale.id}/file`, {
                 method: "GET",
                 headers: {
                     authorization: `Bearer ` + token,

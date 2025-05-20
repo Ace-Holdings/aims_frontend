@@ -19,7 +19,7 @@ export default function PreviousBids() {
         const fetchBids = async () => {
             setLoading(true);
             try {
-                const response = await fetch('http://localhost:3002/bids', {
+                const response = await fetch('https://aims-api-latest.onrender.com/bids', {
                     method: 'GET',
                     headers: {
                         "authorization": `Bearer ` + token,

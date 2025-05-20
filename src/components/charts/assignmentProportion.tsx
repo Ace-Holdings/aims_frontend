@@ -13,7 +13,7 @@ export default function ActiveAssignmentsProportion() {
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
-                const response = await fetch("http://localhost:3002/assignments", {
+                const response = await fetch("https://aims-api-latest.onrender.com/assignments", {
                     method: "GET",
                     headers: {
                         authorization: `Bearer ` + token,

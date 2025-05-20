@@ -33,7 +33,7 @@ export default function PasswordResetForm() {
 
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:3002/password-reset/confirm", {
+            const res = await fetch("https://aims-api-latest.onrender.com/password-reset/confirm", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ token, password: newPassword }),

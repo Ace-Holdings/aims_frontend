@@ -51,7 +51,7 @@ export default function UsersTable() {
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     useEffect(() => {
-        fetch("http://localhost:3002/users", {
+        fetch("https://aims-api-latest.onrender.com/users", {
             headers: {
                 authorization: `Bearer ` + token,
             },
@@ -77,7 +77,7 @@ export default function UsersTable() {
         if (!selectedUser) return;
 
         try {
-            const res = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
+            const res = await fetch(`https://aims-api-latest.onrender.com/users/${selectedUser.userId}`, {
                 method: "DELETE",
                 headers: {
                     authorization: `Bearer ` + token,
@@ -125,7 +125,7 @@ export default function UsersTable() {
         };
 
         try {
-            const res = await fetch(`http://localhost:3002/users/${selectedUser.userId}`, {
+            const res = await fetch(`https://aims-api-latest.onrender.com/users/${selectedUser.userId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

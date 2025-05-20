@@ -73,7 +73,7 @@ export default function Loans() {
             return;
         }
         try {
-            const response = await fetch("http://localhost:3002/loanRequests", {
+            const response = await fetch("https://aims-api-latest.onrender.com/loanRequests", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

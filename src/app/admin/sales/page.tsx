@@ -158,7 +158,7 @@ export default function AdminSales() {
 
     const handleSelectInventory = async (inventoryId: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/inventory/${inventoryId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/inventory/${inventoryId}`, {
                 headers: {
                     "authorization": `Bearer ` + token,
                 }
@@ -186,7 +186,7 @@ export default function AdminSales() {
         if (!selectedItemDetails || inputQuantity < 1) return;
 
         try {
-            const response = await fetch(`http://localhost:3002/unit/serials/${selectedItemDetails.id}`);
+            const response = await fetch(`https://aims-api-latest.onrender.com/unit/serials/${selectedItemDetails.id}`);
 
             if (response.ok) {
                 const data = await response.json();
@@ -220,7 +220,7 @@ export default function AdminSales() {
     useEffect(() => {
         const fetchInventories = async (query: string) => {
             try {
-                const response = await fetch(`http://localhost:3002/inventory/search?name=${query}`, {
+                const response = await fetch(`https://aims-api-latest.onrender.com/inventory/search?name=${query}`, {
                     method: "GET",
                     headers: {
                         "authorization": `Bearer ` + token,
@@ -247,7 +247,7 @@ export default function AdminSales() {
         if (username) {
             const fetchUserId = async () => {
                 try {
-                    const response = await fetch(`http://localhost:3002/users/search?username=${username}`, {
+                    const response = await fetch(`https://aims-api-latest.onrender.com/users/search?username=${username}`, {
                         method: "GET",
                         headers: {
                             "authorization": `Bearer ` + token,
@@ -273,7 +273,7 @@ export default function AdminSales() {
     useEffect(() => {
         const fetchSales = async () =>  {
             try {
-                const response: any = await fetch('http://localhost:3002/sales', {
+                const response: any = await fetch('https://aims-api-latest.onrender.com/sales', {
                     method: "GET",
                     headers: {
                         "authorization": `Bearer ` + token,
@@ -371,7 +371,7 @@ export default function AdminSales() {
 
         try {
             // 1. Submit the sale
-            const saleRes = await fetch("http://localhost:3002/sales", {
+            const saleRes = await fetch("https://aims-api-latest.onrender.com/sales", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -389,7 +389,7 @@ export default function AdminSales() {
             invoiceForm.append("saleId", saleId);
             invoiceForm.append("file", pdfBlob);
 
-            const invoiceRes = await fetch("http://localhost:3002/invoices", {
+            const invoiceRes = await fetch("https://aims-api-latest.onrender.com/invoices", {
                 method: "POST",
                 headers: {
                     authorization: `Bearer ` + token,
@@ -403,7 +403,7 @@ export default function AdminSales() {
             await Promise.allSettled(
                 selectedItems.map(async (item) => {
                     try {
-                        const invRes = await fetch(`http://localhost:3002/inventory/${item.id}`, {
+                        const invRes = await fetch(`https://aims-api-latest.onrender.com/inventory/${item.id}`, {
                             headers: {
                                 authorization: `Bearer ` + token,
                             },
@@ -413,7 +413,7 @@ export default function AdminSales() {
                         const inventoryData = await invRes.json();
                         const updatedQuantity = inventoryData.quantity - item.quantity;
 
-                        await fetch(`http://localhost:3002/inventory/${item.id}`, {
+                        await fetch(`https://aims-api-latest.onrender.com/inventory/${item.id}`, {
                             method: "PUT",
                             headers: {
                                 "Content-Type": "application/json",
@@ -431,7 +431,7 @@ export default function AdminSales() {
             await Promise.allSettled(
                 selectedItems.flatMap((item) =>
                     (item.serials || []).map((serial: any) =>
-                        fetch(`http://localhost:3002/unit/${serial.unitId}`, {
+                        fetch(`https://aims-api-latest.onrender.com/unit/${serial.unitId}`, {
                             method: "DELETE",
                             headers: {
                                 authorization: `Bearer ` + token,

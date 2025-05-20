@@ -6,7 +6,7 @@ export default function TotalActiveUsers() {
 
     useEffect(() => {
         const fetchActiveUsers = async () => {
-            const response = await fetch("http://localhost:3002/assignments", {
+            const response = await fetch("https://aims-api-latest.onrender.com/assignments", {
                 headers: {
                     "authorization": `Bearer ` + token,
                 }

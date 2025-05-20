@@ -114,7 +114,7 @@ export default function UsersManager() {
     useEffect(() => {
         const fetchLoanRequests = async () => {
             try {
-                const response = await fetch('http://localhost:3002/loanRequests');
+                const response = await fetch('https://aims-api-latest.onrender.com/loanRequests');
                 if (response.ok) {
                     const data = await response.json();
                     setLoansRequests(data);
@@ -142,7 +142,7 @@ export default function UsersManager() {
     useEffect(() => {
         const fetchLoans = async () => {
             try {
-                const response = await fetch("http://localhost:3002/loans");
+                const response = await fetch("https://aims-api-latest.onrender.com/loans");
                 if (response.ok) {
                     const data = await response.json();
                     setLoans(data);
@@ -195,7 +195,7 @@ export default function UsersManager() {
     useEffect(() => {
         const fetchSalaries = async () => {
             try {
-                const response = await fetch('http://localhost:3002/salaries', {
+                const response = await fetch('https://aims-api-latest.onrender.com/salaries', {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ` + token,
@@ -250,7 +250,7 @@ export default function UsersManager() {
                 ...(salaryClass && {class: salaryClass })
             };
 
-            const response = await fetch(`http://localhost:3002/salaries/${id}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/salaries/${id}`, {
                 method: "PUT",
                 headers: {
                     "Authorization": `Bearer ` + token,
@@ -271,7 +271,7 @@ export default function UsersManager() {
         const { requestId, applicantId, amountRequested, purpose } = request;
 
         try{
-            const approveResponse = await fetch(`http://localhost:3002/loanRequests/${requestId}`, {
+            const approveResponse = await fetch(`https://aims-api-latest.onrender.com/loanRequests/${requestId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: "approved" })
@@ -282,7 +282,7 @@ export default function UsersManager() {
                 return;
             }
 
-            const loanResponse = await fetch('http://localhost:3002/loans', {
+            const loanResponse = await fetch('https://aims-api-latest.onrender.com/loans', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -309,7 +309,7 @@ export default function UsersManager() {
         const { requestId, applicantId, amountRequested, purpose } = request;
 
         try {
-            const response = await fetch(`http://localhost:3002/loanRequests/${requestId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/loanRequests/${requestId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -333,7 +333,7 @@ export default function UsersManager() {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:3002/users', {
+            const response = await fetch('https://aims-api-latest.onrender.com/users', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -381,7 +381,7 @@ export default function UsersManager() {
         }
 
         try {
-            const response = await fetch(`http://localhost:3002/users/search?username=${term}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/users/search?username=${term}`, {
                 headers: {
                     "Authorization": `Bearer ` + token,
                 }
@@ -409,7 +409,7 @@ export default function UsersManager() {
         const userId = selectedApplicant?.userId;
 
         try {
-            const response = await fetch('http://localhost:3002/loans', {
+            const response = await fetch('https://aims-api-latest.onrender.com/loans', {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",

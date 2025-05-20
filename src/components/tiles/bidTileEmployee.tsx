@@ -101,7 +101,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
 
     const fetchForBidChecklist = async (bidId: any) => {
         try {
-            const response = await fetch(`http://localhost:3002/checklist/${bidId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/checklist/${bidId}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -135,7 +135,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
             formData.append("lastModifiedBy", user.username);
 
 
-            const response = await fetch(`http://localhost:3002/bids/${selectedBid?.bidId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${selectedBid?.bidId}`, {
                 method: "PUT",
                 headers: {
                     "authorization": `Bearer ` + token,
@@ -158,7 +158,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
     // handler function to download file
     const handleDownloadFile = async (bidId: number, fileType: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/file`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${bidId}/file`, {
                 headers: {
                     "authorization": `Bearer ` + token,
                 }
@@ -185,7 +185,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
     // Fetch and preview the bid file (PDF)
     const fetchBidFile = async (bidId: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/file`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${bidId}/file`, {
                 headers: {
                     "authorization": "Bearer " + token,
                 },
@@ -207,7 +207,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
     // Fetch PDF and preview in iframe
     const previewBidFile = async (bidId: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/filePreview`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${bidId}/filePreview`, {
                 headers: {
                     "authorization": "Bearer " + token,
                 },
@@ -235,7 +235,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
     // Fetch Editable File (DOCX)
     const previewEditableFile = async (bidId: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/editablePreview`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${bidId}/editablePreview`, {
                 headers: {
                     "authorization": "Bearer " + token,
                 },
@@ -256,7 +256,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
 
     const handleDownloadEditable = async (bidId: number, fileType: string) => {
         try {
-            const response = await fetch(`http://localhost:3002/bids/${bidId}/editable`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${bidId}/editable`, {
                 headers: {
                     "authorization": `Bearer ${localStorage.getItem('token')}`,
                 }

@@ -53,7 +53,7 @@ export default function EmployeeAssignments() {
 
         const fetchAssignments = async () => {
             try {
-                const response = await fetch('http://localhost:3002/assignments', {
+                const response = await fetch('https://aims-api-latest.onrender.com/assignments', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -139,7 +139,7 @@ export default function EmployeeAssignments() {
                     isComplete: isCompleted,
                 }
 
-                await fetch(`http://localhost:3002/objectives/${obj.objectiveId}`, {
+                await fetch(`https://aims-api-latest.onrender.com/objectives/${obj.objectiveId}`, {
                     method: 'PUT',
                     headers: {
                         "Content-Type": "application/json",
@@ -160,7 +160,7 @@ export default function EmployeeAssignments() {
     const openDialog = async () => {
         if (!hasActiveAssignment) return;
         try {
-            const response = await fetch(`http://localhost:3002/objectives/assignment/${hasActiveAssignment.assignmentId}`);
+            const response = await fetch(`https://aims-api-latest.onrender.com/objectives/assignment/${hasActiveAssignment.assignmentId}`);
             if (!response.ok) throw new Error("Failed to fetch objectives");
 
             const data: Objective[] = await response.json();

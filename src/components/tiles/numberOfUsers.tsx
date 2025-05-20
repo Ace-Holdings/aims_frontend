@@ -8,7 +8,7 @@ export default function TotalUsers() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('http://localhost:3002/users', {
+                const response = await fetch('https://aims-api-latest.onrender.com/users', {
                     method: 'GET',
                     headers: {
                         "authorization": "Bearer " + token

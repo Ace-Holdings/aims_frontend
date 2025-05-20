@@ -124,7 +124,7 @@ export default function ManagerBids() {
 
 
         try {
-            const response = await fetch("http://localhost:3002/bids", {
+            const response = await fetch("https://aims-api-latest.onrender.com/bids", {
                 method: "POST",
                 headers: {
                     "authorization": 'Bearer ' + token,

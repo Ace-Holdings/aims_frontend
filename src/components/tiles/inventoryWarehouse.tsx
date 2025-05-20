@@ -6,7 +6,7 @@ export default function InventoryWarehouse() {
 
     useEffect(() => {
         // Fetch inventory data
-        fetch('http://localhost:3002/inventory', {
+        fetch('https://aims-api-latest.onrender.com/inventory', {
             method: 'GET',
             headers: {
                 "authorization": 'Bearer ' + token,

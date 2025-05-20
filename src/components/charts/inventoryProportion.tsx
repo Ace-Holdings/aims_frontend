@@ -13,7 +13,7 @@ export default function InventoryProportion() {
     useEffect(() => {
         const fetchInventory = async () => {
             try {
-                const response = await fetch('http://localhost:3002/inventory', {
+                const response = await fetch('https://aims-api-latest.onrender.com/inventory', {
                     method: "GET",
                     headers: {
                         "authorization": 'Bearer ' + token,

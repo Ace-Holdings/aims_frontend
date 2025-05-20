@@ -49,7 +49,7 @@ export default function AssignmentsTable() {
 
 
     useEffect(() => {
-        fetch("http://localhost:3002/assignments", {
+        fetch("https://aims-api-latest.onrender.com/assignments", {
             method: "GET",
             headers: {
                 "authorization": `Bearer ` + token,
@@ -88,7 +88,7 @@ export default function AssignmentsTable() {
     const openObjectivesDialog = async (assignment: any) => {
         setSelectedAssignment(assignment);
         try {
-            const objectivesResponse = await fetch(`http://localhost:3002/objectives/`, {
+            const objectivesResponse = await fetch(`https://aims-api-latest.onrender.com/objectives/`, {
                 method: "GET",
             });
             if (!objectivesResponse.ok) {
@@ -124,7 +124,7 @@ export default function AssignmentsTable() {
                 updatedAt: new Date().toISOString(),
             };
 
-            const response = await fetch(`http://localhost:3002/assignments/${selectedAssignment?.assignmentId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/assignments/${selectedAssignment?.assignmentId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -148,7 +148,7 @@ export default function AssignmentsTable() {
     // handler function for deleting an assignment
     const handleDeleteAssignment = async () => {
         try {
-            const response = await fetch(`http://localhost:3002/assignments/${selectedAssignment?.assignmentId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/assignments/${selectedAssignment?.assignmentId}`, {
                 method: "DELETE",
                 headers: {
                     "authorization": `Bearer ` + token,

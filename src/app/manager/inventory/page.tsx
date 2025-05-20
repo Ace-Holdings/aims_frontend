@@ -113,7 +113,7 @@ export default function ManagerInventory() {
 
         try {
             // Step 1: Create the inventory record
-            const inventoryResponse = await fetch('http://localhost:3002/inventory', {
+            const inventoryResponse = await fetch('https://aims-api-latest.onrender.com/inventory', {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
@@ -148,7 +148,7 @@ export default function ManagerInventory() {
                 inventoryId
             }));
 
-            const inventoryUnitResponse = await fetch('http://localhost:3002/unit', {
+            const inventoryUnitResponse = await fetch('https://aims-api-latest.onrender.com/unit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

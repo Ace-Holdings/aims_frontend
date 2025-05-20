@@ -45,7 +45,7 @@ const PaySlipsTile: React.FC<PaySlipProps> = ({ id, employee, earnings, deductio
     const downloadPaySlipFile = async (slip: SelectedSlip) => {
         setSelectedSlip(slip);
         try {
-            const response = await fetch(`http://localhost:3002/payslips/${slip.id}/file`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/payslips/${slip.id}/file`, {
                 headers: {
                     authorization: `Bearer ` + token,
                 },
@@ -74,7 +74,7 @@ const PaySlipsTile: React.FC<PaySlipProps> = ({ id, employee, earnings, deductio
         if (!selectedSlip) return;
 
         try {
-            const response = await fetch(`http://localhost:3002/payslips/${selectedSlip.id}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/payslips/${selectedSlip.id}`, {
                 method: "DELETE",
                 headers: {
                     authorization: `Bearer ` + token,

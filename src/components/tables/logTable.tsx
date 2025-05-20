@@ -38,7 +38,7 @@ export default function LogTable() {
     useEffect(() => {
         const fetchUsers = async () => {
             try{
-                const response = await fetch('http://localhost:3002/logs', {
+                const response = await fetch('https://aims-api-latest.onrender.com/logs', {
                     method: "GET",
                     headers: {
                         "authorization": "Bearer " + token,
@@ -74,7 +74,7 @@ export default function LogTable() {
 
     const handleDeleteLog = async () => {
         try {
-            const response = await fetch(`http://localhost:3002/logs/${selectedLog?.id}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/logs/${selectedLog?.id}`, {
                 method: "DELETE",
                 headers: {
                     "authorization": "Bearer " + token,
@@ -93,7 +93,7 @@ export default function LogTable() {
     useEffect(() => {
         const fetchLogs = async () => {
             try {
-                const response = await fetch('http://localhost:3002/logs', {
+                const response = await fetch('https://aims-api-latest.onrender.com/logs', {
                     headers: {
                         "authorization": `Bearer ` + token,
                     }

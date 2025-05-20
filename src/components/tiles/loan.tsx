@@ -32,7 +32,7 @@ export default function LoanTile() {
             const username = decoded.user.username;
 
             try {
-                const response = await fetch(`http://localhost:3002/loans`);
+                const response = await fetch(`https://aims-api-latest.onrender.com/loans`);
                 if (response.ok) {
                     const data: Loan[] = await response.json();
 

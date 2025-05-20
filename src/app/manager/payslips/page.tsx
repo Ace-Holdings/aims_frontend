@@ -139,7 +139,7 @@ export default function ManagerPayslips() {
     useEffect(() => {
         const fetchPaySlips = async () => {
             try {
-                const response = await fetch('http://localhost:3002/payslips', {
+                const response = await fetch('https://aims-api-latest.onrender.com/payslips', {
                     headers: {
                         "authorization": `Bearer ` + token,
                     }
@@ -180,7 +180,7 @@ export default function ManagerPayslips() {
 
     useEffect(() => {
         const fetchUsers = async (query: string) => {
-            const response = await fetch(`http://localhost:3002/users/search?username=${query}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/users/search?username=${query}`, {
                 headers: {
                     "authorization": `Bearer ` + token,
                 }
@@ -393,7 +393,7 @@ export default function ManagerPayslips() {
         payslip.append("file", slipPdf);
 
         try {
-            const response = await fetch('http://localhost:3002/payslips', {
+            const response = await fetch('https://aims-api-latest.onrender.com/payslips', {
                 method: "POST",
                 headers: {
                     "authorization": `Bearer ${localStorage.getItem('token')}`,
