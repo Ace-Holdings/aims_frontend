@@ -78,7 +78,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
     const openChecklistDialog = (bid: any) => {
         setSelectedBid(bid);
-        fetchForBidChecklist(bid.bidId);
+        fetchForBidChecklist(bid.id);
         setShowChecklistDialog(true);
     }
 

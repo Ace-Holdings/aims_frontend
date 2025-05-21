@@ -97,7 +97,7 @@ export default function BidTileEmployee ({ bid }: { bid: { id: number, descripti
 
     const openChecklistDialog = (bid: any) => {
         setSelectedBid(bid);
-        fetchForBidChecklist(bid.bidId);
+        fetchForBidChecklist(bid.id);
         setShowChecklistDialog(true);
     }
 
