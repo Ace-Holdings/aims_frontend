@@ -4,6 +4,8 @@ import ReactDOM from "react-dom";
 import React, {useEffect, useState} from "react";
 import {jwtDecode} from "jwt-decode";
 import {useRouter} from "next/navigation";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface DecodedToken {
     user: {
@@ -16,7 +18,7 @@ interface DecodedToken {
 }
 
 interface Bid {
-    bidId: any;
+    id: any;
     description: string;
     deadline: Date;
     status: boolean;
@@ -114,9 +116,9 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
 
     useEffect(() => {
-        if (downloadDialog && selectedBid?.bidId) {
-            previewBidFile(selectedBid.bidId);
-            previewEditableFile(selectedBid.bidId);
+        if (downloadDialog && selectedBid?.id) {
+            previewBidFile(selectedBid.id);
+            previewEditableFile(selectedBid.id);
         }
     }, [downloadDialog, selectedBid]);
 
@@ -132,7 +134,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
     // handler function for deleting bid
     const handleDelete = async () => {
         try {
-            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${selectedBid?.bidId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${selectedBid?.id}`, {
                 method: "DELETE",
                 headers: {
                     "authorization": `Bearer ` + token,
@@ -162,7 +164,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
             formData.append("lastModifiedBy", user.username);
 
 
-            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${selectedBid?.bidId}`, {
+            const response = await fetch(`https://aims-api-latest.onrender.com/bids/${selectedBid?.id}`, {
                 method: "PUT",
                 headers: {
                     "authorization": `Bearer ` + token,
@@ -376,7 +378,7 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                             <h3 className="text-lg mb-6 text-center text-black">Bid Details</h3>
                             <div className="flex flex-wrap gap-4">
                                 <div>
-                                    <strong>Bid ID:</strong>{selectedBid?.bidId}
+                                    <strong>Bid ID:</strong>{selectedBid?.id}
                                 </div>
                                 <div>
                                     <strong>Description:</strong>{selectedBid?.description}
@@ -440,12 +442,15 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                                     Deadline
                                 </label>
                                 <div className="relative overflow-visible">
-                                    <input
-                                        type="datetime-local"
-                                        value={deadline ? new Date(deadline).toISOString().slice(0, 16) : ""}
-                                        onChange={(e) => setDeadline(new Date(e.target.value))}
+                                    <DatePicker
+                                        selected={deadline}
+                                        onChange={(date: Date | null) => setDeadline(date)}
+                                        showTimeSelect
+                                        timeFormat="HH:mm"
+                                        timeIntervals={15}
+                                        dateFormat="yyyy-MM-dd HH:mm"
+                                        placeholderText="Select start date and time"
                                         className="grow p-2 bg-white w-[220px] border border-gray-300 rounded"
-                                        placeholder="Select start date and time"
                                     />
                                 </div>
                             </div>
@@ -569,13 +574,13 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                         <div className="flex justify-between">
                             <button
                                 className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg"
-                                onClick={() => handleDownloadFile(selectedBid?.bidId, 'pdf')}
+                                onClick={() => handleDownloadFile(selectedBid?.id, 'pdf')}
                             >
                                 Download Bid File
                             </button>
                             <button
                                 className="bg-green-500 hover:bg-green-400 text-white py-2 px-4 rounded-lg"
-                                onClick={() => handleDownloadEditable(selectedBid?.bidId, 'docx')}
+                                onClick={() => handleDownloadEditable(selectedBid?.id, 'docx')}
                             >
                                 Download Editable File
                             </button>

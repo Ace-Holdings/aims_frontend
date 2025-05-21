@@ -2,13 +2,11 @@ import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
-    user: {
-        id: string;
-        username: string;
-        roles: string[];
-    };
-    exp?: number;
-    iat?: number;
+    id: number;
+    user: string;
+    roles: string[];
+    iat: number;
+    exp: number;
 }
 
 interface Loan {
@@ -29,7 +27,7 @@ export default function LoanTile() {
             if (!token) return;
 
             const decoded = jwtDecode<DecodedToken>(token);
-            const username = decoded.user.username;
+            const username = decoded.user;
 
             try {
                 const response = await fetch(`https://aims-api-latest.onrender.com/loans`);

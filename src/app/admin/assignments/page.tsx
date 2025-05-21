@@ -354,8 +354,8 @@ export default function AssignmentsAdmin() {
                             </label>
                             <div className="relative w-[350px]">
                                 <DatePicker
-                                    selected={endDate}
-                                    onChange={(date) => setEndDate(date)}
+                                    selected={startDate}
+                                    onChange={(date) => setStartDate(date)}
                                     showTimeSelect
                                     timeFormat="HH:mm"
                                     timeIntervals={15}

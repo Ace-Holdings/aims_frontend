@@ -21,11 +21,11 @@ interface Loan {
 }
 
 interface DecodedToken {
-    user: {
-        id: string;
-        username: string;
-        roles: string[];
-    };
+    id: number;
+    user: string;
+    roles: string[];
+    iat: number;
+    exp: number;
 }
 
 export default function LoanTable() {
@@ -42,7 +42,7 @@ export default function LoanTable() {
                 if (!token) return;
 
                 const decoded = jwtDecode<DecodedToken>(token);
-                const username = decoded.user.username;
+                const username = decoded.user;
 
                 const response = await fetch("https://aims-api-latest.onrender.com/loans");
                 if (response.ok) {

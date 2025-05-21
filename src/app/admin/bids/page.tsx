@@ -32,8 +32,8 @@ export default function AdminBids() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [description, setDescription] = useState("");
     const [deadline, setDeadline] = useState<Date | null>(null);
-    const [bidFile, setBidFile] = useState("");
-    const [editFile, setEditFile] = useState("");
+    const [bidFile, setBidFile] = useState<File | null>(null);
+    const [editFile, setEditFile] = useState<File | null>(null);
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
 
@@ -47,13 +47,17 @@ export default function AdminBids() {
         setIsDialogOpen(false);
     }
 
-    const handleBidFileChange = (event: any) => {
-        setBidFile(event.target.files[0]);
+    const handleBidFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            setBidFile(event.target.files[0]);
+        }
     };
 
-    const handleEditFileChange = (event: any) => {
-        setEditFile(event.target.files[0]);
-    }
+    const handleEditFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            setEditFile(event.target.files[0]);
+        }
+    };
 
 
     useEffect(() => {
@@ -116,8 +120,13 @@ export default function AdminBids() {
 
         formData.append("description", description);
         formData.append("deadline", deadline.toISOString());
-        formData.append("bidDocumentFile", bidFile);
-        formData.append("editableFileForBid", editFile);
+        if (bidFile) {
+            formData.append("bidDocumentFile", bidFile);
+        }
+
+        if (editFile) {
+            formData.append("editableFileForBid", editFile);
+        }
         formData.append("lastModifiedBy", user?.username || "");
 
 

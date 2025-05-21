@@ -114,7 +114,9 @@ export default function EmployeeBids() {
         const formData = new FormData();
         formData.append("description", description);
         formData.append("deadline", deadline.toISOString());
-        formData.append("bidDocumentFile", bidFile);
+        if (bidFile) {
+            formData.append("bidDocumentFile", bidFile);
+        }
         if (editFile) {
             formData.append("editableFileForBid", editFile);
         }
