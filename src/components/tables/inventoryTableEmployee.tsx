@@ -202,7 +202,8 @@ export default function InventoryTableEmployee() {
     };
 
     // handler function to update stock item
-    const handleUpdateStock1 = async () => {
+    const handleUpdateStock1 = async (e: React.FormEvent) => {
+        e.preventDefault();
         if (!token) {
             router.push("/");
             return null;
@@ -233,10 +234,9 @@ export default function InventoryTableEmployee() {
             if (quantityChanged) {
                 setSerialNumbersUpdate(prev => Array(quantity).fill(""));
                 setShowUpdateDialog(false);
-                setTimeout(() => {
-                    setIsSerialDialogOpen(true);
-                }, 50);
+                setIsSerialDialogOpen(true);
             } else {
+                // No quantity change, proceed to update directly
                 const response = await fetch(`https://aims-api-latest.onrender.com/inventory/${selectedItem?.inventoryId}`, {
                     method: "PUT",
                     headers: {
@@ -323,8 +323,7 @@ export default function InventoryTableEmployee() {
             },
         },
     };
-
-    // Handle Filter Change
+    
     // Handle Filter Change
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
@@ -528,7 +527,8 @@ export default function InventoryTableEmployee() {
                                 <button
                                     type="button"
                                     className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                                    onClick={handleUpdateStock1}
+                                    onClick={
+                                        handleUpdateStock1}
                                 >
                                     Update
                                 </button>

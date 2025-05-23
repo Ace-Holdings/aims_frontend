@@ -154,7 +154,8 @@ export default function InventoryTable() {
         }
     }
 
-    const handleUpdateStock1 = async () => {
+    const handleUpdateStock1 = async (e: React.FormEvent) => {
+        e.preventDefault();
         if (!token) {
             router.push("/");
             return null;
@@ -185,9 +186,7 @@ export default function InventoryTable() {
             if (quantityChanged) {
                 setSerialNumbersUpdate(prev => Array(quantity).fill(""));
                 setShowUpdateDialog(false);
-                setTimeout(() => {
-                    setIsSerialDialogOpen(true);
-                }, 50);
+                setIsSerialDialogOpen(true);
             } else {
                 // No quantity change, proceed to update directly
                 const response = await fetch(`https://aims-api-latest.onrender.com/inventory/${selectedItem?.inventoryId}`, {
@@ -618,9 +617,10 @@ export default function InventoryTable() {
                                 Cancel
                             </button>
                             <button
-                                type="submit"
+                                type="button"
                                 className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                                onClick={handleUpdateStock1}
+                                onClick={
+                                    handleUpdateStock1}
                             >
                                 Update
                             </button>
