@@ -203,7 +203,6 @@ export default function InventoryTableEmployee() {
 
     // handler function to update stock item
     const handleUpdateStock1 = async () => {
-        setLoading(true);
         if (!token) {
             router.push("/");
             return null;
@@ -212,24 +211,37 @@ export default function InventoryTableEmployee() {
         const decoded = jwtDecode<DecodedToken>(token);
         const user = decoded.user;
 
-        if (!quantity || quantity === selectedItem?.quantity) {
-            try {
-                const updatedStock = {
-                    inventoryId: selectedItem?.inventoryId,
-                    ...(quantity && { quantity }),
-                    ...(pricePerUnit && { pricePerUnit }),
-                    ...(name && { name }),
-                    ...(description && { description }),
-                    ...(dateAdded && { dateAdded: dateAdded.toISOString() }),
-                    ...(location && { location }),
-                    ...(status !== "" && { status }),
-                };
+        if (!quantity) {
+            console.error("Quantity is required");
+            return;
+        }
 
+        const quantityChanged = quantity !== selectedItem?.quantity;
+
+        const updatedStock = {
+            inventoryId: selectedItem?.inventoryId,
+            ...(quantity && { quantity }),
+            ...(pricePerUnit && { pricePerUnit }),
+            ...(name && { name }),
+            ...(description && { description }),
+            ...(dateAdded && { dateAdded: dateAdded.toISOString() }),
+            ...(location && { location }),
+            ...(status !== "" && { status }),
+        };
+
+        try {
+            if (quantityChanged) {
+                setSerialNumbersUpdate(prev => Array(quantity).fill(""));
+                setShowUpdateDialog(false);
+                setTimeout(() => {
+                    setShowSerialDialog(true);
+                }, 50);
+            } else {
                 const response = await fetch(`https://aims-api-latest.onrender.com/inventory/${selectedItem?.inventoryId}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
-                        "authorization": 'Bearer ' + token,
+                        "authorization": `Bearer ${token}`,
                     },
                     body: JSON.stringify({
                         ...updatedStock,
@@ -243,19 +255,9 @@ export default function InventoryTableEmployee() {
                 }
 
                 setShowUpdateDialog(false);
-                setLoading(false);
-                window.location.reload();
-            } catch (error) {
-                console.log(error);
-                setLoading(false);
             }
-
-        } else {
-            // Quantity changed – ask for new serial numbers
-            setSerialNumbersUpdate(Array(quantity).fill(""));
-            setShowUpdateDialog(false);
-            setLoading(false);
-            setIsSerialDialogOpen(true);
+        } catch (error) {
+            console.error(error);
         }
     };
 

@@ -480,9 +480,7 @@ export default function UsersAdmin() {
 
         const salaryId = selectedSalary.salaryId;
         handleUpdateSalary(salaryId);
-        if (typeof window !== "undefined") {
-            window.location.reload();
-        }
+        setTimeout(() => window.location.reload(), 7000);
     };
 
     const handleUpdateSalary = async (id: number) => {

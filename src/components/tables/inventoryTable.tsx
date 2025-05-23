@@ -183,10 +183,11 @@ export default function InventoryTable() {
 
         try {
             if (quantityChanged) {
-                // Ask for serials first
-                setSerialNumbersUpdate(Array(quantity).fill(""));
+                setSerialNumbersUpdate(prev => Array(quantity).fill(""));
                 setShowUpdateDialog(false);
-                setIsSerialDialogOpen(true);
+                setTimeout(() => {
+                    setShowSerialDialog(true);
+                }, 50);
             } else {
                 // No quantity change, proceed to update directly
                 const response = await fetch(`https://aims-api-latest.onrender.com/inventory/${selectedItem?.inventoryId}`, {

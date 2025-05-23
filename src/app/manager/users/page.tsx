@@ -241,7 +241,7 @@ export default function UsersManager() {
 
         const salaryId = selectedSalary.salaryId;
         handleUpdateSalary(salaryId);
-        // window.location.reload();
+        setTimeout(() => window.location.reload(), 7000);
     };
 
     const handleUpdateSalary = async (id: number) => {
