@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import {FiEdit, FiMenu, FiTrash2} from "react-icons/fi";
 import { FiEye } from "react-icons/fi";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import ReactDOM from "react-dom";
 
 interface SelectedAssignment {
@@ -44,6 +46,7 @@ export default function AssignmentsTable() {
 
     const [objectives, setObjectives] = useState<Objective[]>([]);
     const [showObjectivesDialog, setShowObjectivesDialog] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -112,6 +115,7 @@ export default function AssignmentsTable() {
 
     // Handle update request
     const handleUpdateAssignment = async () => {
+        setLoading(true);
         try {
             const updatedAssignment = {
                 assignmentId: selectedAssignment?.assignmentId,
@@ -139,9 +143,11 @@ export default function AssignmentsTable() {
             }
 
             setShowUpdateDialog(false);
+            setLoading(false);
             window.location.reload();
         } catch (error) {
             console.log(error);
+            setLoading(false);
         }
     };
 
@@ -486,11 +492,14 @@ export default function AssignmentsTable() {
                             <label htmlFor="startsAt" className="block text-gray-700 font-medium mb-2">
                                 Starts at
                             </label>
-                            <input
-                                type="datetime-local"
-                                id="startsAt"
-                                value={startsAt ? new Date(startsAt).toISOString().slice(0, 16) : ""}
-                                onChange={(e) => setStartsAt(new Date(e.target.value))}
+                            <DatePicker
+                                selected={startsAt}
+                                onChange={(date: any) => setStartsAt(date)}
+                                showTimeSelect
+                                timeFormat="HH:mm"
+                                timeIntervals={15}
+                                dateFormat="yyyy-MM-dd HH:mm"
+                                placeholderText="Select start date and time"
                                 className="grow p-2 bg-white w-[180px] border border-gray-300 rounded"
                             />
                         </div>
@@ -499,11 +508,14 @@ export default function AssignmentsTable() {
                             <label htmlFor="endsAt" className="block text-gray-700 font-medium mb-2">
                                 Ends at
                             </label>
-                            <input
-                                type="datetime-local"
-                                id="endsAt"
-                                value={endsAt ? new Date(endsAt).toISOString().slice(0, 16) : ""}
-                                onChange={(e) => setEndsAt(new Date(e.target.value))}
+                            <DatePicker
+                                selected={endsAt}
+                                onChange={(date: any) => setEndsAt(date)}
+                                showTimeSelect
+                                timeFormat="HH:mm"
+                                timeIntervals={15}
+                                dateFormat="yyyy-MM-dd HH:mm"
+                                placeholderText="Select end date and time"
                                 className="grow p-2 bg-white w-[180px] border border-gray-300 rounded"
                             />
                         </div>
@@ -567,6 +579,12 @@ export default function AssignmentsTable() {
                     </div>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
 
     )

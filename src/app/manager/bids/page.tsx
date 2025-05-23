@@ -34,6 +34,7 @@ export default function ManagerBids() {
     const [editFile, setEditFile] = useState<File | null>(null);
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -103,6 +104,7 @@ export default function ManagerBids() {
     }, [router]);
 
     const handleBidSubmit = async (event: any) => {
+        setLoading(true);
         event.preventDefault();
 
         if (!bidFile) {
@@ -140,6 +142,7 @@ export default function ManagerBids() {
 
             if (response.ok) {
                 closeDialog();
+                setLoading(false);
                 if (typeof window !== 'undefined') {
                     window.location.reload();
                 }
@@ -148,6 +151,7 @@ export default function ManagerBids() {
             }
         } catch (e) {
             console.log(e);
+            setLoading(false);
         }
     }
 
@@ -297,6 +301,12 @@ export default function ManagerBids() {
                     </form>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
 
         </>
     )

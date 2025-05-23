@@ -47,6 +47,7 @@ export default function UsersTable() {
     const [salaryId, setSalaryId] = useState("");
     const [idNumber, setIdNumber] = useState("");
     const [role, setRole] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -111,6 +112,7 @@ export default function UsersTable() {
     }
 
     const handleUpdateUser = async () => {
+        setLoading(true);
         if (!selectedUser) return;
 
         const updatedUser = {
@@ -137,11 +139,13 @@ export default function UsersTable() {
             if (!res.ok) console.error("Failed to update user");
 
             setShowUpdateDialog(false);
+            setLoading(false);
             if (typeof window !== "undefined") {
                 window.location.reload();
             }
         } catch (e) {
             console.error(e);
+            setLoading(false);
         }
     };
 
@@ -438,6 +442,12 @@ export default function UsersTable() {
                     </div>
                 </div>,
                 document.body
+            )}
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
             )}
         </>
 

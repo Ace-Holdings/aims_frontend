@@ -81,6 +81,7 @@ export default function ManagerPayslips() {
     const [payslips, setPayslips] = useState<Payslip[]>([]);
     const [filteredPaySlips, setFilteredPaySlips] = useState<Payslip[]>([]);
     const [period, setPeriod] = useState(1);
+    const [loading, setLoading] = useState(false);
 
     const [searchTerm, setSearchTerm] = useState("");
     const router = useRouter();
@@ -331,6 +332,7 @@ export default function ManagerPayslips() {
     };
 
     const handlePaySlipSubmit = async (e: any) => {
+        setLoading(true);
         e.preventDefault();
 
         if (!selectedEmployee || !selectedDate) {
@@ -406,9 +408,11 @@ export default function ManagerPayslips() {
             }
 
             setIsDialogOpen(false);
+            setLoading(false);
             window.location.reload();
         } catch (e) {
-            console.log('could not submit slip to database')
+            console.log('could not submit slip to database');
+            setLoading(false);
         }
 
     }
@@ -760,6 +764,12 @@ export default function ManagerPayslips() {
                     </form>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     )
 }

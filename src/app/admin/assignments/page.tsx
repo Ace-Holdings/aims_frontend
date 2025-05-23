@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/navbar";
 import ActiveAssignments from "@/components/tiles/activeAssignments";
 import TotalAssignments from "@/components/tiles/totalAssignments";
 import AssignmentsTable from "@/components/tables/assignmentsTable";
-import {useState, useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import { useRouter } from "next/navigation";
 import {jwtDecode} from "jwt-decode";
 import DatePicker from "react-datepicker";
@@ -31,6 +31,8 @@ export default function AssignmentsAdmin() {
     const [isObjectiveListPromptOpen, setIsObjectiveListPromptOpen] = useState(false);
 
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -133,6 +135,7 @@ export default function AssignmentsAdmin() {
     }
 
     const handleSubmitWithoutObjectives = async (e: any) => {
+        setLoading(true);
         e.preventDefault();
 
         try {
@@ -154,20 +157,24 @@ export default function AssignmentsAdmin() {
             if (!assignmentResponse.ok) {
                 throw new Error("Failed to create assignment");
             }
+
+            setIsObjectivePromptOpen(false);
+            setIsDialogOpen(false);
+            setLoading(false);
+            if (typeof window !== 'undefined') {
+                window.location.reload();
+            }
         } catch (e) {
             console.log(e);
+            setLoading(false);
         }
 
-        setIsObjectivePromptOpen(false);
-        setIsDialogOpen(false);
-        if (typeof window !== 'undefined') {
-            window.location.reload();
-        }
     }
 
 
     // handler function to submit assignment form data to server
     const handleAssignmentSubmit = async (e: any) => {
+        setLoading(true);
         e.preventDefault();
 
         try {
@@ -229,6 +236,7 @@ export default function AssignmentsAdmin() {
             }
 
             setIsDialogOpen(false);
+            setLoading(false);
             if (typeof window !== 'undefined') {
                 window.location.reload();
             }
@@ -240,6 +248,7 @@ export default function AssignmentsAdmin() {
             setSelectedEmployees([]);
         } catch (e) {
             console.log("Error submitting assignment:", e);
+            setLoading(false);
         }
     };
 
@@ -542,6 +551,12 @@ export default function AssignmentsAdmin() {
                     </div>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
 
         </>
 

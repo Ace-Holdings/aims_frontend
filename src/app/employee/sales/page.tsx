@@ -108,6 +108,7 @@ export default function EmployeeSales() {
 
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -377,6 +378,7 @@ export default function EmployeeSales() {
 
     // handler function to submit sales transaction
     const handleSalesSubmit = async (e: any) => {
+        setLoading(true);
         e.preventDefault();
 
         const sale = {
@@ -469,12 +471,14 @@ export default function EmployeeSales() {
             setInputQuantity(1);
 
             closeDialog();
+            setLoading(false);
             if (typeof window !== "undefined") {
                 window.location.reload();
             }
 
         } catch (err) {
             console.error("Sales submission error:", err);
+            setLoading(false);
         }
     };
 
@@ -1179,6 +1183,12 @@ export default function EmployeeSales() {
                     </div>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     )
 }

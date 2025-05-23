@@ -19,6 +19,7 @@ export default function Loans() {
     const [loanAmount, setLoanAmount] = useState(0);
     const [loanPurpose, setLoanPurpose] = useState("");
     const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -67,6 +68,7 @@ export default function Loans() {
     const applicantId = token ? jwtDecode<DecodedToken>(token).id : null;
 
     const handleSubmitLoanRequest = async (e: FormEvent<HTMLFormElement>) => {
+        setLoading(true);
         e.preventDefault();
         if (applicantId === null) {
             console.error("User not authenticated");
@@ -92,6 +94,8 @@ export default function Loans() {
 
             setIsSuccessVisible(true);
             setTimeout(() => setIsSuccessVisible(false), 3000);
+            setLoading(false);
+            window.location.reload();
         } catch (e) {
             console.log(e);
         }
@@ -255,6 +259,12 @@ export default function Loans() {
                     <p className="text-sm text-gray-600 mt-2">Your application has been submitted successfully.</p>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     );
 }

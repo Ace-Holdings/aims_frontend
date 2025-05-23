@@ -92,6 +92,7 @@ export default function UsersManager() {
     const [searchTerm, setSearchTerm] = useState('');
     const [applicantResults, setApplicantResults] = useState<User[]>([]);
     const [selectedApplicant, setSelectedApplicant] = useState<User | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -240,7 +241,7 @@ export default function UsersManager() {
 
         const salaryId = selectedSalary.salaryId;
         handleUpdateSalary(salaryId);
-        window.location.reload();
+        // window.location.reload();
     };
 
     const handleUpdateSalary = async (id: number) => {
@@ -330,6 +331,7 @@ export default function UsersManager() {
     }
 
     const handleUserRegistration = async (e: any) => {
+        setLoading(true);
         e.preventDefault();
 
         try {
@@ -353,10 +355,12 @@ export default function UsersManager() {
 
             if (response.ok) {
                 closeDialog();
+                setLoading(false);
                 window.location.reload();
             }
         } catch(e) {
             console.log(e);
+            setLoading(false);
         }
     }
 
@@ -1127,6 +1131,12 @@ export default function UsersManager() {
                     </p>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
 
         </>
     )

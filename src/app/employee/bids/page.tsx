@@ -33,6 +33,7 @@ export default function EmployeeBids() {
     const [editFile, setEditFile] = useState<File | null>(null);
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -96,6 +97,7 @@ export default function EmployeeBids() {
     }, [router]);
 
     const handleBidSubmit = async (event: FormEvent) => {
+        setLoading(true);
         event.preventDefault();
 
         if (!bidFile) {
@@ -133,12 +135,14 @@ export default function EmployeeBids() {
 
             if (response.ok) {
                 closeDialog();
+                setIsDialogOpen(false);
                 window.location.reload();
             } else {
                 console.log("Could not create bid");
             }
         } catch (e) {
             console.error(e);
+            setLoading(false);
         }
     };
 
@@ -297,6 +301,12 @@ export default function EmployeeBids() {
                     </form>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     );
 }

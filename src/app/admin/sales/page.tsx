@@ -113,6 +113,7 @@ export default function AdminSales() {
     const [endDate, setEndDate] = useState<Date | null>(null);
 
     const [confirmedItems, setConfirmedItems] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -357,6 +358,7 @@ export default function AdminSales() {
 
     // handler function to submit sales transaction
     const handleSalesSubmit = async (e: any) => {
+        setLoading(true);
         e.preventDefault();
 
         const sale = {
@@ -449,12 +451,14 @@ export default function AdminSales() {
             setInputQuantity(1);
 
             closeDialog();
+            setLoading(false);
             if (typeof window !== 'undefined') {
                 window.location.reload();
             }
 
         } catch (err) {
             console.error("Sales submission error:", err);
+            setLoading(false);
         }
     };
 
@@ -1165,6 +1169,12 @@ export default function AdminSales() {
                     </div>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     )
 }

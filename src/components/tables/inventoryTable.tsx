@@ -57,6 +57,8 @@ export default function InventoryTable() {
 
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
 
+    const [loading, setLoading] = useState(false);
+
     const router = useRouter();
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -153,7 +155,6 @@ export default function InventoryTable() {
     }
 
     const handleUpdateStock1 = async () => {
-
         if (!token) {
             router.push("/");
             return null;
@@ -162,24 +163,37 @@ export default function InventoryTable() {
         const decoded = jwtDecode<DecodedToken>(token);
         const user = decoded.user;
 
-        if (!quantity || quantity === selectedItem?.quantity) {
-            try {
-                const updatedStock = {
-                    inventoryId: selectedItem?.inventoryId,
-                    ...(quantity && { quantity }),
-                    ...(pricePerUnit && { pricePerUnit }),
-                    ...(name && { name }),
-                    ...(description && { description }),
-                    ...(dateAdded && { dateAdded: dateAdded.toISOString() }),
-                    ...(location && { location }),
-                    ...(status !== "" && { status }),
-                };
+        if (!quantity) {
+            console.error("Quantity is required");
+            return;
+        }
 
+        const quantityChanged = quantity !== selectedItem?.quantity;
+
+        const updatedStock = {
+            inventoryId: selectedItem?.inventoryId,
+            ...(quantity && { quantity }),
+            ...(pricePerUnit && { pricePerUnit }),
+            ...(name && { name }),
+            ...(description && { description }),
+            ...(dateAdded && { dateAdded: dateAdded.toISOString() }),
+            ...(location && { location }),
+            ...(status !== "" && { status }),
+        };
+
+        try {
+            if (quantityChanged) {
+                // Ask for serials first
+                setSerialNumbersUpdate(Array(quantity).fill(""));
+                setShowUpdateDialog(false);
+                setIsSerialDialogOpen(true);
+            } else {
+                // No quantity change, proceed to update directly
                 const response = await fetch(`https://aims-api-latest.onrender.com/inventory/${selectedItem?.inventoryId}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
-                        "authorization": 'Bearer ' + token,
+                        "authorization": `Bearer ${token}`,
                     },
                     body: JSON.stringify({
                         ...updatedStock,
@@ -193,16 +207,9 @@ export default function InventoryTable() {
                 }
 
                 setShowUpdateDialog(false);
-                window.location.reload();
-            } catch (error) {
-                console.log(error);
             }
-
-        } else {
-            // Quantity changed – ask for new serial numbers
-            setSerialNumbersUpdate(Array(quantity).fill(""));
-            setShowUpdateDialog(false);
-            setIsSerialDialogOpen(true);
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -312,7 +319,7 @@ export default function InventoryTable() {
     };
 
     const submitSerialsAndUpdateStock = async () => {
-
+        setLoading(true);
         if (!token) {
             router.push("/");
             return null;
@@ -389,9 +396,11 @@ export default function InventoryTable() {
             // 5. Close dialogs and refresh
             setIsSerialDialogOpen(false);
             setShowUpdateDialog(false);
+            setLoading(false);
             window.location.reload();
         } catch (error) {
             console.error("Submission error:", error);
+            setLoading(false);
         }
     };
 
@@ -700,6 +709,12 @@ export default function InventoryTable() {
                     </div>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     );
 }

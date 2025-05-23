@@ -53,6 +53,8 @@ export default function InventoryTableEmployee() {
 
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
 
+    const [loading, setLoading] = useState(false);
+
     const router = useRouter();
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -113,6 +115,7 @@ export default function InventoryTableEmployee() {
     };
 
     const submitSerialsAndUpdateStock = async () => {
+        setLoading(true);
 
         if (!token) {
             router.push("/");
@@ -190,15 +193,17 @@ export default function InventoryTableEmployee() {
             // 5. Close dialogs and refresh
             setIsSerialDialogOpen(false);
             setShowUpdateDialog(false);
+            setLoading(false);
             window.location.reload();
         } catch (error) {
             console.error("Submission error:", error);
+            setLoading(false);
         }
     };
 
     // handler function to update stock item
     const handleUpdateStock1 = async () => {
-
+        setLoading(true);
         if (!token) {
             router.push("/");
             return null;
@@ -238,15 +243,18 @@ export default function InventoryTableEmployee() {
                 }
 
                 setShowUpdateDialog(false);
+                setLoading(false);
                 window.location.reload();
             } catch (error) {
                 console.log(error);
+                setLoading(false);
             }
 
         } else {
             // Quantity changed – ask for new serial numbers
             setSerialNumbersUpdate(Array(quantity).fill(""));
             setShowUpdateDialog(false);
+            setLoading(false);
             setIsSerialDialogOpen(true);
         }
     };
@@ -621,6 +629,12 @@ export default function InventoryTableEmployee() {
                     </div>
                 </div>,
                 document.body
+            )}
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
             )}
         </>
     );

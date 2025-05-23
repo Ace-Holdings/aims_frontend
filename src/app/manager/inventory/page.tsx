@@ -35,6 +35,7 @@ export default function ManagerInventory() {
 
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
     const [serialNumbers, setSerialNumbers] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -97,6 +98,7 @@ export default function ManagerInventory() {
 
     // handler function to submit inventory item creation form
     const handleFinalSubmit = async () => {
+        setLoading(true);
 
         if (!token) {
             // handle missing token, e.g. redirect or throw error
@@ -161,10 +163,12 @@ export default function ManagerInventory() {
                 throw new Error(`Error creating inventory units: ${errText}`);
             }
 
+            setLoading(false);
             window.location.reload();
 
         } catch (e) {
             console.error("Submission error:", e);
+            setLoading(false);
         }
     };
 
@@ -386,6 +390,12 @@ export default function ManagerInventory() {
                     </div>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     )
 }

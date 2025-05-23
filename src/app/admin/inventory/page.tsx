@@ -33,6 +33,8 @@ export default function AdminInventory() {
     const [isSerialDialogOpen, setIsSerialDialogOpen] = useState(false);
     const [serialNumbers, setSerialNumbers] = useState<string[]>([]);
 
+    const [loading, setLoading] = useState(false);
+
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
 
@@ -104,6 +106,8 @@ export default function AdminInventory() {
             throw new Error("Token not found");
         }
 
+        setLoading(true);
+
         const decoded = jwtDecode<DecodedToken>(token);
         const user = decoded.user;
 
@@ -162,10 +166,12 @@ export default function AdminInventory() {
                 throw new Error(`Error creating inventory units: ${errText}`);
             }
 
+            setLoading(false);
             window.location.reload();
 
         } catch (e) {
             console.error("Submission error:", e);
+            setLoading(false);
         }
     };
 
@@ -387,6 +393,12 @@ export default function AdminInventory() {
                     </div>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     )
 }

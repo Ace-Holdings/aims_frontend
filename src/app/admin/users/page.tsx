@@ -82,6 +82,8 @@ export default function UsersAdmin() {
 
     const [updatedSalaries, setUpdatedSalaries] = useState(salaries);
 
+    const [loading, setLoading] = useState(false);
+
     // states for updating salary
     const [salaryClass, setSalaryClass] = useState("A");
     const [amount, setAmount] = useState(0);
@@ -535,6 +537,7 @@ export default function UsersAdmin() {
 
     // handler function to submit user details
     const handleUserRegistration = async (e: any) => {
+        setLoading(true);
         e.preventDefault();
 
         try {
@@ -558,10 +561,12 @@ export default function UsersAdmin() {
 
             if (response.ok) {
                 closeDialog();
+                setLoading(false);
                 window.location.reload();
             }
         } catch(e) {
             console.log(e);
+            setLoading(false);
         }
     }
 

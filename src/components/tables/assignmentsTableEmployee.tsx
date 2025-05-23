@@ -18,10 +18,8 @@ interface SelectedAssignment {
 }
 
 export default function AssignmentsTableEmployee() {
-    const [assignments, setAssignments] = useState<SelectedAssignment[]>([])
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [assignments, setAssignments] = useState<SelectedAssignment[]>([]);
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
-    const [showUpdateDialog, setShowUpdateDialog] = useState(false);
     const [selectedAssignment, setSelectedAssignment] = useState<SelectedAssignment | null>(null);
 
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);

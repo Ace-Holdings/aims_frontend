@@ -31,6 +31,7 @@ export default function AssignmentsManager() {
     const [assignmentObjectives, setAssignmentObjectives] = useState([""]);
 
     const [isObjectiveListPromptOpen, setIsObjectiveListPromptOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -75,6 +76,7 @@ export default function AssignmentsManager() {
 
     const handleSubmitWithoutObjectives = async (e: any) => {
         e.preventDefault();
+        setLoading(true);
 
         try {
             const assignmentResponse = await fetch('https://aims-api-latest.onrender.com/assignments', {
@@ -95,14 +97,15 @@ export default function AssignmentsManager() {
             if (!assignmentResponse.ok) {
                 throw new Error("Failed to create assignment");
             }
-        } catch (e) {
-            console.log(e);
-        }
 
-        setIsObjectivePromptOpen(false);
-        setIsDialogOpen(false);
-        window.location.reload();
-    }
+            setIsObjectivePromptOpen(false);
+            setIsDialogOpen(false);
+            window.location.reload();
+        } catch (e) {
+            console.error(e);
+            setLoading(false);
+        }
+    };
 
     // Add employee to selected list
     const handleSelectEmployee = (employee: any) => {
@@ -170,6 +173,7 @@ export default function AssignmentsManager() {
     // handler function to submit assignment form data to server
     const handleAssignmentSubmit = async (e: any) => {
         e.preventDefault();
+        setLoading(true);
 
         try {
             // Step 1: Create the assignment first
@@ -230,6 +234,7 @@ export default function AssignmentsManager() {
             }
 
             setIsDialogOpen(false);
+            setLoading(false);
             window.location.reload();
             setAssignmentName("");
             setLocation("");
@@ -239,6 +244,7 @@ export default function AssignmentsManager() {
             setSelectedEmployees([]);
         } catch (e) {
             console.log("Error submitting assignment:", e);
+            setLoading(false);
         }
     };
 
@@ -541,6 +547,12 @@ export default function AssignmentsManager() {
                     </div>
                 </div>
             </div>
+
+            {loading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                    <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                </div>
+            )}
         </>
     )
 }
