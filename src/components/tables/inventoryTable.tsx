@@ -186,7 +186,7 @@ export default function InventoryTable() {
                 setSerialNumbersUpdate(prev => Array(quantity).fill(""));
                 setShowUpdateDialog(false);
                 setTimeout(() => {
-                    setShowSerialDialog(true);
+                    setIsSerialDialogOpen(true);
                 }, 50);
             } else {
                 // No quantity change, proceed to update directly

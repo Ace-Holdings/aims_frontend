@@ -234,7 +234,7 @@ export default function InventoryTableEmployee() {
                 setSerialNumbersUpdate(prev => Array(quantity).fill(""));
                 setShowUpdateDialog(false);
                 setTimeout(() => {
-                    setShowSerialDialog(true);
+                    setIsSerialDialogOpen(true);
                 }, 50);
             } else {
                 const response = await fetch(`https://aims-api-latest.onrender.com/inventory/${selectedItem?.inventoryId}`, {
