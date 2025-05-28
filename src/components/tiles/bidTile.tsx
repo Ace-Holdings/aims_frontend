@@ -40,6 +40,8 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
     const [showChecklistUnavailableDialog, setShowChecklistUnavailableDialog] = useState(false);
 
+    const [loadingChecklist, setLoadingChecklist] = useState(false);
+
     const [shouldRenderDialog, setShouldRenderDialog] = useState(false);
 
 
@@ -78,9 +80,13 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
 
     const openChecklistDialog = (bid: any) => {
         setSelectedBid(bid);
-        fetchForBidChecklist(bid.id);
         setShowChecklistDialog(true);
-    }
+        setLoadingChecklist(true);
+
+        fetchForBidChecklist(bid.id).finally(() => {
+            setLoadingChecklist(false);
+        });
+    };
 
     const fetchForBidChecklist = async (bidId: any) => {
         try {
@@ -611,34 +617,42 @@ export default function BidTile({ bid }: { bid: { id: number, description: strin
                         }`}
                     >
                         <h3 className="text-lg mb-4 text-black text-center">Checklist</h3>
-                        <div className="mb-6 space-y-2 text-gray-800 text-sm max-h-[300px] overflow-y-auto pr-2">
-                            {checklist.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className="bg-gray-100 px-4 py-2 rounded-md shadow-sm flex justify-between items-start"
-                                >
-                                    <span className="w-[95%]">{item.requirement}</span>
-                                    <span className="text-lg">
-                            {item.fulfilled ? (
-                                '✅'
-                            ) : (
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5 text-red-600"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            )}
-                        </span>
-                                </div>
-                            ))}
-                        </div>
+
+                        {loadingChecklist ? (
+                            <div className="flex items-center justify-center h-[300px]">
+                                <div className="w-16 h-16 border-8 border-t-blue-500 border-transparent rounded-full animate-spin"></div>
+                            </div>
+                        ) : (
+                            <div className="mb-6 space-y-2 text-gray-800 text-sm max-h-[300px] overflow-y-auto pr-2">
+                                {checklist.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="bg-gray-100 px-4 py-2 rounded-md shadow-sm flex justify-between items-start"
+                                    >
+                                        <span className="w-[95%]">{item.requirement}</span>
+                                        <span className="text-lg">
+                                {item.fulfilled ? (
+                                    '✅'
+                                ) : (
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-5 w-5 text-red-600"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                )}
+                            </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         <div className="mt-4 flex justify-end">
                             <button
                                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md"

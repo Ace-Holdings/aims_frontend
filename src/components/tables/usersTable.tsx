@@ -182,15 +182,16 @@ export default function UsersTable() {
             name: "Actions",
             cell: (row) => (
                 <div className="flex">
-                    <button className="text-green-600 p-2 bg-gray-200 rounded-md" onClick={() => openUpdateDialog(row)}>
+                    <button className="text-green-600 p-2 hover:text-green-800 transition-colors duration-200
+                hover:bg-green-100 bg-gray-200 rounded-md" onClick={() => openUpdateDialog(row)}>
                         <FiEdit className="size-6" />
                     </button>
                     <div className="w-2" />
-                    <button className="text-blue-600 p-2 bg-gray-200 rounded-md" onClick={() => openDetailDialog(row)}>
+                    <button className="text-blue-600 p-2 hover:text-blue-800 hover:bg-blue-100 transition-colors duration-200 bg-gray-200 rounded-md" onClick={() => openDetailDialog(row)}>
                         <FiEye className="w-5 h-5" />
                     </button>
                     <div className="w-2" />
-                    <button className="text-red-600 p-2 bg-gray-200 rounded-md" onClick={() => openDeleteDialog(row)}>
+                    <button className="text-red-600 p-2 hover:text-red-800 hover:bg-red-100 transition-colors duration-200 bg-gray-200 rounded-md" onClick={() => openDeleteDialog(row)}>
                         <FiTrash2 className="w-5 h-5" />
                     </button>
                 </div>

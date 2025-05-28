@@ -314,7 +314,6 @@ export default function InventoryTableEmployee() {
         },
     ];
 
-    // Custom styles for table
     const customStyles = {
         headCells: {
             style: {
@@ -323,8 +322,7 @@ export default function InventoryTableEmployee() {
             },
         },
     };
-    
-    // Handle Filter Change
+
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         setFilter(value);
@@ -341,7 +339,6 @@ export default function InventoryTableEmployee() {
         );
     };
 
-    // Handle Search Change
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearch(value);
@@ -361,7 +358,6 @@ export default function InventoryTableEmployee() {
         <>
             <div className="p-4">
                 <div className="flex justify-between items-center mb-4 text-black">
-                    {/* Filter Dropdown */}
                     <select
                         value={filter}
                         onChange={handleFilterChange}
@@ -372,7 +368,6 @@ export default function InventoryTableEmployee() {
                         <option value="warehouse">Warehouse</option>
                     </select>
 
-                    {/* Search Bar */}
                     <input
                         type="text"
                         value={search}
@@ -382,7 +377,6 @@ export default function InventoryTableEmployee() {
                     />
                 </div>
 
-                {/* DataTable Component */}
                 <DataTable
                     columns={columns}
                     data={filteredData}
@@ -393,7 +387,6 @@ export default function InventoryTableEmployee() {
                 />
             </div>
 
-            {/* modal for inventory details */}
             {typeof window !== "undefined" && shouldRenderDialog &&
                 ReactDOM.createPortal(
                     <div
@@ -539,7 +532,6 @@ export default function InventoryTableEmployee() {
                 document.body
             )}
 
-            {/* modal for showing inventory item serials */}
             {typeof window !== "undefined" && ReactDOM.createPortal(
                 <div
                     className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm text-black font-custom z-50 transition-opacity duration-300 ${
@@ -580,7 +572,6 @@ export default function InventoryTableEmployee() {
                 document.body
             )}
 
-            {/* modal for entering inventory item serial numbers */}
             {typeof window !== "undefined" && ReactDOM.createPortal(
                 <div
                     className={`fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50 text-black font-custom transition-opacity duration-300 ${
